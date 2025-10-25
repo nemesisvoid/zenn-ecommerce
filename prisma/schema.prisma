@@ -1,0 +1,263 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+model User {
+  id       String  @id @default(uuid())
+  email    String  @unique
+  password String?
+
+  // --- ADD THESE FIELDS FOR NEXTAUTH.JS OAUTH ---
+  name          String? // Stores the full name from OAuth providers (e.g., Google, GitHub)
+  image         String? // Stores the profile picture URL from OAuth providers
+  emailVerified DateTime? // Timestamp when the email was verified by the OAuth provider
+  // ---------------------------------------------
+
+  firstName       String?        @db.VarChar(50)
+  lastName        String?        @db.VarChar(50)
+  phone           String?
+  avatarUrl       String?
+  isEmailVerified Boolean        @default(false)
+  role            UserRole       @default(USER)
+  orders          Order[]
+  address         String?
+  paymentMethods  PaymentMethod?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  Review          Review[]
+  Cart            Cart?
+  account         Account[]
+  Session         Session[]
+  wishlists       Wishlist[]
+
+  @@index([email])
+}
+
+model Product {
+  id              String           @id @default(uuid())
+  name            String
+  slug            String           @unique(map: "product_slug_idx")
+  price           Float            @default(0)
+  discountPercent Float?           @default(0)
+  images          String[]
+  sizes           String[]
+  colors          String[]
+  coverImage      String
+  stock           Int
+  categoryId      String?          @default("all-products")
+  category        Category?        @relation(fields: [categoryId], references: [id])
+  description     String
+  createdAt       DateTime         @default(now()) @db.Timestamp(6)
+  updatedAt       DateTime         @updatedAt
+  isFeatured      Boolean          @default(false)
+  isArchived      Boolean          @default(false)
+  reviews         Review[]
+  rating          Float?
+  numReviews      Int              @default(0)
+  orders          Order[]
+  variants        ProductVariant[]
+  OrderItem       OrderItem[]
+  wishlists       Wishlist[]
+  deletedAt       DateTime?
+  CartItem        CartItem[]
+
+  @@index([categoryId])
+  @@index([slug])
+}
+
+model ProductVariant {
+  id        String      @id @default(uuid())
+  productId String
+  product   Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  color     String?
+  size      String?
+  price     Float?
+  images    String[]
+  stock     Int?
+  sku       String?     @unique
+  OrderItem OrderItem[]
+  CartItem  CartItem[]
+
+  @@index([productId])
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  slug        String    @unique(map: "category_slug_idx")
+  description String?
+  coverImage  String
+  products    Product[]
+  createdAt   DateTime  @default(now())
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating    Float
+  comment   String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([productId])
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  ERROR
+}
+
+enum PaymentMethod {
+  PAYONDELIVERY
+  PAYSTACK
+}
+
+model Order {
+  id                String        @id @default(uuid())
+  userId            String
+  cartId            String
+  email             String
+  phoneNo           String?
+  productId         String?
+  shippingAddress   String
+  country           String
+  city              String
+  postalCode        String?
+  paymentMethod     PaymentMethod
+  paystackReference String?       @unique
+  paystackPayload   Json?
+  status            OrderStatus   @default(PENDING)
+  isPaid            Boolean       @default(false)
+  paidAt            DateTime?     @db.Timestamp(6)
+  isDelivered       Boolean       @default(false)
+  deliveredAt       DateTime?     @db.Timestamp(6)
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemsPrice        Float
+  shippingPrice     Float
+  totalPrice        Float
+  taxPrice          Float?
+  Product           Product?      @relation(fields: [productId], references: [id], onDelete: SetNull)
+  orderItems        OrderItem[]
+  createdAt         DateTime      @default(now())
+
+  @@index([userId])
+  @@index([productId])
+}
+
+model OrderItem {
+  id        String          @id @default(uuid())
+  orderId   String
+  productId String
+  variantId String?
+  quantity  Int
+  price     Float
+  product   Product         @relation(fields: [productId], references: [id], onDelete: Restrict)
+  variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  order     Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  sku       String?
+
+  @@index([orderId])
+  @@index([productId])
+  @@index([variantId])
+}
+
+model Cart {
+  id            String     @id @default(uuid())
+  userId        String?    @unique
+  sessionCartId String
+  cartItems     CartItem[]
+  itemsPrice    Float
+  totalPrice    Float
+  shippingPrice Float
+  createdAt     DateTime   @default(now())
+  user          User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model CartItem {
+  id        String          @id @default(uuid())
+  cartId    String?
+  cart      Cart?           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  products  Product         @relation(fields: [productId], references: [id])
+  variantId String?
+  variants  ProductVariant? @relation(fields: [variantId], references: [id])
+  quantity  Int             @default(1)
+  price     Float
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+// New Wishlist Model
+model Wishlist {
+  id        String   @id @default(uuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@index([productId])
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @id
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId])
+}
