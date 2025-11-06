@@ -36,18 +36,20 @@ const CartDetails = ({ cart, cartItems }: CartDetailsProps) => {
                 key={item.id}
                 className='flex gap-2
                   '>
-                {item.variants?.images.slice(1, 2).map((img, index) => (
-                  <div
-                    key={index}
-                    className='relative w-25 aspect-square'>
-                    <Image
-                      src={img}
-                      className='object-cover rounded-sm'
-                      fill
-                      alt='product image'
-                    />
-                  </div>
-                ))}
+                {item.variants &&
+                  item.variants?.images.slice(1, 2).map((img, index) => (
+                    <div
+                      key={index}
+                      className='relative w-25 aspect-square'>
+                      <Image
+                        src={img}
+                        className='object-cover rounded-sm'
+                        fill
+                        alt='product image'
+                      />
+                    </div>
+                  ))}
+
                 <div className='flex flex-col justify-between ml-2'>
                   <p className='text-lg font-medium'>{item.products?.name}</p>
 

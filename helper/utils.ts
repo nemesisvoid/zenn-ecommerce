@@ -11,10 +11,8 @@ export const convertToSlug = (text: string) => {
 };
 
 export const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'NGN',
-  }).format(amount);
+  const formatter = new Intl.NumberFormat('en-US').format(`${amount}`);
+  return `₦${formatter}`;
 };
 
 export const getPercentagePrice = (amount: number, percentage: number) => {

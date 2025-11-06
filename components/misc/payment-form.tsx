@@ -166,7 +166,7 @@ export const PaymentForm = ({ user, cart }: PaymentFormProps) => {
                   <figure
                     key={item.id}
                     className='flex item-center gap-5'>
-                    {item.variants
+                    {item?.variants
                       ? item.variants?.images.slice(1, 2).map(img => (
                           <div
                             key={img}

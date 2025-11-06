@@ -10,6 +10,8 @@ const CartPage = async () => {
   console.log(session);
 
   const cart = await getCart();
+  const user = await auth();
+  console.log('cart page user:', user);
 
   if (!cart || cart.cartItems.length === 0) {
     return (

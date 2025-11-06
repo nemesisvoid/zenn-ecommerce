@@ -14,10 +14,12 @@ import { Button } from '../ui/button';
 import FormError from '../misc/form-error';
 import FormSuccess from '../misc/form-success';
 import { register } from '@/actions/register.action';
+import { useRouter } from 'next/navigation';
 
 const RegisterForm = () => {
   const [error, setError] = useState<string | undefined>('');
   const [success, setSuccess] = useState<string | undefined>('');
+  const router = useRouter();
   // const [showPassword, setShowPassword] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -40,6 +42,7 @@ const RegisterForm = () => {
         setError(data.error);
         setSuccess(data.success);
       });
+      if (success) router.push('/auth/login');
     });
   };
   console.log(form);

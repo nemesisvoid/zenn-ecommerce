@@ -16,6 +16,8 @@ interface CreateOrderProps {
   address: string;
 }
 
+type Row = { month: Date; revenue: any };
+
 export const createOrder = async (data: CreateOrderProps) => {
   const { cart, userId, name, email, phoneNo, paymentMethod, address, country, city } = data;
   if (!userId) throw new Error('User not found');
@@ -36,7 +38,7 @@ export const createOrder = async (data: CreateOrderProps) => {
         shippingAddress: address,
         itemsPrice: cart.itemsPrice,
         totalPrice: cart.totalPrice,
-        // productId: cart.productId,
+        productId: cart.cartItems[0].productId,
         // taxPrice:cart.t,
         shippingPrice: cart.shippingPrice,
         paystackReference: reference,
@@ -85,7 +87,7 @@ export const createOrder = async (data: CreateOrderProps) => {
         where: { id: order?.id },
         data: { status: 'ERROR' },
       });
-      throw new Error(data.message) || 'Failed to intialize transaction';
+      throw new Error(data.message) || 'Failed to initialize transaction';
     }
 
     await prisma?.order.update({
@@ -114,6 +116,97 @@ export const getOrderById = async (orderId: string, userId: string) => {
 
     return order;
   } catch (error) {
-    console.error('error gettin order:', error);
+    console.error('error getting order:', error);
   }
 };
+
+export const getOrderSummary = async () => {
+  const totalOrders = await prisma?.order.count();
+  const totalSales = await prisma?.order.aggregate({ _sum: { totalPrice: true } });
+  const totalUsers = await prisma?.user.count();
+  const totalProducts = await prisma?.product.count();
+
+  const topProducts = await prisma?.product.findMany({
+    select: {
+      id: true,
+      name: true,
+      images: true,
+      price: true,
+      _count: {
+        select: {
+          OrderItem: true,
+        },
+      },
+    },
+    orderBy: {
+      OrderItem: {
+        _count: 'desc',
+      },
+    },
+    take: 5,
+  });
+
+  const recentSales = await prisma?.order.findMany({
+    select: {
+      id: true,
+      user: { select: { name: true } },
+      totalPrice: true,
+      createdAt: true,
+      isDelivered: true,
+      paidAt: true,
+      deliveredAt: true,
+      paymentMethod: true,
+      email: true,
+      status: true,
+      shippingAddress: true,
+      _count: {
+        select: {
+          orderItems: true,
+        },
+      },
+    },
+    take: 5,
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return {
+    totalOrders: totalOrders || 0,
+    totalSales: totalSales?._sum.totalPrice || 0,
+    totalUsers: totalUsers || 0,
+    totalProducts: totalProducts || 0,
+    topProducts,
+    recentSales,
+    // salesData: salesData || [],
+  };
+};
+
+export async function getMonthlySales() {
+  const rows = await prisma.$queryRaw<Row[]>`
+    SELECT month, SUM("totalPrice") AS revenue, COUNT(*) AS orders
+    FROM (
+      SELECT date_trunc('month', "createdAt")::date AS month, "totalPrice"
+      FROM "Order"
+    ) s
+    GROUP BY month
+    ORDER BY month ASC;
+  `;
+
+  const points = rows.map(r => ({
+    month: r.month.toISOString().slice(0, 7), // YYYY-MM
+    revenue: typeof r.revenue === 'object' && 'toNumber' in r.revenue ? Number(r.revenue.toNumber()) : Number(r.revenue || 0),
+  }));
+
+  return fillLast12Months(points);
+}
+
+function fillLast12Months(points: { month: string; revenue: number }[]) {
+  const map = new Map(points.map(p => [p.month, p.revenue]));
+  const out: { month: string; revenue: number }[] = [];
+  const now = new Date();
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1));
+    const key = d.toISOString().slice(0, 7);
+    out.push({ month: key, revenue: map.get(key) ?? 0 });
+  }
+  return out;
+}

@@ -39,3 +39,16 @@ export const getProductBySlug = async (slug: string) => {
 
   return data;
 };
+
+export const getAllProducts = async () => {
+  try {
+    const data = await prisma.product.findMany({
+      where: {
+        isArchived: false,
+      },
+    });
+    return data;
+  } catch (error) {
+    console.log('error fetching products', error);
+  }
+};

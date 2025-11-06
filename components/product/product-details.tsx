@@ -37,12 +37,9 @@ const ProductDetails = ({ product, cart }: ProductVariantType) => {
   }, [variantsByColor]);
 
   const selectedVariant = useMemo(() => {
-    if (!hasVariants)
-      return {
-        id: product.id,
-        productId: product.id,
-        price: product.price ?? 0,
-      };
+    // For products without variants, do not fabricate a variant.
+    // Keep this null so the server does not attempt a variant lookup.
+    if (!hasVariants) return null;
 
     const foundVariant = product.variants.find(v => v.color === selectedColor && v.size === selectedSize);
 

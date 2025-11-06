@@ -7,7 +7,6 @@ import { PrismaAdapter } from '@auth/prisma-adapter';
 import { prisma } from './lib/prisma';
 import { getUserById } from './data/user';
 import { cookies } from 'next/headers';
-import { NextResponse } from 'next/server';
 
 export const {
   handlers: { GET, POST },
@@ -19,7 +18,7 @@ export const {
   adapter: PrismaAdapter(prisma),
   session: { strategy: 'jwt' },
   callbacks: {
-    async session({ session, token, trigger }) {
+    async session({ session, token }) {
       if (session.user && token.sub) {
         session.user.id = token.sub;
         session.user.name = token.name;
@@ -32,7 +31,6 @@ export const {
     },
 
     async jwt({ token, user, trigger }) {
-      console.log({ user });
       console.log('token', token);
       if (!token.sub) return token;
       const existingUser = await getUserById(token.sub);

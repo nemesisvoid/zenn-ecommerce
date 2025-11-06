@@ -20,8 +20,9 @@ type UserNavProps = {
   isLoggedIn: boolean;
   cart: CartType | null;
   cartItemsCount: number;
+  userRole: string;
 };
-const UserNav = ({ isLoggedIn, cartItemsCount }: UserNavProps) => {
+const UserNav = ({ isLoggedIn, userRole, cartItemsCount }: UserNavProps) => {
   console.log(isLoggedIn);
   return (
     <div>
@@ -46,6 +47,12 @@ const UserNav = ({ isLoggedIn, cartItemsCount }: UserNavProps) => {
             {isLoggedIn ? (
               <DropdownMenuContent>
                 <DropdownMenuLabel>Account</DropdownMenuLabel>
+
+                {userRole === 'ADMIN' && (
+                  <DropdownMenuItem>
+                    <Link href='/admin/dashboard'>Dashboard</Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem>
                   <Link href='/user/orders'>Orders</Link>
                 </DropdownMenuItem>
