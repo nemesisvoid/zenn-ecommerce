@@ -1,5 +1,4 @@
 import { PaymentMethods } from '@/constants';
-import path from 'path';
 import * as z from 'zod';
 
 export const LoginSchema = z.object({
@@ -54,4 +53,30 @@ export const OrderItemSchema = z.object({
   color: z.string().min(3, { message: 'Color must be at least 3 characters' }).optional().nullable(),
   size: z.string().min(3, { message: 'Size must be at least 3 characters' }).optional().nullable(),
   sku: z.string().min(3, { message: 'SKU must be at least 3 characters' }).optional().nullable(),
+});
+
+export const CreateProductVariantSchema = z.object({
+  size: z.string().min(1, { message: 'Size is required' }).optional().nullable(),
+  color: z.string().min(3, { message: 'Color must be at least 3 characters' }).optional().nullable(),
+  price: z.coerce.number().nonnegative('Price must be a positive number'),
+  sku: z.string().min(3, { message: 'SKU must be at least 3 characters' }).optional(),
+  stock: z.number().min(0),
+});
+
+export const CreateProductColorImageSchema = z.object({
+  color: z.string().min(1, 'Color name is required'),
+  images: z.array(z.string().url()).min(1, 'At least one image is required for the color'),
+});
+
+export const CreateProductSchema = z.object({
+  name: z.string().min(3, { message: 'Product name must be at least 3 characters' }),
+  price: z.coerce.number().nonnegative('Price must be a positive number'),
+  description: z.string().min(3, { message: 'Description must be at least 3 characters' }),
+  categories: z.array(z.string()).min(1, { message: 'Category is required' }),
+  images: z.array(z.string()).min(1, { message: 'At least one image is required' }),
+  stock: z.coerce.number().nonnegative('Stock must be a positive number'),
+  discountPercent: z.coerce.number().nonnegative('Discount percent must be a positive number').optional(),
+  colorImages: z.array(CreateProductColorImageSchema).optional(),
+  hasVariants: z.boolean().default(false),
+  variants: z.array(CreateProductVariantSchema).optional(),
 });

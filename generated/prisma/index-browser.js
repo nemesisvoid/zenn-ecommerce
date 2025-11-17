@@ -146,11 +146,7 @@ exports.Prisma.ProductScalarFieldEnum = {
   price: 'price',
   discountPercent: 'discountPercent',
   images: 'images',
-  sizes: 'sizes',
-  colors: 'colors',
-  coverImage: 'coverImage',
   stock: 'stock',
-  categoryId: 'categoryId',
   description: 'description',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -158,7 +154,8 @@ exports.Prisma.ProductScalarFieldEnum = {
   isArchived: 'isArchived',
   rating: 'rating',
   numReviews: 'numReviews',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  hasVariants: 'hasVariants'
 };
 
 exports.Prisma.ProductVariantScalarFieldEnum = {

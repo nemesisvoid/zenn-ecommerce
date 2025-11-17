@@ -43,11 +43,7 @@ model Product {
   price           Float            @default(0)
   discountPercent Float?           @default(0)
   images          String[]
-  sizes           String[]
-  colors          String[]
-  coverImage      String
   stock           Int
-  categoryId      String?          @default("all-products")
   description     String
   createdAt       DateTime         @default(now()) @db.Timestamp(6)
   updatedAt       DateTime         @updatedAt
@@ -57,14 +53,15 @@ model Product {
   numReviews      Int              @default(0)
   deletedAt       DateTime?
   CartItem        CartItem[]
+  hasVariants     Boolean          @default(false)
   orders          Order[]
   OrderItem       OrderItem[]
-  category        Category?        @relation(fields: [categoryId], references: [id])
   variants        ProductVariant[]
   reviews         Review[]
   wishlists       Wishlist[]
 
-  @@index([categoryId])
+  categories Category[] @relation("ProductCategories")
+
   @@index([slug])
 }
 
@@ -91,7 +88,7 @@ model Category {
   description String?
   coverImage  String
   createdAt   DateTime  @default(now())
-  products    Product[]
+  products    Product[] @relation("ProductCategories")
 }
 
 model Review {

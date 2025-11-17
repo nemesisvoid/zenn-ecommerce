@@ -18,7 +18,7 @@ import { login } from '@/actions/login.action';
 const LoginForm = () => {
   const [error, setError] = useState<string | undefined>('');
   const [success, setSuccess] = useState<string | undefined>('');
-  // const [showPassword, setShowPassword] = useState(false);
+  // todo const [showPassword, setShowPassword] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -40,6 +40,7 @@ const LoginForm = () => {
       });
     });
   };
+
   console.log(form);
   return (
     <CardWrapper

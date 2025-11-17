@@ -22,7 +22,7 @@ const CheckoutComplete = () => {
     startTransition(async () => {
       try {
         const res = await verifyPayment(ref);
-        console.log('ress:', res);
+        console.log('res:', res);
         if (res?.success) {
           setMessage('Payment successful! Thank you for your purchase. Redirection to order confirmation page....');
 
