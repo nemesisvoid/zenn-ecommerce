@@ -37,30 +37,30 @@ model User {
 }
 
 model Product {
-  id              String           @id @default(uuid())
+  id              String              @id @default(uuid())
   name            String
-  slug            String           @unique(map: "product_slug_idx")
-  price           Float            @default(0)
-  discountPercent Float?           @default(0)
+  slug            String              @unique(map: "product_slug_idx")
+  price           Float               @default(0)
+  discountPercent Float?              @default(0)
   images          String[]
   stock           Int
   description     String
-  createdAt       DateTime         @default(now()) @db.Timestamp(6)
-  updatedAt       DateTime         @updatedAt
-  isFeatured      Boolean          @default(false)
-  isArchived      Boolean          @default(false)
+  createdAt       DateTime            @default(now()) @db.Timestamp(6)
+  updatedAt       DateTime            @updatedAt
+  isFeatured      Boolean             @default(false)
+  isArchived      Boolean             @default(false)
   rating          Float?
-  numReviews      Int              @default(0)
+  numReviews      Int                 @default(0)
   deletedAt       DateTime?
   CartItem        CartItem[]
-  hasVariants     Boolean          @default(false)
+  hasVariants     Boolean             @default(false)
   orders          Order[]
   OrderItem       OrderItem[]
+  colorImages     ProductColorImage[]
   variants        ProductVariant[]
   reviews         Review[]
   wishlists       Wishlist[]
-
-  categories Category[] @relation("ProductCategories")
+  categories      Category[]          @relation("ProductCategories")
 
   @@index([slug])
 }
@@ -73,11 +73,21 @@ model ProductVariant {
   price     Float?
   stock     Int?
   sku       String?     @unique
-  images    String[]
   CartItem  CartItem[]
   OrderItem OrderItem[]
   product   Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
 
+  @@index([productId])
+}
+
+model ProductColorImage {
+  id        String   @id @default(uuid())
+  productId String
+  color     String
+  images    String[]
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, color])
   @@index([productId])
 }
 

@@ -59,8 +59,8 @@ export const CreateProductVariantSchema = z.object({
   size: z.string().min(1, { message: 'Size is required' }).optional().nullable(),
   color: z.string().min(3, { message: 'Color must be at least 3 characters' }).optional().nullable(),
   price: z.coerce.number().nonnegative('Price must be a positive number'),
-  sku: z.string().min(3, { message: 'SKU must be at least 3 characters' }).optional(),
-  stock: z.number().min(0),
+  sku: z.string().min(3, { message: 'SKU must be at least 3 characters' }).optional().nullable(),
+  stock: z.coerce.number().min(0).optional(),
 });
 
 export const CreateProductColorImageSchema = z.object({

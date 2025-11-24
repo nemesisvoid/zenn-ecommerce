@@ -16,6 +16,7 @@ const ProductColorForm = ({ form, isPending }: ProductColorFormProps) => {
     control: form.control,
     name: 'colorImages',
   });
+
   return (
     <div className='space-y-5'>
       {fields.map((field, index) => (

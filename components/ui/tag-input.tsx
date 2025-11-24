@@ -8,6 +8,7 @@ interface TagInputProps {
   onChange: (tags: string[]) => void;
   placeholder?: string;
 }
+
 const TagInput = ({ value = [], onChange, placeholder = 'Add values...' }: TagInputProps) => {
   const [inputValue, setInputValue] = useState('');
 
@@ -22,6 +23,7 @@ const TagInput = ({ value = [], onChange, placeholder = 'Add values...' }: TagIn
   const removeTag = (indexToRemove: number) => {
     onChange(value.filter((_, index) => index !== indexToRemove));
   };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault();
@@ -47,13 +49,12 @@ const TagInput = ({ value = [], onChange, placeholder = 'Add values...' }: TagIn
         </Badge>
       ))}
 
-      {/* The actual input field */}
       <Input
         type='text'
         value={inputValue}
         onChange={e => setInputValue(e.target.value)}
         onKeyDown={handleKeyDown}
-        onBlur={addTag} // Add tag when user clicks away
+        onBlur={addTag}
         placeholder={placeholder}
         className='flex-1 border-none shadow-none focus-visible:ring-0'
       />

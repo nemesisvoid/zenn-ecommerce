@@ -76,6 +76,9 @@ export const createProduct = async (productData: z.infer<typeof CreateProductSch
         categories: {
           connect: [...data.categories.map((id: string) => ({ id }))],
         },
+        colorImages: {
+          create: data.colorImages || [],
+        },
         price: data.price,
         description: data.description,
         discountPercent: data.discountPercent,

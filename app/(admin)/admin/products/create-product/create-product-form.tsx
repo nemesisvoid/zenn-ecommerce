@@ -1,13 +1,13 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { useTransition } from 'react';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createProduct } from '@/actions/product.actions';
 
 import { toast } from 'sonner';
-import { useForm, Resolver, UseFormReturn, useFieldArray } from 'react-hook-form';
+import { useForm, Resolver } from 'react-hook-form';
 import { CreateProductSchema } from '@/schemas';
 
 import { Form, FormField, FormControl, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -15,14 +15,12 @@ import { Form, FormField, FormControl, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Loader2Icon, TrashIcon } from 'lucide-react';
+import { Loader2Icon } from 'lucide-react';
 import UploadProductImagWidget from '@/components/cloudinary/upload-image-widget';
 
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Badge } from '@/components/ui/badge';
-import { getVariantCombinations } from '@/helper/utils';
-import TagInput from '@/components/ui/tag-input';
 import ProductVariantForm from './product-variant-form';
 
 const CreateProductForm = ({ categories }) => {
@@ -38,13 +36,13 @@ const CreateProductForm = ({ categories }) => {
       description: '',
       categories: [],
       images: [],
+      colorImages: [],
       stock: 0,
       discountPercent: 0,
       variants: [],
     },
   });
   const { handleSubmit, setValue } = form;
-  console.log(form.watch('hasVariants'));
 
   const onSubmit = async (data: z.infer<typeof CreateProductSchema>) => {
     startTransition(async () => {
@@ -61,13 +59,12 @@ const CreateProductForm = ({ categories }) => {
   };
 
   const watchedImages = form.watch('images');
-  console.log('watched images:', watchedImages);
 
   return (
     <Form {...form}>
       <form
         action=''
-        onSubmit={handleSubmit(onSubmit)}>
+        onSubmit={handleSubmit(onSubmit, err => console.log('form error:', err))}>
         {/*  PRODUCT FORM */}
         <div className='bg-white text-gray-600 rounded-md py-4 mb-10'>
           <div>
@@ -365,7 +362,8 @@ const CreateProductForm = ({ categories }) => {
           <div className='my-4 ml-auto'>
             <Button
               className='text-lg p-6 cursor-pointer'
-              type='submit'>
+              type='submit'
+              disabled={isPending}>
               {isPending ? <Loader2Icon className='mr-2 h-4 w-4 animate-spin' /> : 'Create Product'}
             </Button>
           </div>

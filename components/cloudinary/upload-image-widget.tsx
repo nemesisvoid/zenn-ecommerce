@@ -21,13 +21,26 @@ const UploadProductImagWidget = ({ onUpload, isVariant, isPending }: UploadProdu
         clientAllowedFormats: ['jpg', 'png', 'jpeg'],
       }}
       onSuccess={result => {
-        const uploadedUrls = Array.isArray(result.info) ? result.info.map(file => file.secure_url) : [result.info?.secure_url];
-        onUpload(uploadedUrls);
+        const info = result?.info;
+        if (!info) return;
+
+        let urls: string[] = [];
+
+        // Case 1: 'info' is the object containing secure_url directly (Single upload)
+        if (typeof info === 'object' && 'secure_url' in info) {
+          urls = [(info as any).secure_url];
+        }
+        // Case 2: We are relying on internal behavior, but standard check:
+        else if (Array.isArray(info)) {
+          urls = info.map((file: any) => file.secure_url);
+        }
+
+        onUpload(urls);
       }}>
       {({ open }) => {
         return (
           <Button
-            className='button text-sm rounded-sm py-5 cursor-pointer'
+            className='button text-sm rounded-sm py-5 cursor-pointer w-1/2'
             onClick={() => open()}
             disabled={isPending}>
             {isVariant ? 'Upload Variant Images' : 'Upload Product Images'}

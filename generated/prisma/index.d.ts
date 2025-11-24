@@ -29,6 +29,11 @@ export type Product = $Result.DefaultSelection<Prisma.$ProductPayload>
  */
 export type ProductVariant = $Result.DefaultSelection<Prisma.$ProductVariantPayload>
 /**
+ * Model ProductColorImage
+ * 
+ */
+export type ProductColorImage = $Result.DefaultSelection<Prisma.$ProductColorImagePayload>
+/**
  * Model Category
  * 
  */
@@ -274,6 +279,16 @@ export class PrismaClient<
     * ```
     */
   get productVariant(): Prisma.ProductVariantDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.productColorImage`: Exposes CRUD operations for the **ProductColorImage** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ProductColorImages
+    * const productColorImages = await prisma.productColorImage.findMany()
+    * ```
+    */
+  get productColorImage(): Prisma.ProductColorImageDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.category`: Exposes CRUD operations for the **Category** model.
@@ -807,6 +822,7 @@ export namespace Prisma {
     User: 'User',
     Product: 'Product',
     ProductVariant: 'ProductVariant',
+    ProductColorImage: 'ProductColorImage',
     Category: 'Category',
     Review: 'Review',
     Order: 'Order',
@@ -834,7 +850,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "product" | "productVariant" | "category" | "review" | "order" | "orderItem" | "cart" | "cartItem" | "wishlist" | "account" | "session"
+      modelProps: "user" | "product" | "productVariant" | "productColorImage" | "category" | "review" | "order" | "orderItem" | "cart" | "cartItem" | "wishlist" | "account" | "session"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1057,6 +1073,80 @@ export namespace Prisma {
           count: {
             args: Prisma.ProductVariantCountArgs<ExtArgs>
             result: $Utils.Optional<ProductVariantCountAggregateOutputType> | number
+          }
+        }
+      }
+      ProductColorImage: {
+        payload: Prisma.$ProductColorImagePayload<ExtArgs>
+        fields: Prisma.ProductColorImageFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ProductColorImageFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductColorImagePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ProductColorImageFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductColorImagePayload>
+          }
+          findFirst: {
+            args: Prisma.ProductColorImageFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductColorImagePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ProductColorImageFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductColorImagePayload>
+          }
+          findMany: {
+            args: Prisma.ProductColorImageFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductColorImagePayload>[]
+          }
+          create: {
+            args: Prisma.ProductColorImageCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductColorImagePayload>
+          }
+          createMany: {
+            args: Prisma.ProductColorImageCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ProductColorImageCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductColorImagePayload>[]
+          }
+          delete: {
+            args: Prisma.ProductColorImageDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductColorImagePayload>
+          }
+          update: {
+            args: Prisma.ProductColorImageUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductColorImagePayload>
+          }
+          deleteMany: {
+            args: Prisma.ProductColorImageDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ProductColorImageUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ProductColorImageUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductColorImagePayload>[]
+          }
+          upsert: {
+            args: Prisma.ProductColorImageUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProductColorImagePayload>
+          }
+          aggregate: {
+            args: Prisma.ProductColorImageAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateProductColorImage>
+          }
+          groupBy: {
+            args: Prisma.ProductColorImageGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ProductColorImageGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ProductColorImageCountArgs<ExtArgs>
+            result: $Utils.Optional<ProductColorImageCountAggregateOutputType> | number
           }
         }
       }
@@ -1817,6 +1907,7 @@ export namespace Prisma {
     user?: UserOmit
     product?: ProductOmit
     productVariant?: ProductVariantOmit
+    productColorImage?: ProductColorImageOmit
     category?: CategoryOmit
     review?: ReviewOmit
     order?: OrderOmit
@@ -1990,6 +2081,7 @@ export namespace Prisma {
     CartItem: number
     orders: number
     OrderItem: number
+    colorImages: number
     variants: number
     reviews: number
     wishlists: number
@@ -2000,6 +2092,7 @@ export namespace Prisma {
     CartItem?: boolean | ProductCountOutputTypeCountCartItemArgs
     orders?: boolean | ProductCountOutputTypeCountOrdersArgs
     OrderItem?: boolean | ProductCountOutputTypeCountOrderItemArgs
+    colorImages?: boolean | ProductCountOutputTypeCountColorImagesArgs
     variants?: boolean | ProductCountOutputTypeCountVariantsArgs
     reviews?: boolean | ProductCountOutputTypeCountReviewsArgs
     wishlists?: boolean | ProductCountOutputTypeCountWishlistsArgs
@@ -2036,6 +2129,13 @@ export namespace Prisma {
    */
   export type ProductCountOutputTypeCountOrderItemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OrderItemWhereInput
+  }
+
+  /**
+   * ProductCountOutputType without action
+   */
+  export type ProductCountOutputTypeCountColorImagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProductColorImageWhereInput
   }
 
   /**
@@ -3853,6 +3953,7 @@ export namespace Prisma {
     CartItem?: boolean | Product$CartItemArgs<ExtArgs>
     orders?: boolean | Product$ordersArgs<ExtArgs>
     OrderItem?: boolean | Product$OrderItemArgs<ExtArgs>
+    colorImages?: boolean | Product$colorImagesArgs<ExtArgs>
     variants?: boolean | Product$variantsArgs<ExtArgs>
     reviews?: boolean | Product$reviewsArgs<ExtArgs>
     wishlists?: boolean | Product$wishlistsArgs<ExtArgs>
@@ -3922,6 +4023,7 @@ export namespace Prisma {
     CartItem?: boolean | Product$CartItemArgs<ExtArgs>
     orders?: boolean | Product$ordersArgs<ExtArgs>
     OrderItem?: boolean | Product$OrderItemArgs<ExtArgs>
+    colorImages?: boolean | Product$colorImagesArgs<ExtArgs>
     variants?: boolean | Product$variantsArgs<ExtArgs>
     reviews?: boolean | Product$reviewsArgs<ExtArgs>
     wishlists?: boolean | Product$wishlistsArgs<ExtArgs>
@@ -3937,6 +4039,7 @@ export namespace Prisma {
       CartItem: Prisma.$CartItemPayload<ExtArgs>[]
       orders: Prisma.$OrderPayload<ExtArgs>[]
       OrderItem: Prisma.$OrderItemPayload<ExtArgs>[]
+      colorImages: Prisma.$ProductColorImagePayload<ExtArgs>[]
       variants: Prisma.$ProductVariantPayload<ExtArgs>[]
       reviews: Prisma.$ReviewPayload<ExtArgs>[]
       wishlists: Prisma.$WishlistPayload<ExtArgs>[]
@@ -4356,6 +4459,7 @@ export namespace Prisma {
     CartItem<T extends Product$CartItemArgs<ExtArgs> = {}>(args?: Subset<T, Product$CartItemArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CartItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     orders<T extends Product$ordersArgs<ExtArgs> = {}>(args?: Subset<T, Product$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     OrderItem<T extends Product$OrderItemArgs<ExtArgs> = {}>(args?: Subset<T, Product$OrderItemArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    colorImages<T extends Product$colorImagesArgs<ExtArgs> = {}>(args?: Subset<T, Product$colorImagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductColorImagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     variants<T extends Product$variantsArgs<ExtArgs> = {}>(args?: Subset<T, Product$variantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductVariantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     reviews<T extends Product$reviewsArgs<ExtArgs> = {}>(args?: Subset<T, Product$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     wishlists<T extends Product$wishlistsArgs<ExtArgs> = {}>(args?: Subset<T, Product$wishlistsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4865,6 +4969,30 @@ export namespace Prisma {
   }
 
   /**
+   * Product.colorImages
+   */
+  export type Product$colorImagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductColorImage
+     */
+    select?: ProductColorImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductColorImage
+     */
+    omit?: ProductColorImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductColorImageInclude<ExtArgs> | null
+    where?: ProductColorImageWhereInput
+    orderBy?: ProductColorImageOrderByWithRelationInput | ProductColorImageOrderByWithRelationInput[]
+    cursor?: ProductColorImageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProductColorImageScalarFieldEnum | ProductColorImageScalarFieldEnum[]
+  }
+
+  /**
    * Product.variants
    */
   export type Product$variantsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5029,7 +5157,6 @@ export namespace Prisma {
     price: number
     stock: number
     sku: number
-    images: number
     _all: number
   }
 
@@ -5072,7 +5199,6 @@ export namespace Prisma {
     price?: true
     stock?: true
     sku?: true
-    images?: true
     _all?: true
   }
 
@@ -5170,7 +5296,6 @@ export namespace Prisma {
     price: number | null
     stock: number | null
     sku: string | null
-    images: string[]
     _count: ProductVariantCountAggregateOutputType | null
     _avg: ProductVariantAvgAggregateOutputType | null
     _sum: ProductVariantSumAggregateOutputType | null
@@ -5200,7 +5325,6 @@ export namespace Prisma {
     price?: boolean
     stock?: boolean
     sku?: boolean
-    images?: boolean
     CartItem?: boolean | ProductVariant$CartItemArgs<ExtArgs>
     OrderItem?: boolean | ProductVariant$OrderItemArgs<ExtArgs>
     product?: boolean | ProductDefaultArgs<ExtArgs>
@@ -5215,7 +5339,6 @@ export namespace Prisma {
     price?: boolean
     stock?: boolean
     sku?: boolean
-    images?: boolean
     product?: boolean | ProductDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["productVariant"]>
 
@@ -5227,7 +5350,6 @@ export namespace Prisma {
     price?: boolean
     stock?: boolean
     sku?: boolean
-    images?: boolean
     product?: boolean | ProductDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["productVariant"]>
 
@@ -5239,10 +5361,9 @@ export namespace Prisma {
     price?: boolean
     stock?: boolean
     sku?: boolean
-    images?: boolean
   }
 
-  export type ProductVariantOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "productId" | "color" | "size" | "price" | "stock" | "sku" | "images", ExtArgs["result"]["productVariant"]>
+  export type ProductVariantOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "productId" | "color" | "size" | "price" | "stock" | "sku", ExtArgs["result"]["productVariant"]>
   export type ProductVariantInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     CartItem?: boolean | ProductVariant$CartItemArgs<ExtArgs>
     OrderItem?: boolean | ProductVariant$OrderItemArgs<ExtArgs>
@@ -5271,7 +5392,6 @@ export namespace Prisma {
       price: number | null
       stock: number | null
       sku: string | null
-      images: string[]
     }, ExtArgs["result"]["productVariant"]>
     composites: {}
   }
@@ -5705,7 +5825,6 @@ export namespace Prisma {
     readonly price: FieldRef<"ProductVariant", 'Float'>
     readonly stock: FieldRef<"ProductVariant", 'Int'>
     readonly sku: FieldRef<"ProductVariant", 'String'>
-    readonly images: FieldRef<"ProductVariant", 'String[]'>
   }
     
 
@@ -6165,6 +6284,1047 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: ProductVariantInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ProductColorImage
+   */
+
+  export type AggregateProductColorImage = {
+    _count: ProductColorImageCountAggregateOutputType | null
+    _min: ProductColorImageMinAggregateOutputType | null
+    _max: ProductColorImageMaxAggregateOutputType | null
+  }
+
+  export type ProductColorImageMinAggregateOutputType = {
+    id: string | null
+    productId: string | null
+    color: string | null
+  }
+
+  export type ProductColorImageMaxAggregateOutputType = {
+    id: string | null
+    productId: string | null
+    color: string | null
+  }
+
+  export type ProductColorImageCountAggregateOutputType = {
+    id: number
+    productId: number
+    color: number
+    images: number
+    _all: number
+  }
+
+
+  export type ProductColorImageMinAggregateInputType = {
+    id?: true
+    productId?: true
+    color?: true
+  }
+
+  export type ProductColorImageMaxAggregateInputType = {
+    id?: true
+    productId?: true
+    color?: true
+  }
+
+  export type ProductColorImageCountAggregateInputType = {
+    id?: true
+    productId?: true
+    color?: true
+    images?: true
+    _all?: true
+  }
+
+  export type ProductColorImageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ProductColorImage to aggregate.
+     */
+    where?: ProductColorImageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProductColorImages to fetch.
+     */
+    orderBy?: ProductColorImageOrderByWithRelationInput | ProductColorImageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ProductColorImageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProductColorImages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProductColorImages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ProductColorImages
+    **/
+    _count?: true | ProductColorImageCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ProductColorImageMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ProductColorImageMaxAggregateInputType
+  }
+
+  export type GetProductColorImageAggregateType<T extends ProductColorImageAggregateArgs> = {
+        [P in keyof T & keyof AggregateProductColorImage]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateProductColorImage[P]>
+      : GetScalarType<T[P], AggregateProductColorImage[P]>
+  }
+
+
+
+
+  export type ProductColorImageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProductColorImageWhereInput
+    orderBy?: ProductColorImageOrderByWithAggregationInput | ProductColorImageOrderByWithAggregationInput[]
+    by: ProductColorImageScalarFieldEnum[] | ProductColorImageScalarFieldEnum
+    having?: ProductColorImageScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ProductColorImageCountAggregateInputType | true
+    _min?: ProductColorImageMinAggregateInputType
+    _max?: ProductColorImageMaxAggregateInputType
+  }
+
+  export type ProductColorImageGroupByOutputType = {
+    id: string
+    productId: string
+    color: string
+    images: string[]
+    _count: ProductColorImageCountAggregateOutputType | null
+    _min: ProductColorImageMinAggregateOutputType | null
+    _max: ProductColorImageMaxAggregateOutputType | null
+  }
+
+  type GetProductColorImageGroupByPayload<T extends ProductColorImageGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ProductColorImageGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ProductColorImageGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ProductColorImageGroupByOutputType[P]>
+            : GetScalarType<T[P], ProductColorImageGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ProductColorImageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    productId?: boolean
+    color?: boolean
+    images?: boolean
+    product?: boolean | ProductDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["productColorImage"]>
+
+  export type ProductColorImageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    productId?: boolean
+    color?: boolean
+    images?: boolean
+    product?: boolean | ProductDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["productColorImage"]>
+
+  export type ProductColorImageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    productId?: boolean
+    color?: boolean
+    images?: boolean
+    product?: boolean | ProductDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["productColorImage"]>
+
+  export type ProductColorImageSelectScalar = {
+    id?: boolean
+    productId?: boolean
+    color?: boolean
+    images?: boolean
+  }
+
+  export type ProductColorImageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "productId" | "color" | "images", ExtArgs["result"]["productColorImage"]>
+  export type ProductColorImageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    product?: boolean | ProductDefaultArgs<ExtArgs>
+  }
+  export type ProductColorImageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    product?: boolean | ProductDefaultArgs<ExtArgs>
+  }
+  export type ProductColorImageIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    product?: boolean | ProductDefaultArgs<ExtArgs>
+  }
+
+  export type $ProductColorImagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ProductColorImage"
+    objects: {
+      product: Prisma.$ProductPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      productId: string
+      color: string
+      images: string[]
+    }, ExtArgs["result"]["productColorImage"]>
+    composites: {}
+  }
+
+  type ProductColorImageGetPayload<S extends boolean | null | undefined | ProductColorImageDefaultArgs> = $Result.GetResult<Prisma.$ProductColorImagePayload, S>
+
+  type ProductColorImageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ProductColorImageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ProductColorImageCountAggregateInputType | true
+    }
+
+  export interface ProductColorImageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ProductColorImage'], meta: { name: 'ProductColorImage' } }
+    /**
+     * Find zero or one ProductColorImage that matches the filter.
+     * @param {ProductColorImageFindUniqueArgs} args - Arguments to find a ProductColorImage
+     * @example
+     * // Get one ProductColorImage
+     * const productColorImage = await prisma.productColorImage.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ProductColorImageFindUniqueArgs>(args: SelectSubset<T, ProductColorImageFindUniqueArgs<ExtArgs>>): Prisma__ProductColorImageClient<$Result.GetResult<Prisma.$ProductColorImagePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ProductColorImage that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ProductColorImageFindUniqueOrThrowArgs} args - Arguments to find a ProductColorImage
+     * @example
+     * // Get one ProductColorImage
+     * const productColorImage = await prisma.productColorImage.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ProductColorImageFindUniqueOrThrowArgs>(args: SelectSubset<T, ProductColorImageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ProductColorImageClient<$Result.GetResult<Prisma.$ProductColorImagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ProductColorImage that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProductColorImageFindFirstArgs} args - Arguments to find a ProductColorImage
+     * @example
+     * // Get one ProductColorImage
+     * const productColorImage = await prisma.productColorImage.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ProductColorImageFindFirstArgs>(args?: SelectSubset<T, ProductColorImageFindFirstArgs<ExtArgs>>): Prisma__ProductColorImageClient<$Result.GetResult<Prisma.$ProductColorImagePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ProductColorImage that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProductColorImageFindFirstOrThrowArgs} args - Arguments to find a ProductColorImage
+     * @example
+     * // Get one ProductColorImage
+     * const productColorImage = await prisma.productColorImage.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ProductColorImageFindFirstOrThrowArgs>(args?: SelectSubset<T, ProductColorImageFindFirstOrThrowArgs<ExtArgs>>): Prisma__ProductColorImageClient<$Result.GetResult<Prisma.$ProductColorImagePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ProductColorImages that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProductColorImageFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ProductColorImages
+     * const productColorImages = await prisma.productColorImage.findMany()
+     * 
+     * // Get first 10 ProductColorImages
+     * const productColorImages = await prisma.productColorImage.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const productColorImageWithIdOnly = await prisma.productColorImage.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ProductColorImageFindManyArgs>(args?: SelectSubset<T, ProductColorImageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductColorImagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ProductColorImage.
+     * @param {ProductColorImageCreateArgs} args - Arguments to create a ProductColorImage.
+     * @example
+     * // Create one ProductColorImage
+     * const ProductColorImage = await prisma.productColorImage.create({
+     *   data: {
+     *     // ... data to create a ProductColorImage
+     *   }
+     * })
+     * 
+     */
+    create<T extends ProductColorImageCreateArgs>(args: SelectSubset<T, ProductColorImageCreateArgs<ExtArgs>>): Prisma__ProductColorImageClient<$Result.GetResult<Prisma.$ProductColorImagePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ProductColorImages.
+     * @param {ProductColorImageCreateManyArgs} args - Arguments to create many ProductColorImages.
+     * @example
+     * // Create many ProductColorImages
+     * const productColorImage = await prisma.productColorImage.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ProductColorImageCreateManyArgs>(args?: SelectSubset<T, ProductColorImageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ProductColorImages and returns the data saved in the database.
+     * @param {ProductColorImageCreateManyAndReturnArgs} args - Arguments to create many ProductColorImages.
+     * @example
+     * // Create many ProductColorImages
+     * const productColorImage = await prisma.productColorImage.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ProductColorImages and only return the `id`
+     * const productColorImageWithIdOnly = await prisma.productColorImage.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ProductColorImageCreateManyAndReturnArgs>(args?: SelectSubset<T, ProductColorImageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductColorImagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ProductColorImage.
+     * @param {ProductColorImageDeleteArgs} args - Arguments to delete one ProductColorImage.
+     * @example
+     * // Delete one ProductColorImage
+     * const ProductColorImage = await prisma.productColorImage.delete({
+     *   where: {
+     *     // ... filter to delete one ProductColorImage
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ProductColorImageDeleteArgs>(args: SelectSubset<T, ProductColorImageDeleteArgs<ExtArgs>>): Prisma__ProductColorImageClient<$Result.GetResult<Prisma.$ProductColorImagePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ProductColorImage.
+     * @param {ProductColorImageUpdateArgs} args - Arguments to update one ProductColorImage.
+     * @example
+     * // Update one ProductColorImage
+     * const productColorImage = await prisma.productColorImage.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ProductColorImageUpdateArgs>(args: SelectSubset<T, ProductColorImageUpdateArgs<ExtArgs>>): Prisma__ProductColorImageClient<$Result.GetResult<Prisma.$ProductColorImagePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ProductColorImages.
+     * @param {ProductColorImageDeleteManyArgs} args - Arguments to filter ProductColorImages to delete.
+     * @example
+     * // Delete a few ProductColorImages
+     * const { count } = await prisma.productColorImage.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ProductColorImageDeleteManyArgs>(args?: SelectSubset<T, ProductColorImageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ProductColorImages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProductColorImageUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ProductColorImages
+     * const productColorImage = await prisma.productColorImage.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ProductColorImageUpdateManyArgs>(args: SelectSubset<T, ProductColorImageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ProductColorImages and returns the data updated in the database.
+     * @param {ProductColorImageUpdateManyAndReturnArgs} args - Arguments to update many ProductColorImages.
+     * @example
+     * // Update many ProductColorImages
+     * const productColorImage = await prisma.productColorImage.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ProductColorImages and only return the `id`
+     * const productColorImageWithIdOnly = await prisma.productColorImage.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ProductColorImageUpdateManyAndReturnArgs>(args: SelectSubset<T, ProductColorImageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductColorImagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ProductColorImage.
+     * @param {ProductColorImageUpsertArgs} args - Arguments to update or create a ProductColorImage.
+     * @example
+     * // Update or create a ProductColorImage
+     * const productColorImage = await prisma.productColorImage.upsert({
+     *   create: {
+     *     // ... data to create a ProductColorImage
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ProductColorImage we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ProductColorImageUpsertArgs>(args: SelectSubset<T, ProductColorImageUpsertArgs<ExtArgs>>): Prisma__ProductColorImageClient<$Result.GetResult<Prisma.$ProductColorImagePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ProductColorImages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProductColorImageCountArgs} args - Arguments to filter ProductColorImages to count.
+     * @example
+     * // Count the number of ProductColorImages
+     * const count = await prisma.productColorImage.count({
+     *   where: {
+     *     // ... the filter for the ProductColorImages we want to count
+     *   }
+     * })
+    **/
+    count<T extends ProductColorImageCountArgs>(
+      args?: Subset<T, ProductColorImageCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ProductColorImageCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ProductColorImage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProductColorImageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ProductColorImageAggregateArgs>(args: Subset<T, ProductColorImageAggregateArgs>): Prisma.PrismaPromise<GetProductColorImageAggregateType<T>>
+
+    /**
+     * Group by ProductColorImage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProductColorImageGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ProductColorImageGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ProductColorImageGroupByArgs['orderBy'] }
+        : { orderBy?: ProductColorImageGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ProductColorImageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProductColorImageGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ProductColorImage model
+   */
+  readonly fields: ProductColorImageFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ProductColorImage.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ProductColorImageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    product<T extends ProductDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProductDefaultArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ProductColorImage model
+   */
+  interface ProductColorImageFieldRefs {
+    readonly id: FieldRef<"ProductColorImage", 'String'>
+    readonly productId: FieldRef<"ProductColorImage", 'String'>
+    readonly color: FieldRef<"ProductColorImage", 'String'>
+    readonly images: FieldRef<"ProductColorImage", 'String[]'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ProductColorImage findUnique
+   */
+  export type ProductColorImageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductColorImage
+     */
+    select?: ProductColorImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductColorImage
+     */
+    omit?: ProductColorImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductColorImageInclude<ExtArgs> | null
+    /**
+     * Filter, which ProductColorImage to fetch.
+     */
+    where: ProductColorImageWhereUniqueInput
+  }
+
+  /**
+   * ProductColorImage findUniqueOrThrow
+   */
+  export type ProductColorImageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductColorImage
+     */
+    select?: ProductColorImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductColorImage
+     */
+    omit?: ProductColorImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductColorImageInclude<ExtArgs> | null
+    /**
+     * Filter, which ProductColorImage to fetch.
+     */
+    where: ProductColorImageWhereUniqueInput
+  }
+
+  /**
+   * ProductColorImage findFirst
+   */
+  export type ProductColorImageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductColorImage
+     */
+    select?: ProductColorImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductColorImage
+     */
+    omit?: ProductColorImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductColorImageInclude<ExtArgs> | null
+    /**
+     * Filter, which ProductColorImage to fetch.
+     */
+    where?: ProductColorImageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProductColorImages to fetch.
+     */
+    orderBy?: ProductColorImageOrderByWithRelationInput | ProductColorImageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ProductColorImages.
+     */
+    cursor?: ProductColorImageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProductColorImages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProductColorImages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ProductColorImages.
+     */
+    distinct?: ProductColorImageScalarFieldEnum | ProductColorImageScalarFieldEnum[]
+  }
+
+  /**
+   * ProductColorImage findFirstOrThrow
+   */
+  export type ProductColorImageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductColorImage
+     */
+    select?: ProductColorImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductColorImage
+     */
+    omit?: ProductColorImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductColorImageInclude<ExtArgs> | null
+    /**
+     * Filter, which ProductColorImage to fetch.
+     */
+    where?: ProductColorImageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProductColorImages to fetch.
+     */
+    orderBy?: ProductColorImageOrderByWithRelationInput | ProductColorImageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ProductColorImages.
+     */
+    cursor?: ProductColorImageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProductColorImages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProductColorImages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ProductColorImages.
+     */
+    distinct?: ProductColorImageScalarFieldEnum | ProductColorImageScalarFieldEnum[]
+  }
+
+  /**
+   * ProductColorImage findMany
+   */
+  export type ProductColorImageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductColorImage
+     */
+    select?: ProductColorImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductColorImage
+     */
+    omit?: ProductColorImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductColorImageInclude<ExtArgs> | null
+    /**
+     * Filter, which ProductColorImages to fetch.
+     */
+    where?: ProductColorImageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProductColorImages to fetch.
+     */
+    orderBy?: ProductColorImageOrderByWithRelationInput | ProductColorImageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ProductColorImages.
+     */
+    cursor?: ProductColorImageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProductColorImages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProductColorImages.
+     */
+    skip?: number
+    distinct?: ProductColorImageScalarFieldEnum | ProductColorImageScalarFieldEnum[]
+  }
+
+  /**
+   * ProductColorImage create
+   */
+  export type ProductColorImageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductColorImage
+     */
+    select?: ProductColorImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductColorImage
+     */
+    omit?: ProductColorImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductColorImageInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ProductColorImage.
+     */
+    data: XOR<ProductColorImageCreateInput, ProductColorImageUncheckedCreateInput>
+  }
+
+  /**
+   * ProductColorImage createMany
+   */
+  export type ProductColorImageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ProductColorImages.
+     */
+    data: ProductColorImageCreateManyInput | ProductColorImageCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ProductColorImage createManyAndReturn
+   */
+  export type ProductColorImageCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductColorImage
+     */
+    select?: ProductColorImageSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductColorImage
+     */
+    omit?: ProductColorImageOmit<ExtArgs> | null
+    /**
+     * The data used to create many ProductColorImages.
+     */
+    data: ProductColorImageCreateManyInput | ProductColorImageCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductColorImageIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ProductColorImage update
+   */
+  export type ProductColorImageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductColorImage
+     */
+    select?: ProductColorImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductColorImage
+     */
+    omit?: ProductColorImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductColorImageInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ProductColorImage.
+     */
+    data: XOR<ProductColorImageUpdateInput, ProductColorImageUncheckedUpdateInput>
+    /**
+     * Choose, which ProductColorImage to update.
+     */
+    where: ProductColorImageWhereUniqueInput
+  }
+
+  /**
+   * ProductColorImage updateMany
+   */
+  export type ProductColorImageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ProductColorImages.
+     */
+    data: XOR<ProductColorImageUpdateManyMutationInput, ProductColorImageUncheckedUpdateManyInput>
+    /**
+     * Filter which ProductColorImages to update
+     */
+    where?: ProductColorImageWhereInput
+    /**
+     * Limit how many ProductColorImages to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ProductColorImage updateManyAndReturn
+   */
+  export type ProductColorImageUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductColorImage
+     */
+    select?: ProductColorImageSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductColorImage
+     */
+    omit?: ProductColorImageOmit<ExtArgs> | null
+    /**
+     * The data used to update ProductColorImages.
+     */
+    data: XOR<ProductColorImageUpdateManyMutationInput, ProductColorImageUncheckedUpdateManyInput>
+    /**
+     * Filter which ProductColorImages to update
+     */
+    where?: ProductColorImageWhereInput
+    /**
+     * Limit how many ProductColorImages to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductColorImageIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ProductColorImage upsert
+   */
+  export type ProductColorImageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductColorImage
+     */
+    select?: ProductColorImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductColorImage
+     */
+    omit?: ProductColorImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductColorImageInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ProductColorImage to update in case it exists.
+     */
+    where: ProductColorImageWhereUniqueInput
+    /**
+     * In case the ProductColorImage found by the `where` argument doesn't exist, create a new ProductColorImage with this data.
+     */
+    create: XOR<ProductColorImageCreateInput, ProductColorImageUncheckedCreateInput>
+    /**
+     * In case the ProductColorImage was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ProductColorImageUpdateInput, ProductColorImageUncheckedUpdateInput>
+  }
+
+  /**
+   * ProductColorImage delete
+   */
+  export type ProductColorImageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductColorImage
+     */
+    select?: ProductColorImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductColorImage
+     */
+    omit?: ProductColorImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductColorImageInclude<ExtArgs> | null
+    /**
+     * Filter which ProductColorImage to delete.
+     */
+    where: ProductColorImageWhereUniqueInput
+  }
+
+  /**
+   * ProductColorImage deleteMany
+   */
+  export type ProductColorImageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ProductColorImages to delete
+     */
+    where?: ProductColorImageWhereInput
+    /**
+     * Limit how many ProductColorImages to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ProductColorImage without action
+   */
+  export type ProductColorImageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductColorImage
+     */
+    select?: ProductColorImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductColorImage
+     */
+    omit?: ProductColorImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductColorImageInclude<ExtArgs> | null
   }
 
 
@@ -16661,11 +17821,20 @@ export namespace Prisma {
     size: 'size',
     price: 'price',
     stock: 'stock',
-    sku: 'sku',
-    images: 'images'
+    sku: 'sku'
   };
 
   export type ProductVariantScalarFieldEnum = (typeof ProductVariantScalarFieldEnum)[keyof typeof ProductVariantScalarFieldEnum]
+
+
+  export const ProductColorImageScalarFieldEnum: {
+    id: 'id',
+    productId: 'productId',
+    color: 'color',
+    images: 'images'
+  };
+
+  export type ProductColorImageScalarFieldEnum = (typeof ProductColorImageScalarFieldEnum)[keyof typeof ProductColorImageScalarFieldEnum]
 
 
   export const CategoryScalarFieldEnum: {
@@ -17118,6 +18287,7 @@ export namespace Prisma {
     CartItem?: CartItemListRelationFilter
     orders?: OrderListRelationFilter
     OrderItem?: OrderItemListRelationFilter
+    colorImages?: ProductColorImageListRelationFilter
     variants?: ProductVariantListRelationFilter
     reviews?: ReviewListRelationFilter
     wishlists?: WishlistListRelationFilter
@@ -17144,6 +18314,7 @@ export namespace Prisma {
     CartItem?: CartItemOrderByRelationAggregateInput
     orders?: OrderOrderByRelationAggregateInput
     OrderItem?: OrderItemOrderByRelationAggregateInput
+    colorImages?: ProductColorImageOrderByRelationAggregateInput
     variants?: ProductVariantOrderByRelationAggregateInput
     reviews?: ReviewOrderByRelationAggregateInput
     wishlists?: WishlistOrderByRelationAggregateInput
@@ -17173,6 +18344,7 @@ export namespace Prisma {
     CartItem?: CartItemListRelationFilter
     orders?: OrderListRelationFilter
     OrderItem?: OrderItemListRelationFilter
+    colorImages?: ProductColorImageListRelationFilter
     variants?: ProductVariantListRelationFilter
     reviews?: ReviewListRelationFilter
     wishlists?: WishlistListRelationFilter
@@ -17236,7 +18408,6 @@ export namespace Prisma {
     price?: FloatNullableFilter<"ProductVariant"> | number | null
     stock?: IntNullableFilter<"ProductVariant"> | number | null
     sku?: StringNullableFilter<"ProductVariant"> | string | null
-    images?: StringNullableListFilter<"ProductVariant">
     CartItem?: CartItemListRelationFilter
     OrderItem?: OrderItemListRelationFilter
     product?: XOR<ProductScalarRelationFilter, ProductWhereInput>
@@ -17250,7 +18421,6 @@ export namespace Prisma {
     price?: SortOrderInput | SortOrder
     stock?: SortOrderInput | SortOrder
     sku?: SortOrderInput | SortOrder
-    images?: SortOrder
     CartItem?: CartItemOrderByRelationAggregateInput
     OrderItem?: OrderItemOrderByRelationAggregateInput
     product?: ProductOrderByWithRelationInput
@@ -17267,7 +18437,6 @@ export namespace Prisma {
     size?: StringNullableFilter<"ProductVariant"> | string | null
     price?: FloatNullableFilter<"ProductVariant"> | number | null
     stock?: IntNullableFilter<"ProductVariant"> | number | null
-    images?: StringNullableListFilter<"ProductVariant">
     CartItem?: CartItemListRelationFilter
     OrderItem?: OrderItemListRelationFilter
     product?: XOR<ProductScalarRelationFilter, ProductWhereInput>
@@ -17281,7 +18450,6 @@ export namespace Prisma {
     price?: SortOrderInput | SortOrder
     stock?: SortOrderInput | SortOrder
     sku?: SortOrderInput | SortOrder
-    images?: SortOrder
     _count?: ProductVariantCountOrderByAggregateInput
     _avg?: ProductVariantAvgOrderByAggregateInput
     _max?: ProductVariantMaxOrderByAggregateInput
@@ -17300,7 +18468,57 @@ export namespace Prisma {
     price?: FloatNullableWithAggregatesFilter<"ProductVariant"> | number | null
     stock?: IntNullableWithAggregatesFilter<"ProductVariant"> | number | null
     sku?: StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
-    images?: StringNullableListFilter<"ProductVariant">
+  }
+
+  export type ProductColorImageWhereInput = {
+    AND?: ProductColorImageWhereInput | ProductColorImageWhereInput[]
+    OR?: ProductColorImageWhereInput[]
+    NOT?: ProductColorImageWhereInput | ProductColorImageWhereInput[]
+    id?: StringFilter<"ProductColorImage"> | string
+    productId?: StringFilter<"ProductColorImage"> | string
+    color?: StringFilter<"ProductColorImage"> | string
+    images?: StringNullableListFilter<"ProductColorImage">
+    product?: XOR<ProductScalarRelationFilter, ProductWhereInput>
+  }
+
+  export type ProductColorImageOrderByWithRelationInput = {
+    id?: SortOrder
+    productId?: SortOrder
+    color?: SortOrder
+    images?: SortOrder
+    product?: ProductOrderByWithRelationInput
+  }
+
+  export type ProductColorImageWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    productId_color?: ProductColorImageProductIdColorCompoundUniqueInput
+    AND?: ProductColorImageWhereInput | ProductColorImageWhereInput[]
+    OR?: ProductColorImageWhereInput[]
+    NOT?: ProductColorImageWhereInput | ProductColorImageWhereInput[]
+    productId?: StringFilter<"ProductColorImage"> | string
+    color?: StringFilter<"ProductColorImage"> | string
+    images?: StringNullableListFilter<"ProductColorImage">
+    product?: XOR<ProductScalarRelationFilter, ProductWhereInput>
+  }, "id" | "productId_color">
+
+  export type ProductColorImageOrderByWithAggregationInput = {
+    id?: SortOrder
+    productId?: SortOrder
+    color?: SortOrder
+    images?: SortOrder
+    _count?: ProductColorImageCountOrderByAggregateInput
+    _max?: ProductColorImageMaxOrderByAggregateInput
+    _min?: ProductColorImageMinOrderByAggregateInput
+  }
+
+  export type ProductColorImageScalarWhereWithAggregatesInput = {
+    AND?: ProductColorImageScalarWhereWithAggregatesInput | ProductColorImageScalarWhereWithAggregatesInput[]
+    OR?: ProductColorImageScalarWhereWithAggregatesInput[]
+    NOT?: ProductColorImageScalarWhereWithAggregatesInput | ProductColorImageScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ProductColorImage"> | string
+    productId?: StringWithAggregatesFilter<"ProductColorImage"> | string
+    color?: StringWithAggregatesFilter<"ProductColorImage"> | string
+    images?: StringNullableListFilter<"ProductColorImage">
   }
 
   export type CategoryWhereInput = {
@@ -18191,6 +19409,7 @@ export namespace Prisma {
     CartItem?: CartItemCreateNestedManyWithoutProductsInput
     orders?: OrderCreateNestedManyWithoutProductInput
     OrderItem?: OrderItemCreateNestedManyWithoutProductInput
+    colorImages?: ProductColorImageCreateNestedManyWithoutProductInput
     variants?: ProductVariantCreateNestedManyWithoutProductInput
     reviews?: ReviewCreateNestedManyWithoutProductInput
     wishlists?: WishlistCreateNestedManyWithoutProductInput
@@ -18217,6 +19436,7 @@ export namespace Prisma {
     CartItem?: CartItemUncheckedCreateNestedManyWithoutProductsInput
     orders?: OrderUncheckedCreateNestedManyWithoutProductInput
     OrderItem?: OrderItemUncheckedCreateNestedManyWithoutProductInput
+    colorImages?: ProductColorImageUncheckedCreateNestedManyWithoutProductInput
     variants?: ProductVariantUncheckedCreateNestedManyWithoutProductInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProductInput
     wishlists?: WishlistUncheckedCreateNestedManyWithoutProductInput
@@ -18243,6 +19463,7 @@ export namespace Prisma {
     CartItem?: CartItemUpdateManyWithoutProductsNestedInput
     orders?: OrderUpdateManyWithoutProductNestedInput
     OrderItem?: OrderItemUpdateManyWithoutProductNestedInput
+    colorImages?: ProductColorImageUpdateManyWithoutProductNestedInput
     variants?: ProductVariantUpdateManyWithoutProductNestedInput
     reviews?: ReviewUpdateManyWithoutProductNestedInput
     wishlists?: WishlistUpdateManyWithoutProductNestedInput
@@ -18269,6 +19490,7 @@ export namespace Prisma {
     CartItem?: CartItemUncheckedUpdateManyWithoutProductsNestedInput
     orders?: OrderUncheckedUpdateManyWithoutProductNestedInput
     OrderItem?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
+    colorImages?: ProductColorImageUncheckedUpdateManyWithoutProductNestedInput
     variants?: ProductVariantUncheckedUpdateManyWithoutProductNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProductNestedInput
     wishlists?: WishlistUncheckedUpdateManyWithoutProductNestedInput
@@ -18339,7 +19561,6 @@ export namespace Prisma {
     price?: number | null
     stock?: number | null
     sku?: string | null
-    images?: ProductVariantCreateimagesInput | string[]
     CartItem?: CartItemCreateNestedManyWithoutVariantsInput
     OrderItem?: OrderItemCreateNestedManyWithoutVariantInput
     product: ProductCreateNestedOneWithoutVariantsInput
@@ -18353,7 +19574,6 @@ export namespace Prisma {
     price?: number | null
     stock?: number | null
     sku?: string | null
-    images?: ProductVariantCreateimagesInput | string[]
     CartItem?: CartItemUncheckedCreateNestedManyWithoutVariantsInput
     OrderItem?: OrderItemUncheckedCreateNestedManyWithoutVariantInput
   }
@@ -18365,7 +19585,6 @@ export namespace Prisma {
     price?: NullableFloatFieldUpdateOperationsInput | number | null
     stock?: NullableIntFieldUpdateOperationsInput | number | null
     sku?: NullableStringFieldUpdateOperationsInput | string | null
-    images?: ProductVariantUpdateimagesInput | string[]
     CartItem?: CartItemUpdateManyWithoutVariantsNestedInput
     OrderItem?: OrderItemUpdateManyWithoutVariantNestedInput
     product?: ProductUpdateOneRequiredWithoutVariantsNestedInput
@@ -18379,7 +19598,6 @@ export namespace Prisma {
     price?: NullableFloatFieldUpdateOperationsInput | number | null
     stock?: NullableIntFieldUpdateOperationsInput | number | null
     sku?: NullableStringFieldUpdateOperationsInput | string | null
-    images?: ProductVariantUpdateimagesInput | string[]
     CartItem?: CartItemUncheckedUpdateManyWithoutVariantsNestedInput
     OrderItem?: OrderItemUncheckedUpdateManyWithoutVariantNestedInput
   }
@@ -18392,7 +19610,6 @@ export namespace Prisma {
     price?: number | null
     stock?: number | null
     sku?: string | null
-    images?: ProductVariantCreateimagesInput | string[]
   }
 
   export type ProductVariantUpdateManyMutationInput = {
@@ -18402,7 +19619,6 @@ export namespace Prisma {
     price?: NullableFloatFieldUpdateOperationsInput | number | null
     stock?: NullableIntFieldUpdateOperationsInput | number | null
     sku?: NullableStringFieldUpdateOperationsInput | string | null
-    images?: ProductVariantUpdateimagesInput | string[]
   }
 
   export type ProductVariantUncheckedUpdateManyInput = {
@@ -18413,7 +19629,54 @@ export namespace Prisma {
     price?: NullableFloatFieldUpdateOperationsInput | number | null
     stock?: NullableIntFieldUpdateOperationsInput | number | null
     sku?: NullableStringFieldUpdateOperationsInput | string | null
-    images?: ProductVariantUpdateimagesInput | string[]
+  }
+
+  export type ProductColorImageCreateInput = {
+    id?: string
+    color: string
+    images?: ProductColorImageCreateimagesInput | string[]
+    product: ProductCreateNestedOneWithoutColorImagesInput
+  }
+
+  export type ProductColorImageUncheckedCreateInput = {
+    id?: string
+    productId: string
+    color: string
+    images?: ProductColorImageCreateimagesInput | string[]
+  }
+
+  export type ProductColorImageUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    color?: StringFieldUpdateOperationsInput | string
+    images?: ProductColorImageUpdateimagesInput | string[]
+    product?: ProductUpdateOneRequiredWithoutColorImagesNestedInput
+  }
+
+  export type ProductColorImageUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    productId?: StringFieldUpdateOperationsInput | string
+    color?: StringFieldUpdateOperationsInput | string
+    images?: ProductColorImageUpdateimagesInput | string[]
+  }
+
+  export type ProductColorImageCreateManyInput = {
+    id?: string
+    productId: string
+    color: string
+    images?: ProductColorImageCreateimagesInput | string[]
+  }
+
+  export type ProductColorImageUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    color?: StringFieldUpdateOperationsInput | string
+    images?: ProductColorImageUpdateimagesInput | string[]
+  }
+
+  export type ProductColorImageUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    productId?: StringFieldUpdateOperationsInput | string
+    color?: StringFieldUpdateOperationsInput | string
+    images?: ProductColorImageUpdateimagesInput | string[]
   }
 
   export type CategoryCreateInput = {
@@ -19495,6 +20758,12 @@ export namespace Prisma {
     none?: OrderItemWhereInput
   }
 
+  export type ProductColorImageListRelationFilter = {
+    every?: ProductColorImageWhereInput
+    some?: ProductColorImageWhereInput
+    none?: ProductColorImageWhereInput
+  }
+
   export type ProductVariantListRelationFilter = {
     every?: ProductVariantWhereInput
     some?: ProductVariantWhereInput
@@ -19512,6 +20781,10 @@ export namespace Prisma {
   }
 
   export type OrderItemOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ProductColorImageOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -19666,7 +20939,6 @@ export namespace Prisma {
     price?: SortOrder
     stock?: SortOrder
     sku?: SortOrder
-    images?: SortOrder
   }
 
   export type ProductVariantAvgOrderByAggregateInput = {
@@ -19713,6 +20985,30 @@ export namespace Prisma {
     _sum?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedIntNullableFilter<$PrismaModel>
     _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type ProductColorImageProductIdColorCompoundUniqueInput = {
+    productId: string
+    color: string
+  }
+
+  export type ProductColorImageCountOrderByAggregateInput = {
+    id?: SortOrder
+    productId?: SortOrder
+    color?: SortOrder
+    images?: SortOrder
+  }
+
+  export type ProductColorImageMaxOrderByAggregateInput = {
+    id?: SortOrder
+    productId?: SortOrder
+    color?: SortOrder
+  }
+
+  export type ProductColorImageMinOrderByAggregateInput = {
+    id?: SortOrder
+    productId?: SortOrder
+    color?: SortOrder
   }
 
   export type ProductListRelationFilter = {
@@ -20519,6 +21815,13 @@ export namespace Prisma {
     connect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
   }
 
+  export type ProductColorImageCreateNestedManyWithoutProductInput = {
+    create?: XOR<ProductColorImageCreateWithoutProductInput, ProductColorImageUncheckedCreateWithoutProductInput> | ProductColorImageCreateWithoutProductInput[] | ProductColorImageUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: ProductColorImageCreateOrConnectWithoutProductInput | ProductColorImageCreateOrConnectWithoutProductInput[]
+    createMany?: ProductColorImageCreateManyProductInputEnvelope
+    connect?: ProductColorImageWhereUniqueInput | ProductColorImageWhereUniqueInput[]
+  }
+
   export type ProductVariantCreateNestedManyWithoutProductInput = {
     create?: XOR<ProductVariantCreateWithoutProductInput, ProductVariantUncheckedCreateWithoutProductInput> | ProductVariantCreateWithoutProductInput[] | ProductVariantUncheckedCreateWithoutProductInput[]
     connectOrCreate?: ProductVariantCreateOrConnectWithoutProductInput | ProductVariantCreateOrConnectWithoutProductInput[]
@@ -20565,6 +21868,13 @@ export namespace Prisma {
     connectOrCreate?: OrderItemCreateOrConnectWithoutProductInput | OrderItemCreateOrConnectWithoutProductInput[]
     createMany?: OrderItemCreateManyProductInputEnvelope
     connect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
+  }
+
+  export type ProductColorImageUncheckedCreateNestedManyWithoutProductInput = {
+    create?: XOR<ProductColorImageCreateWithoutProductInput, ProductColorImageUncheckedCreateWithoutProductInput> | ProductColorImageCreateWithoutProductInput[] | ProductColorImageUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: ProductColorImageCreateOrConnectWithoutProductInput | ProductColorImageCreateOrConnectWithoutProductInput[]
+    createMany?: ProductColorImageCreateManyProductInputEnvelope
+    connect?: ProductColorImageWhereUniqueInput | ProductColorImageWhereUniqueInput[]
   }
 
   export type ProductVariantUncheckedCreateNestedManyWithoutProductInput = {
@@ -20665,6 +21975,20 @@ export namespace Prisma {
     deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
   }
 
+  export type ProductColorImageUpdateManyWithoutProductNestedInput = {
+    create?: XOR<ProductColorImageCreateWithoutProductInput, ProductColorImageUncheckedCreateWithoutProductInput> | ProductColorImageCreateWithoutProductInput[] | ProductColorImageUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: ProductColorImageCreateOrConnectWithoutProductInput | ProductColorImageCreateOrConnectWithoutProductInput[]
+    upsert?: ProductColorImageUpsertWithWhereUniqueWithoutProductInput | ProductColorImageUpsertWithWhereUniqueWithoutProductInput[]
+    createMany?: ProductColorImageCreateManyProductInputEnvelope
+    set?: ProductColorImageWhereUniqueInput | ProductColorImageWhereUniqueInput[]
+    disconnect?: ProductColorImageWhereUniqueInput | ProductColorImageWhereUniqueInput[]
+    delete?: ProductColorImageWhereUniqueInput | ProductColorImageWhereUniqueInput[]
+    connect?: ProductColorImageWhereUniqueInput | ProductColorImageWhereUniqueInput[]
+    update?: ProductColorImageUpdateWithWhereUniqueWithoutProductInput | ProductColorImageUpdateWithWhereUniqueWithoutProductInput[]
+    updateMany?: ProductColorImageUpdateManyWithWhereWithoutProductInput | ProductColorImageUpdateManyWithWhereWithoutProductInput[]
+    deleteMany?: ProductColorImageScalarWhereInput | ProductColorImageScalarWhereInput[]
+  }
+
   export type ProductVariantUpdateManyWithoutProductNestedInput = {
     create?: XOR<ProductVariantCreateWithoutProductInput, ProductVariantUncheckedCreateWithoutProductInput> | ProductVariantCreateWithoutProductInput[] | ProductVariantUncheckedCreateWithoutProductInput[]
     connectOrCreate?: ProductVariantCreateOrConnectWithoutProductInput | ProductVariantCreateOrConnectWithoutProductInput[]
@@ -20762,6 +22086,20 @@ export namespace Prisma {
     deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
   }
 
+  export type ProductColorImageUncheckedUpdateManyWithoutProductNestedInput = {
+    create?: XOR<ProductColorImageCreateWithoutProductInput, ProductColorImageUncheckedCreateWithoutProductInput> | ProductColorImageCreateWithoutProductInput[] | ProductColorImageUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: ProductColorImageCreateOrConnectWithoutProductInput | ProductColorImageCreateOrConnectWithoutProductInput[]
+    upsert?: ProductColorImageUpsertWithWhereUniqueWithoutProductInput | ProductColorImageUpsertWithWhereUniqueWithoutProductInput[]
+    createMany?: ProductColorImageCreateManyProductInputEnvelope
+    set?: ProductColorImageWhereUniqueInput | ProductColorImageWhereUniqueInput[]
+    disconnect?: ProductColorImageWhereUniqueInput | ProductColorImageWhereUniqueInput[]
+    delete?: ProductColorImageWhereUniqueInput | ProductColorImageWhereUniqueInput[]
+    connect?: ProductColorImageWhereUniqueInput | ProductColorImageWhereUniqueInput[]
+    update?: ProductColorImageUpdateWithWhereUniqueWithoutProductInput | ProductColorImageUpdateWithWhereUniqueWithoutProductInput[]
+    updateMany?: ProductColorImageUpdateManyWithWhereWithoutProductInput | ProductColorImageUpdateManyWithWhereWithoutProductInput[]
+    deleteMany?: ProductColorImageScalarWhereInput | ProductColorImageScalarWhereInput[]
+  }
+
   export type ProductVariantUncheckedUpdateManyWithoutProductNestedInput = {
     create?: XOR<ProductVariantCreateWithoutProductInput, ProductVariantUncheckedCreateWithoutProductInput> | ProductVariantCreateWithoutProductInput[] | ProductVariantUncheckedCreateWithoutProductInput[]
     connectOrCreate?: ProductVariantCreateOrConnectWithoutProductInput | ProductVariantCreateOrConnectWithoutProductInput[]
@@ -20817,10 +22155,6 @@ export namespace Prisma {
     deleteMany?: CategoryScalarWhereInput | CategoryScalarWhereInput[]
   }
 
-  export type ProductVariantCreateimagesInput = {
-    set: string[]
-  }
-
   export type CartItemCreateNestedManyWithoutVariantsInput = {
     create?: XOR<CartItemCreateWithoutVariantsInput, CartItemUncheckedCreateWithoutVariantsInput> | CartItemCreateWithoutVariantsInput[] | CartItemUncheckedCreateWithoutVariantsInput[]
     connectOrCreate?: CartItemCreateOrConnectWithoutVariantsInput | CartItemCreateOrConnectWithoutVariantsInput[]
@@ -20861,11 +22195,6 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
-  }
-
-  export type ProductVariantUpdateimagesInput = {
-    set?: string[]
-    push?: string | string[]
   }
 
   export type CartItemUpdateManyWithoutVariantsNestedInput = {
@@ -20930,6 +22259,29 @@ export namespace Prisma {
     update?: OrderItemUpdateWithWhereUniqueWithoutVariantInput | OrderItemUpdateWithWhereUniqueWithoutVariantInput[]
     updateMany?: OrderItemUpdateManyWithWhereWithoutVariantInput | OrderItemUpdateManyWithWhereWithoutVariantInput[]
     deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
+  }
+
+  export type ProductColorImageCreateimagesInput = {
+    set: string[]
+  }
+
+  export type ProductCreateNestedOneWithoutColorImagesInput = {
+    create?: XOR<ProductCreateWithoutColorImagesInput, ProductUncheckedCreateWithoutColorImagesInput>
+    connectOrCreate?: ProductCreateOrConnectWithoutColorImagesInput
+    connect?: ProductWhereUniqueInput
+  }
+
+  export type ProductColorImageUpdateimagesInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type ProductUpdateOneRequiredWithoutColorImagesNestedInput = {
+    create?: XOR<ProductCreateWithoutColorImagesInput, ProductUncheckedCreateWithoutColorImagesInput>
+    connectOrCreate?: ProductCreateOrConnectWithoutColorImagesInput
+    upsert?: ProductUpsertWithoutColorImagesInput
+    connect?: ProductWhereUniqueInput
+    update?: XOR<XOR<ProductUpdateToOneWithWhereWithoutColorImagesInput, ProductUpdateWithoutColorImagesInput>, ProductUncheckedUpdateWithoutColorImagesInput>
   }
 
   export type ProductCreateNestedManyWithoutCategoriesInput = {
@@ -22120,6 +23472,28 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ProductColorImageCreateWithoutProductInput = {
+    id?: string
+    color: string
+    images?: ProductColorImageCreateimagesInput | string[]
+  }
+
+  export type ProductColorImageUncheckedCreateWithoutProductInput = {
+    id?: string
+    color: string
+    images?: ProductColorImageCreateimagesInput | string[]
+  }
+
+  export type ProductColorImageCreateOrConnectWithoutProductInput = {
+    where: ProductColorImageWhereUniqueInput
+    create: XOR<ProductColorImageCreateWithoutProductInput, ProductColorImageUncheckedCreateWithoutProductInput>
+  }
+
+  export type ProductColorImageCreateManyProductInputEnvelope = {
+    data: ProductColorImageCreateManyProductInput | ProductColorImageCreateManyProductInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ProductVariantCreateWithoutProductInput = {
     id?: string
     color?: string | null
@@ -22127,7 +23501,6 @@ export namespace Prisma {
     price?: number | null
     stock?: number | null
     sku?: string | null
-    images?: ProductVariantCreateimagesInput | string[]
     CartItem?: CartItemCreateNestedManyWithoutVariantsInput
     OrderItem?: OrderItemCreateNestedManyWithoutVariantInput
   }
@@ -22139,7 +23512,6 @@ export namespace Prisma {
     price?: number | null
     stock?: number | null
     sku?: string | null
-    images?: ProductVariantCreateimagesInput | string[]
     CartItem?: CartItemUncheckedCreateNestedManyWithoutVariantsInput
     OrderItem?: OrderItemUncheckedCreateNestedManyWithoutVariantInput
   }
@@ -22302,6 +23674,32 @@ export namespace Prisma {
     sku?: StringNullableFilter<"OrderItem"> | string | null
   }
 
+  export type ProductColorImageUpsertWithWhereUniqueWithoutProductInput = {
+    where: ProductColorImageWhereUniqueInput
+    update: XOR<ProductColorImageUpdateWithoutProductInput, ProductColorImageUncheckedUpdateWithoutProductInput>
+    create: XOR<ProductColorImageCreateWithoutProductInput, ProductColorImageUncheckedCreateWithoutProductInput>
+  }
+
+  export type ProductColorImageUpdateWithWhereUniqueWithoutProductInput = {
+    where: ProductColorImageWhereUniqueInput
+    data: XOR<ProductColorImageUpdateWithoutProductInput, ProductColorImageUncheckedUpdateWithoutProductInput>
+  }
+
+  export type ProductColorImageUpdateManyWithWhereWithoutProductInput = {
+    where: ProductColorImageScalarWhereInput
+    data: XOR<ProductColorImageUpdateManyMutationInput, ProductColorImageUncheckedUpdateManyWithoutProductInput>
+  }
+
+  export type ProductColorImageScalarWhereInput = {
+    AND?: ProductColorImageScalarWhereInput | ProductColorImageScalarWhereInput[]
+    OR?: ProductColorImageScalarWhereInput[]
+    NOT?: ProductColorImageScalarWhereInput | ProductColorImageScalarWhereInput[]
+    id?: StringFilter<"ProductColorImage"> | string
+    productId?: StringFilter<"ProductColorImage"> | string
+    color?: StringFilter<"ProductColorImage"> | string
+    images?: StringNullableListFilter<"ProductColorImage">
+  }
+
   export type ProductVariantUpsertWithWhereUniqueWithoutProductInput = {
     where: ProductVariantWhereUniqueInput
     update: XOR<ProductVariantUpdateWithoutProductInput, ProductVariantUncheckedUpdateWithoutProductInput>
@@ -22329,7 +23727,6 @@ export namespace Prisma {
     price?: FloatNullableFilter<"ProductVariant"> | number | null
     stock?: IntNullableFilter<"ProductVariant"> | number | null
     sku?: StringNullableFilter<"ProductVariant"> | string | null
-    images?: StringNullableListFilter<"ProductVariant">
   }
 
   export type ReviewUpsertWithWhereUniqueWithoutProductInput = {
@@ -22470,6 +23867,7 @@ export namespace Prisma {
     CartItem?: CartItemCreateNestedManyWithoutProductsInput
     orders?: OrderCreateNestedManyWithoutProductInput
     OrderItem?: OrderItemCreateNestedManyWithoutProductInput
+    colorImages?: ProductColorImageCreateNestedManyWithoutProductInput
     reviews?: ReviewCreateNestedManyWithoutProductInput
     wishlists?: WishlistCreateNestedManyWithoutProductInput
     categories?: CategoryCreateNestedManyWithoutProductsInput
@@ -22495,6 +23893,7 @@ export namespace Prisma {
     CartItem?: CartItemUncheckedCreateNestedManyWithoutProductsInput
     orders?: OrderUncheckedCreateNestedManyWithoutProductInput
     OrderItem?: OrderItemUncheckedCreateNestedManyWithoutProductInput
+    colorImages?: ProductColorImageUncheckedCreateNestedManyWithoutProductInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProductInput
     wishlists?: WishlistUncheckedCreateNestedManyWithoutProductInput
     categories?: CategoryUncheckedCreateNestedManyWithoutProductsInput
@@ -22568,6 +23967,7 @@ export namespace Prisma {
     CartItem?: CartItemUpdateManyWithoutProductsNestedInput
     orders?: OrderUpdateManyWithoutProductNestedInput
     OrderItem?: OrderItemUpdateManyWithoutProductNestedInput
+    colorImages?: ProductColorImageUpdateManyWithoutProductNestedInput
     reviews?: ReviewUpdateManyWithoutProductNestedInput
     wishlists?: WishlistUpdateManyWithoutProductNestedInput
     categories?: CategoryUpdateManyWithoutProductsNestedInput
@@ -22593,6 +23993,127 @@ export namespace Prisma {
     CartItem?: CartItemUncheckedUpdateManyWithoutProductsNestedInput
     orders?: OrderUncheckedUpdateManyWithoutProductNestedInput
     OrderItem?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
+    colorImages?: ProductColorImageUncheckedUpdateManyWithoutProductNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProductNestedInput
+    wishlists?: WishlistUncheckedUpdateManyWithoutProductNestedInput
+    categories?: CategoryUncheckedUpdateManyWithoutProductsNestedInput
+  }
+
+  export type ProductCreateWithoutColorImagesInput = {
+    id?: string
+    name: string
+    slug: string
+    price?: number
+    discountPercent?: number | null
+    images?: ProductCreateimagesInput | string[]
+    stock: number
+    description: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isFeatured?: boolean
+    isArchived?: boolean
+    rating?: number | null
+    numReviews?: number
+    deletedAt?: Date | string | null
+    hasVariants?: boolean
+    CartItem?: CartItemCreateNestedManyWithoutProductsInput
+    orders?: OrderCreateNestedManyWithoutProductInput
+    OrderItem?: OrderItemCreateNestedManyWithoutProductInput
+    variants?: ProductVariantCreateNestedManyWithoutProductInput
+    reviews?: ReviewCreateNestedManyWithoutProductInput
+    wishlists?: WishlistCreateNestedManyWithoutProductInput
+    categories?: CategoryCreateNestedManyWithoutProductsInput
+  }
+
+  export type ProductUncheckedCreateWithoutColorImagesInput = {
+    id?: string
+    name: string
+    slug: string
+    price?: number
+    discountPercent?: number | null
+    images?: ProductCreateimagesInput | string[]
+    stock: number
+    description: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isFeatured?: boolean
+    isArchived?: boolean
+    rating?: number | null
+    numReviews?: number
+    deletedAt?: Date | string | null
+    hasVariants?: boolean
+    CartItem?: CartItemUncheckedCreateNestedManyWithoutProductsInput
+    orders?: OrderUncheckedCreateNestedManyWithoutProductInput
+    OrderItem?: OrderItemUncheckedCreateNestedManyWithoutProductInput
+    variants?: ProductVariantUncheckedCreateNestedManyWithoutProductInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProductInput
+    wishlists?: WishlistUncheckedCreateNestedManyWithoutProductInput
+    categories?: CategoryUncheckedCreateNestedManyWithoutProductsInput
+  }
+
+  export type ProductCreateOrConnectWithoutColorImagesInput = {
+    where: ProductWhereUniqueInput
+    create: XOR<ProductCreateWithoutColorImagesInput, ProductUncheckedCreateWithoutColorImagesInput>
+  }
+
+  export type ProductUpsertWithoutColorImagesInput = {
+    update: XOR<ProductUpdateWithoutColorImagesInput, ProductUncheckedUpdateWithoutColorImagesInput>
+    create: XOR<ProductCreateWithoutColorImagesInput, ProductUncheckedCreateWithoutColorImagesInput>
+    where?: ProductWhereInput
+  }
+
+  export type ProductUpdateToOneWithWhereWithoutColorImagesInput = {
+    where?: ProductWhereInput
+    data: XOR<ProductUpdateWithoutColorImagesInput, ProductUncheckedUpdateWithoutColorImagesInput>
+  }
+
+  export type ProductUpdateWithoutColorImagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    price?: FloatFieldUpdateOperationsInput | number
+    discountPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    images?: ProductUpdateimagesInput | string[]
+    stock?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    numReviews?: IntFieldUpdateOperationsInput | number
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    hasVariants?: BoolFieldUpdateOperationsInput | boolean
+    CartItem?: CartItemUpdateManyWithoutProductsNestedInput
+    orders?: OrderUpdateManyWithoutProductNestedInput
+    OrderItem?: OrderItemUpdateManyWithoutProductNestedInput
+    variants?: ProductVariantUpdateManyWithoutProductNestedInput
+    reviews?: ReviewUpdateManyWithoutProductNestedInput
+    wishlists?: WishlistUpdateManyWithoutProductNestedInput
+    categories?: CategoryUpdateManyWithoutProductsNestedInput
+  }
+
+  export type ProductUncheckedUpdateWithoutColorImagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    price?: FloatFieldUpdateOperationsInput | number
+    discountPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    images?: ProductUpdateimagesInput | string[]
+    stock?: IntFieldUpdateOperationsInput | number
+    description?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    isArchived?: BoolFieldUpdateOperationsInput | boolean
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    numReviews?: IntFieldUpdateOperationsInput | number
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    hasVariants?: BoolFieldUpdateOperationsInput | boolean
+    CartItem?: CartItemUncheckedUpdateManyWithoutProductsNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutProductNestedInput
+    OrderItem?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
+    variants?: ProductVariantUncheckedUpdateManyWithoutProductNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProductNestedInput
     wishlists?: WishlistUncheckedUpdateManyWithoutProductNestedInput
     categories?: CategoryUncheckedUpdateManyWithoutProductsNestedInput
@@ -22618,6 +24139,7 @@ export namespace Prisma {
     CartItem?: CartItemCreateNestedManyWithoutProductsInput
     orders?: OrderCreateNestedManyWithoutProductInput
     OrderItem?: OrderItemCreateNestedManyWithoutProductInput
+    colorImages?: ProductColorImageCreateNestedManyWithoutProductInput
     variants?: ProductVariantCreateNestedManyWithoutProductInput
     reviews?: ReviewCreateNestedManyWithoutProductInput
     wishlists?: WishlistCreateNestedManyWithoutProductInput
@@ -22643,6 +24165,7 @@ export namespace Prisma {
     CartItem?: CartItemUncheckedCreateNestedManyWithoutProductsInput
     orders?: OrderUncheckedCreateNestedManyWithoutProductInput
     OrderItem?: OrderItemUncheckedCreateNestedManyWithoutProductInput
+    colorImages?: ProductColorImageUncheckedCreateNestedManyWithoutProductInput
     variants?: ProductVariantUncheckedCreateNestedManyWithoutProductInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProductInput
     wishlists?: WishlistUncheckedCreateNestedManyWithoutProductInput
@@ -22711,6 +24234,7 @@ export namespace Prisma {
     CartItem?: CartItemCreateNestedManyWithoutProductsInput
     orders?: OrderCreateNestedManyWithoutProductInput
     OrderItem?: OrderItemCreateNestedManyWithoutProductInput
+    colorImages?: ProductColorImageCreateNestedManyWithoutProductInput
     variants?: ProductVariantCreateNestedManyWithoutProductInput
     wishlists?: WishlistCreateNestedManyWithoutProductInput
     categories?: CategoryCreateNestedManyWithoutProductsInput
@@ -22736,6 +24260,7 @@ export namespace Prisma {
     CartItem?: CartItemUncheckedCreateNestedManyWithoutProductsInput
     orders?: OrderUncheckedCreateNestedManyWithoutProductInput
     OrderItem?: OrderItemUncheckedCreateNestedManyWithoutProductInput
+    colorImages?: ProductColorImageUncheckedCreateNestedManyWithoutProductInput
     variants?: ProductVariantUncheckedCreateNestedManyWithoutProductInput
     wishlists?: WishlistUncheckedCreateNestedManyWithoutProductInput
     categories?: CategoryUncheckedCreateNestedManyWithoutProductsInput
@@ -22830,6 +24355,7 @@ export namespace Prisma {
     CartItem?: CartItemUpdateManyWithoutProductsNestedInput
     orders?: OrderUpdateManyWithoutProductNestedInput
     OrderItem?: OrderItemUpdateManyWithoutProductNestedInput
+    colorImages?: ProductColorImageUpdateManyWithoutProductNestedInput
     variants?: ProductVariantUpdateManyWithoutProductNestedInput
     wishlists?: WishlistUpdateManyWithoutProductNestedInput
     categories?: CategoryUpdateManyWithoutProductsNestedInput
@@ -22855,6 +24381,7 @@ export namespace Prisma {
     CartItem?: CartItemUncheckedUpdateManyWithoutProductsNestedInput
     orders?: OrderUncheckedUpdateManyWithoutProductNestedInput
     OrderItem?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
+    colorImages?: ProductColorImageUncheckedUpdateManyWithoutProductNestedInput
     variants?: ProductVariantUncheckedUpdateManyWithoutProductNestedInput
     wishlists?: WishlistUncheckedUpdateManyWithoutProductNestedInput
     categories?: CategoryUncheckedUpdateManyWithoutProductsNestedInput
@@ -22938,6 +24465,7 @@ export namespace Prisma {
     hasVariants?: boolean
     CartItem?: CartItemCreateNestedManyWithoutProductsInput
     OrderItem?: OrderItemCreateNestedManyWithoutProductInput
+    colorImages?: ProductColorImageCreateNestedManyWithoutProductInput
     variants?: ProductVariantCreateNestedManyWithoutProductInput
     reviews?: ReviewCreateNestedManyWithoutProductInput
     wishlists?: WishlistCreateNestedManyWithoutProductInput
@@ -22963,6 +24491,7 @@ export namespace Prisma {
     hasVariants?: boolean
     CartItem?: CartItemUncheckedCreateNestedManyWithoutProductsInput
     OrderItem?: OrderItemUncheckedCreateNestedManyWithoutProductInput
+    colorImages?: ProductColorImageUncheckedCreateNestedManyWithoutProductInput
     variants?: ProductVariantUncheckedCreateNestedManyWithoutProductInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProductInput
     wishlists?: WishlistUncheckedCreateNestedManyWithoutProductInput
@@ -23085,6 +24614,7 @@ export namespace Prisma {
     hasVariants?: BoolFieldUpdateOperationsInput | boolean
     CartItem?: CartItemUpdateManyWithoutProductsNestedInput
     OrderItem?: OrderItemUpdateManyWithoutProductNestedInput
+    colorImages?: ProductColorImageUpdateManyWithoutProductNestedInput
     variants?: ProductVariantUpdateManyWithoutProductNestedInput
     reviews?: ReviewUpdateManyWithoutProductNestedInput
     wishlists?: WishlistUpdateManyWithoutProductNestedInput
@@ -23110,6 +24640,7 @@ export namespace Prisma {
     hasVariants?: BoolFieldUpdateOperationsInput | boolean
     CartItem?: CartItemUncheckedUpdateManyWithoutProductsNestedInput
     OrderItem?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
+    colorImages?: ProductColorImageUncheckedUpdateManyWithoutProductNestedInput
     variants?: ProductVariantUncheckedUpdateManyWithoutProductNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProductNestedInput
     wishlists?: WishlistUncheckedUpdateManyWithoutProductNestedInput
@@ -23267,6 +24798,7 @@ export namespace Prisma {
     hasVariants?: boolean
     CartItem?: CartItemCreateNestedManyWithoutProductsInput
     orders?: OrderCreateNestedManyWithoutProductInput
+    colorImages?: ProductColorImageCreateNestedManyWithoutProductInput
     variants?: ProductVariantCreateNestedManyWithoutProductInput
     reviews?: ReviewCreateNestedManyWithoutProductInput
     wishlists?: WishlistCreateNestedManyWithoutProductInput
@@ -23292,6 +24824,7 @@ export namespace Prisma {
     hasVariants?: boolean
     CartItem?: CartItemUncheckedCreateNestedManyWithoutProductsInput
     orders?: OrderUncheckedCreateNestedManyWithoutProductInput
+    colorImages?: ProductColorImageUncheckedCreateNestedManyWithoutProductInput
     variants?: ProductVariantUncheckedCreateNestedManyWithoutProductInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProductInput
     wishlists?: WishlistUncheckedCreateNestedManyWithoutProductInput
@@ -23310,7 +24843,6 @@ export namespace Prisma {
     price?: number | null
     stock?: number | null
     sku?: string | null
-    images?: ProductVariantCreateimagesInput | string[]
     CartItem?: CartItemCreateNestedManyWithoutVariantsInput
     product: ProductCreateNestedOneWithoutVariantsInput
   }
@@ -23323,7 +24855,6 @@ export namespace Prisma {
     price?: number | null
     stock?: number | null
     sku?: string | null
-    images?: ProductVariantCreateimagesInput | string[]
     CartItem?: CartItemUncheckedCreateNestedManyWithoutVariantsInput
   }
 
@@ -23425,6 +24956,7 @@ export namespace Prisma {
     hasVariants?: BoolFieldUpdateOperationsInput | boolean
     CartItem?: CartItemUpdateManyWithoutProductsNestedInput
     orders?: OrderUpdateManyWithoutProductNestedInput
+    colorImages?: ProductColorImageUpdateManyWithoutProductNestedInput
     variants?: ProductVariantUpdateManyWithoutProductNestedInput
     reviews?: ReviewUpdateManyWithoutProductNestedInput
     wishlists?: WishlistUpdateManyWithoutProductNestedInput
@@ -23450,6 +24982,7 @@ export namespace Prisma {
     hasVariants?: BoolFieldUpdateOperationsInput | boolean
     CartItem?: CartItemUncheckedUpdateManyWithoutProductsNestedInput
     orders?: OrderUncheckedUpdateManyWithoutProductNestedInput
+    colorImages?: ProductColorImageUncheckedUpdateManyWithoutProductNestedInput
     variants?: ProductVariantUncheckedUpdateManyWithoutProductNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProductNestedInput
     wishlists?: WishlistUncheckedUpdateManyWithoutProductNestedInput
@@ -23474,7 +25007,6 @@ export namespace Prisma {
     price?: NullableFloatFieldUpdateOperationsInput | number | null
     stock?: NullableIntFieldUpdateOperationsInput | number | null
     sku?: NullableStringFieldUpdateOperationsInput | string | null
-    images?: ProductVariantUpdateimagesInput | string[]
     CartItem?: CartItemUpdateManyWithoutVariantsNestedInput
     product?: ProductUpdateOneRequiredWithoutVariantsNestedInput
   }
@@ -23487,7 +25019,6 @@ export namespace Prisma {
     price?: NullableFloatFieldUpdateOperationsInput | number | null
     stock?: NullableIntFieldUpdateOperationsInput | number | null
     sku?: NullableStringFieldUpdateOperationsInput | string | null
-    images?: ProductVariantUpdateimagesInput | string[]
     CartItem?: CartItemUncheckedUpdateManyWithoutVariantsNestedInput
   }
 
@@ -23693,6 +25224,7 @@ export namespace Prisma {
     hasVariants?: boolean
     orders?: OrderCreateNestedManyWithoutProductInput
     OrderItem?: OrderItemCreateNestedManyWithoutProductInput
+    colorImages?: ProductColorImageCreateNestedManyWithoutProductInput
     variants?: ProductVariantCreateNestedManyWithoutProductInput
     reviews?: ReviewCreateNestedManyWithoutProductInput
     wishlists?: WishlistCreateNestedManyWithoutProductInput
@@ -23718,6 +25250,7 @@ export namespace Prisma {
     hasVariants?: boolean
     orders?: OrderUncheckedCreateNestedManyWithoutProductInput
     OrderItem?: OrderItemUncheckedCreateNestedManyWithoutProductInput
+    colorImages?: ProductColorImageUncheckedCreateNestedManyWithoutProductInput
     variants?: ProductVariantUncheckedCreateNestedManyWithoutProductInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProductInput
     wishlists?: WishlistUncheckedCreateNestedManyWithoutProductInput
@@ -23736,7 +25269,6 @@ export namespace Prisma {
     price?: number | null
     stock?: number | null
     sku?: string | null
-    images?: ProductVariantCreateimagesInput | string[]
     OrderItem?: OrderItemCreateNestedManyWithoutVariantInput
     product: ProductCreateNestedOneWithoutVariantsInput
   }
@@ -23749,7 +25281,6 @@ export namespace Prisma {
     price?: number | null
     stock?: number | null
     sku?: string | null
-    images?: ProductVariantCreateimagesInput | string[]
     OrderItem?: OrderItemUncheckedCreateNestedManyWithoutVariantInput
   }
 
@@ -23819,6 +25350,7 @@ export namespace Prisma {
     hasVariants?: BoolFieldUpdateOperationsInput | boolean
     orders?: OrderUpdateManyWithoutProductNestedInput
     OrderItem?: OrderItemUpdateManyWithoutProductNestedInput
+    colorImages?: ProductColorImageUpdateManyWithoutProductNestedInput
     variants?: ProductVariantUpdateManyWithoutProductNestedInput
     reviews?: ReviewUpdateManyWithoutProductNestedInput
     wishlists?: WishlistUpdateManyWithoutProductNestedInput
@@ -23844,6 +25376,7 @@ export namespace Prisma {
     hasVariants?: BoolFieldUpdateOperationsInput | boolean
     orders?: OrderUncheckedUpdateManyWithoutProductNestedInput
     OrderItem?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
+    colorImages?: ProductColorImageUncheckedUpdateManyWithoutProductNestedInput
     variants?: ProductVariantUncheckedUpdateManyWithoutProductNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProductNestedInput
     wishlists?: WishlistUncheckedUpdateManyWithoutProductNestedInput
@@ -23868,7 +25401,6 @@ export namespace Prisma {
     price?: NullableFloatFieldUpdateOperationsInput | number | null
     stock?: NullableIntFieldUpdateOperationsInput | number | null
     sku?: NullableStringFieldUpdateOperationsInput | string | null
-    images?: ProductVariantUpdateimagesInput | string[]
     OrderItem?: OrderItemUpdateManyWithoutVariantNestedInput
     product?: ProductUpdateOneRequiredWithoutVariantsNestedInput
   }
@@ -23881,7 +25413,6 @@ export namespace Prisma {
     price?: NullableFloatFieldUpdateOperationsInput | number | null
     stock?: NullableIntFieldUpdateOperationsInput | number | null
     sku?: NullableStringFieldUpdateOperationsInput | string | null
-    images?: ProductVariantUpdateimagesInput | string[]
     OrderItem?: OrderItemUncheckedUpdateManyWithoutVariantNestedInput
   }
 
@@ -23905,6 +25436,7 @@ export namespace Prisma {
     CartItem?: CartItemCreateNestedManyWithoutProductsInput
     orders?: OrderCreateNestedManyWithoutProductInput
     OrderItem?: OrderItemCreateNestedManyWithoutProductInput
+    colorImages?: ProductColorImageCreateNestedManyWithoutProductInput
     variants?: ProductVariantCreateNestedManyWithoutProductInput
     reviews?: ReviewCreateNestedManyWithoutProductInput
     categories?: CategoryCreateNestedManyWithoutProductsInput
@@ -23930,6 +25462,7 @@ export namespace Prisma {
     CartItem?: CartItemUncheckedCreateNestedManyWithoutProductsInput
     orders?: OrderUncheckedCreateNestedManyWithoutProductInput
     OrderItem?: OrderItemUncheckedCreateNestedManyWithoutProductInput
+    colorImages?: ProductColorImageUncheckedCreateNestedManyWithoutProductInput
     variants?: ProductVariantUncheckedCreateNestedManyWithoutProductInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProductInput
     categories?: CategoryUncheckedCreateNestedManyWithoutProductsInput
@@ -24024,6 +25557,7 @@ export namespace Prisma {
     CartItem?: CartItemUpdateManyWithoutProductsNestedInput
     orders?: OrderUpdateManyWithoutProductNestedInput
     OrderItem?: OrderItemUpdateManyWithoutProductNestedInput
+    colorImages?: ProductColorImageUpdateManyWithoutProductNestedInput
     variants?: ProductVariantUpdateManyWithoutProductNestedInput
     reviews?: ReviewUpdateManyWithoutProductNestedInput
     categories?: CategoryUpdateManyWithoutProductsNestedInput
@@ -24049,6 +25583,7 @@ export namespace Prisma {
     CartItem?: CartItemUncheckedUpdateManyWithoutProductsNestedInput
     orders?: OrderUncheckedUpdateManyWithoutProductNestedInput
     OrderItem?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
+    colorImages?: ProductColorImageUncheckedUpdateManyWithoutProductNestedInput
     variants?: ProductVariantUncheckedUpdateManyWithoutProductNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProductNestedInput
     categories?: CategoryUncheckedUpdateManyWithoutProductsNestedInput
@@ -24631,6 +26166,12 @@ export namespace Prisma {
     sku?: string | null
   }
 
+  export type ProductColorImageCreateManyProductInput = {
+    id?: string
+    color: string
+    images?: ProductColorImageCreateimagesInput | string[]
+  }
+
   export type ProductVariantCreateManyProductInput = {
     id?: string
     color?: string | null
@@ -24638,7 +26179,6 @@ export namespace Prisma {
     price?: number | null
     stock?: number | null
     sku?: string | null
-    images?: ProductVariantCreateimagesInput | string[]
   }
 
   export type ReviewCreateManyProductInput = {
@@ -24790,6 +26330,24 @@ export namespace Prisma {
     sku?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type ProductColorImageUpdateWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    color?: StringFieldUpdateOperationsInput | string
+    images?: ProductColorImageUpdateimagesInput | string[]
+  }
+
+  export type ProductColorImageUncheckedUpdateWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    color?: StringFieldUpdateOperationsInput | string
+    images?: ProductColorImageUpdateimagesInput | string[]
+  }
+
+  export type ProductColorImageUncheckedUpdateManyWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    color?: StringFieldUpdateOperationsInput | string
+    images?: ProductColorImageUpdateimagesInput | string[]
+  }
+
   export type ProductVariantUpdateWithoutProductInput = {
     id?: StringFieldUpdateOperationsInput | string
     color?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24797,7 +26355,6 @@ export namespace Prisma {
     price?: NullableFloatFieldUpdateOperationsInput | number | null
     stock?: NullableIntFieldUpdateOperationsInput | number | null
     sku?: NullableStringFieldUpdateOperationsInput | string | null
-    images?: ProductVariantUpdateimagesInput | string[]
     CartItem?: CartItemUpdateManyWithoutVariantsNestedInput
     OrderItem?: OrderItemUpdateManyWithoutVariantNestedInput
   }
@@ -24809,7 +26366,6 @@ export namespace Prisma {
     price?: NullableFloatFieldUpdateOperationsInput | number | null
     stock?: NullableIntFieldUpdateOperationsInput | number | null
     sku?: NullableStringFieldUpdateOperationsInput | string | null
-    images?: ProductVariantUpdateimagesInput | string[]
     CartItem?: CartItemUncheckedUpdateManyWithoutVariantsNestedInput
     OrderItem?: OrderItemUncheckedUpdateManyWithoutVariantNestedInput
   }
@@ -24821,7 +26377,6 @@ export namespace Prisma {
     price?: NullableFloatFieldUpdateOperationsInput | number | null
     stock?: NullableIntFieldUpdateOperationsInput | number | null
     sku?: NullableStringFieldUpdateOperationsInput | string | null
-    images?: ProductVariantUpdateimagesInput | string[]
   }
 
   export type ReviewUpdateWithoutProductInput = {
@@ -24992,6 +26547,7 @@ export namespace Prisma {
     CartItem?: CartItemUpdateManyWithoutProductsNestedInput
     orders?: OrderUpdateManyWithoutProductNestedInput
     OrderItem?: OrderItemUpdateManyWithoutProductNestedInput
+    colorImages?: ProductColorImageUpdateManyWithoutProductNestedInput
     variants?: ProductVariantUpdateManyWithoutProductNestedInput
     reviews?: ReviewUpdateManyWithoutProductNestedInput
     wishlists?: WishlistUpdateManyWithoutProductNestedInput
@@ -25017,6 +26573,7 @@ export namespace Prisma {
     CartItem?: CartItemUncheckedUpdateManyWithoutProductsNestedInput
     orders?: OrderUncheckedUpdateManyWithoutProductNestedInput
     OrderItem?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
+    colorImages?: ProductColorImageUncheckedUpdateManyWithoutProductNestedInput
     variants?: ProductVariantUncheckedUpdateManyWithoutProductNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProductNestedInput
     wishlists?: WishlistUncheckedUpdateManyWithoutProductNestedInput
