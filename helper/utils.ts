@@ -59,3 +59,8 @@ export const getVariantCombinations = <T>(arrays: T[][]): T[][] => {
 // const cartesian = arrays => {
 //   return arrays.reduce((a, b) => a.flatMap(x => b.map(y => [...x, y])), [[]]);
 // };
+
+export const uniqueArray = (arr: any[], attr: string) => {
+  const unique = Array.from(new Set(arr.map(item => item[attr])));
+  return unique;
+};

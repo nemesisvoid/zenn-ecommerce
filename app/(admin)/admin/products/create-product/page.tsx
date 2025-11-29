@@ -1,4 +1,4 @@
-import CreateProductForm from './create-product-form';
+import CreateProductForm from '@/components/admin/products/product-form';
 
 import { getSelectableCategories } from '@/actions/category.actions';
 

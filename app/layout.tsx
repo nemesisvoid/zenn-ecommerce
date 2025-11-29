@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono, DM_Mono, Work_Sans } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/sonner';
+import { ThemeProvider } from 'next-themes';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -37,7 +38,13 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={` ${workSans.variable} ${geistSans.variable} ${geistMono.variable} ${dmMono.variable} antialiased`}>
-        {children}
+        <ThemeProvider
+          attribute='class'
+          defaultTheme='system'
+          enableSystem
+          disableTransitionOnChange>
+          {children}
+        </ThemeProvider>
         <Toaster />
       </body>
     </html>

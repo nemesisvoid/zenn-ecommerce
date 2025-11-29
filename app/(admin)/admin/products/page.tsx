@@ -2,6 +2,7 @@ import { getAllProducts } from '@/actions/product.actions';
 
 import { allProductsColumn } from '@/components/admin/tables/products/all-products-column';
 import AllProductsTable from '@/components/admin/tables/products/all-products-table';
+import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 const AdminProductsPage = async () => {
@@ -11,13 +12,13 @@ const AdminProductsPage = async () => {
       <div className='flex justify-between'>
         <h2 className='text-sm text-gray-700 mx-4 mb-5'>All Products List</h2>
 
-        <div>
+        <Button asChild>
           <Link
             href='/admin/products/create-product'
-            className='text-sm text-gray-700 mx-4 mb-5 bg-pink-400 px-4 py-2 rounded-xl'>
+            className='text-sm text-gray-700 mx-4 mb-5  px-4 py-2 rounded-md'>
             Add Product
           </Link>
-        </div>
+        </Button>
       </div>
       <AllProductsTable
         data={products}

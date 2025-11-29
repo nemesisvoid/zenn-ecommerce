@@ -7,6 +7,7 @@ import { auth } from '@/auth';
 import * as z from 'zod';
 import { CreateProductSchema } from '@/schemas';
 import { slugify } from '@/helper/utils';
+import { id } from 'zod/v4/locales';
 
 export const getProductsByNewArrivals = async () => {
   const data = await prisma.product.findMany({
@@ -25,6 +26,7 @@ export const getProductBySlug = async (slug: string) => {
     where: { slug },
     include: {
       variants: true,
+      colorImages: true,
     },
   });
 
@@ -100,11 +102,50 @@ export const createProduct = async (productData: z.infer<typeof CreateProductSch
   }
 };
 
+export const editProduct = async (id: string, productData: z.infer<typeof CreateProductSchema>) => {
+  const validatedProduct = CreateProductSchema.safeParse(productData);
+
+  if (!validatedProduct.success) throw new Error(validatedProduct.error.message);
+
+  const { data } = validatedProduct;
+  const variants = data.variants?.length ? { deleteMany: {}, create: data.variants } : undefined;
+
+  try {
+    const res = await prisma.product.update({
+      where: { id },
+      data: {
+        name: data.name,
+        price: data.price,
+        description: data.description,
+        images: data.images,
+        stock: data.stock,
+        hasVariants: data.hasVariants,
+        discountPercent: data.discountPercent,
+        categories: {
+          set: data.categories.map(categoryId => ({ id: categoryId })),
+        },
+        colorImages: {
+          deleteMany: {},
+          create: data.colorImages?.map(cl => ({
+            color: cl.color,
+            images: cl.images,
+          })),
+        },
+        variants: variants,
+      },
+    });
+    return { success: true, data: res, message: 'Product updated successfully' };
+  } catch (error) {
+    console.error('error updating product', error);
+    return { success: false, message: 'Error updating product' };
+  }
+};
+
 export const deleteProduct = async (id: string) => {
   try {
     await prisma.product.delete({ where: { id } });
     revalidatePath('/admin/products');
-    return { success: 'Product deleted successfully' };
+    return { success: true, message: 'Product deleted successfully' };
   } catch (error) {
     console.error('error deleting product', error);
   }

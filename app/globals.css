@@ -161,6 +161,12 @@ select:-webkit-autofill:focus {
   }
 }
 
+@layer components {
+  .admin-card {
+    @apply bg-white text-card-foreground rounded-lg p-6 shadow-md border border-border dark:bg-[#282F36];
+  }
+}
+
 @keyframes gradient-x {
   0%,
   100% {

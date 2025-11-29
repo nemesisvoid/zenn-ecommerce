@@ -18,20 +18,30 @@ import {
   AlertDialogContent,
 } from '@/components/ui/alert-dialog';
 import { Edit2Icon, Trash2Icon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export const CustomCell = ({ row }: { row: Row<AllProductsColumnType> }) => {
   const { isPending, handleDelete } = useDelete(deleteProduct);
+  console.log({ row });
+  const router = useRouter();
+
   return (
     <div className='flex items-center gap-3'>
-      <button className='text-[#FF6C2F] bg-[#FF6C2F]/30 hover:text-white hover:bg-[#FF6C2F] py-2 px-3 rounded-sm cursor-pointer'>
-        <Edit2Icon size={13} />
-      </button>
+      <Button
+        asChild
+        className='text-[#FF6C2F] bg-[#FF6C2F]/30 hover:text-white hover:bg-[#FF6C2F] px-3 rounded-sm cursor-pointer'>
+        <Link href={`/admin/products/${row.original.slug}`}>
+          <Edit2Icon size={10} />
+        </Link>
+      </Button>
 
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <button className='text-[#EF5F5F] bg-[#EF5F5F]/30 hover:text-white hover:bg-[#EF5F5F] py-2 px-3 rounded-sm cursor-pointer'>
-            <Trash2Icon size={13} />
-          </button>
+          <Button className='text-[#EF5F5F] bg-[#EF5F5F]/30 hover:text-white hover:bg-[#EF5F5F] px-3 rounded-sm cursor-pointer'>
+            <Trash2Icon size={10} />
+          </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>

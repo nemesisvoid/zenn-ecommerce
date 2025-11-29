@@ -1,7 +1,7 @@
 import { useTransition } from 'react';
 import { toast } from 'sonner';
 
-export const useDelete = (fn: (id: string) => Promise<{ success: string } | undefined>) => {
+export const useDelete = (fn: (id: string) => Promise<{ success: boolean } | undefined>) => {
   const [isPending, startTransition] = useTransition();
 
   const handleDelete = (id: string) => {

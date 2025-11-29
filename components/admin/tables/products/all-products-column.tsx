@@ -4,10 +4,12 @@ import { formatCurrency } from '@/helper/utils';
 import { ColumnDef } from '@tanstack/react-table';
 import Image from 'next/image';
 import { CustomCell } from './custom-cell';
+import Link from 'next/link';
 
 export type AllProductsColumnType = {
   id: string;
   name: string;
+  slug: string;
   images: string[];
   price: number;
   category?: { name: string } | null;
@@ -25,8 +27,10 @@ export const allProductsColumn: ColumnDef<AllProductsColumnType>[] = [
 
       const colors = Array.from(new Set((row.original.variants ?? []).map(v => v.color).filter((v): v is string => Boolean(v))));
       return (
-        <div className='flex gap-5 '>
-          <div className='relative aspect-square size-15'>
+        <Link
+          href={`/admin/products/${row.original.slug}`}
+          className='flex gap-5'>
+          <div className='relative aspect-square size-20'>
             <Image
               src={row.original?.images?.[0] || ''}
               fill
@@ -40,7 +44,7 @@ export const allProductsColumn: ColumnDef<AllProductsColumnType>[] = [
 
             <p className='text-xs text-muted-foreground'>{colors.length ? 'Colors: ' + colors.join(', ') : ''}</p>
           </div>
-        </div>
+        </Link>
       );
     },
   },

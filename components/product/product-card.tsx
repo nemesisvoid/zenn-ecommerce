@@ -19,7 +19,7 @@ const ProductCard = ({ product }: { product: ProductCardProps }) => {
     <Link href={`product/${product?.slug}`}>
       <div className='relative w-full h-72 aspect-square mb-4'>
         <Image
-          src={product?.coverImage ? product?.coverImage : ''}
+          src={product?.coverImage ? product?.coverImage : null}
           fill
           alt={`${product?.name} image`}
           className='object-cover absolute w-full z-10  rounded-md hover:opacity-0 transition-opacity  duration-300'
