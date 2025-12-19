@@ -8,9 +8,10 @@ interface UploadProductImagWidgetProps {
   onUpload: (urls: string[]) => void;
   isVariant: boolean;
   isPending: boolean;
+  title: string;
 }
 
-const UploadProductImagWidget = ({ onUpload, isVariant, isPending }: UploadProductImagWidgetProps) => {
+const UploadProductImageWidget = ({ onUpload, isVariant, isPending, title }: UploadProductImagWidgetProps) => {
   const uploadPreset = isVariant ? process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET_VARIANTS : process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
   return (
@@ -43,7 +44,7 @@ const UploadProductImagWidget = ({ onUpload, isVariant, isPending }: UploadProdu
             className='button text-sm rounded-sm py-5 cursor-pointer w-1/2'
             onClick={() => open()}
             disabled={isPending}>
-            {isVariant ? 'Upload Variant Images' : 'Upload Product Images'}
+            Upload {title}
             {isPending && <Loader2Icon className='w-4 h-4 animate-spin' />}
           </Button>
         );
@@ -51,4 +52,4 @@ const UploadProductImagWidget = ({ onUpload, isVariant, isPending }: UploadProdu
     </CldUploadWidget>
   );
 };
-export default UploadProductImagWidget;
+export default UploadProductImageWidget;

@@ -7,7 +7,6 @@ import { auth } from '@/auth';
 import * as z from 'zod';
 import { CreateProductSchema } from '@/schemas';
 import { slugify } from '@/helper/utils';
-import { id } from 'zod/v4/locales';
 
 export const getProductsByNewArrivals = async () => {
   const data = await prisma.product.findMany({
@@ -47,6 +46,8 @@ export const getAllProducts = async () => {
         slug: true,
         images: true,
         price: true,
+        stock: true,
+        rating: true,
         categories: {
           select: {
             name: true,

@@ -33,4 +33,23 @@ export default {
       },
     }),
   ],
+  callbacks: {
+    async jwt({ token }) {
+      return token;
+    },
+
+    // 3. Session callback: Copy the role from the token to the session user
+    async session({ session, token }) {
+      if (token.sub && session.user) {
+        session.user.id = token.sub;
+      }
+
+      // THIS IS THE KEY PART MISSING IN MIDDLEWARE
+      if (token.role && session.user) {
+        session.user.role = token.role as 'ADMIN' | 'USER';
+      }
+
+      return session;
+    },
+  },
 } satisfies NextAuthConfig;

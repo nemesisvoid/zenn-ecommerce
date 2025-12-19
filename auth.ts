@@ -7,6 +7,7 @@ import { PrismaAdapter } from '@auth/prisma-adapter';
 import { prisma } from './lib/prisma';
 import { getUserById } from './data/user';
 import { cookies } from 'next/headers';
+import Credentials from 'next-auth/providers/credentials';
 
 export const {
   handlers: { GET, POST },
@@ -17,6 +18,11 @@ export const {
   ...authConfig,
   adapter: PrismaAdapter(prisma),
   session: { strategy: 'jwt' },
+  providers: [
+    Credentials({
+      async authorize() {},
+    }),
+  ],
   callbacks: {
     async session({ session, token }) {
       if (session.user && token.sub) {
@@ -70,6 +76,21 @@ export const {
     async error(error) {
       console.error('Auth Error:', error);
       return error;
+    },
+  },
+  events: {
+    async signIn({ user, account }) {
+      if (account?.provider !== 'credentials') {
+        await prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            isEmailVerified: true,
+            emailVerified: new Date(),
+          },
+        });
+      }
     },
   },
 });

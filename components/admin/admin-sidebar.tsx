@@ -2,6 +2,7 @@
 
 import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { sidebarLinks } from '@/constants';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -13,11 +14,15 @@ const AdminSidebar = () => {
       collapsible='icon'
       variant='floating'
       className='backdrop-blur-sm'>
-      <SidebarContent className='mt-3 px-3 py-4'>
+      <SidebarContent className='mt-1 px-3 py-4'>
         <SidebarHeader className='px-2 pb-2'>
-          <div className='flex items-center gap-2'>
-            <span className='size-7 rounded-lg bg-gradient-to-br from-violet-500 to-cyan-400 shadow-sm' />
-            <span className='font-semibold text-lg bg-gradient-to-r from-violet-500 to-cyan-400 bg-clip-text text-transparent'>Zenn Admin</span>
+          <div className='flex items-center justify-center gap-2'>
+            <Image
+              src='/zenn-logo.png'
+              alt='logo'
+              width={100}
+              height={100}
+            />
           </div>
         </SidebarHeader>
 
@@ -34,7 +39,7 @@ const AdminSidebar = () => {
                     title={item.name}
                     aria-current={isActive ? 'page' : undefined}
                     className={[
-                      'group relative flex items-center gap-3 rounded-xl  px-3 py-4 transition-all',
+                      'group relative flex items-center gap-3 rounded-xl px-3 py-4 transition-all',
                       'outline-none ring-0 focus-visible:ring-2 focus-visible:ring-sidebar-ring/50',
                       isActive ? 'text-black shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/60',
                     ].join(' ')}>

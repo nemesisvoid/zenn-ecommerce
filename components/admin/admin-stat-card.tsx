@@ -1,7 +1,7 @@
 interface AdminStatCardProps {
   title: string;
   text: string | number;
-  subtext: string | number;
+  subtext?: string | number;
   icon: React.ReactNode;
   /**
    * Visual variant to theme the card & icon

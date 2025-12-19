@@ -47,11 +47,11 @@ export const sidebarLinks = [
     link: '/admin/dashboard',
     icon: HomeIcon,
   },
-  {
-    name: 'Analytics',
-    link: '/admin/analytics',
-    icon: ChartBarIncreasingIcon,
-  },
+  // {
+  //   name: 'Analytics',
+  //   link: '/admin/analytics',
+  //   icon: ChartBarIncreasingIcon,
+  // },
   {
     name: 'Products',
     link: '/admin/products',

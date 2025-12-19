@@ -10,6 +10,7 @@ export type DashboardProductColumnType = {
   image: string;
   price: number;
 };
+
 export const dashboardProductColumn: ColumnDef<DashboardProductColumnType>[] = [
   { header: 'Product', accessorKey: 'name' },
   { header: 'Price', accessorKey: 'price', cell: row => <p>{formatCurrency(row.row.original.price)}</p> },

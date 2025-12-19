@@ -19,7 +19,7 @@ const AdminInfo = ({ session }: { session: Session | null }) => {
           <MenuIcon />
         </button>
 
-        <h1>Welcome, {session?.user.name}</h1>
+        <h1>Welcome, Mike</h1>
       </div>
 
       <div className='flex items-center gap-6'>

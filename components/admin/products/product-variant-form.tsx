@@ -23,7 +23,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import UploadProductImagWidget from '@/components/cloudinary/upload-image-widget';
+import UploadProductImageWidget from '@/components/cloudinary/upload-image-widget';
 
 interface ProductVariantFormProps {
   form: UseFormReturn<z.infer<typeof CreateProductSchema>>;
@@ -176,9 +176,10 @@ const ProductVariantForm = ({ form, isPending }: ProductVariantFormProps) => {
                         <FormItem>
                           <FormControl>
                             <div>
-                              <UploadProductImagWidget
+                              <UploadProductImageWidget
                                 isPending={isPending}
                                 isVariant={true}
+                                title='Variant Images'
                                 onUpload={newUrls => {
                                   // Append new URLs to existing ones
                                   const current = getValues(`colorImages.${index}.images`) || [];

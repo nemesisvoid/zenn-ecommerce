@@ -31,7 +31,7 @@ export const CustomCell = ({ row }: { row: Row<AllProductsColumnType> }) => {
     <div className='flex items-center gap-3'>
       <Button
         asChild
-        className='text-[#FF6C2F] bg-[#FF6C2F]/30 hover:text-white hover:bg-[#FF6C2F] px-3 rounded-sm cursor-pointer'>
+        className='table-edit-button'>
         <Link href={`/admin/products/${row.original.slug}`}>
           <Edit2Icon size={10} />
         </Link>
@@ -39,7 +39,7 @@ export const CustomCell = ({ row }: { row: Row<AllProductsColumnType> }) => {
 
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button className='text-[#EF5F5F] bg-[#EF5F5F]/30 hover:text-white hover:bg-[#EF5F5F] px-3 rounded-sm cursor-pointer'>
+          <Button className='table-delete-button'>
             <Trash2Icon size={10} />
           </Button>
         </AlertDialogTrigger>

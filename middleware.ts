@@ -1,6 +1,6 @@
 import authConfig from './auth.config';
 import NextAuth from 'next-auth';
-import { apiAuthPrefix, authRoutes, DEFAULT_LOGIN_REDIRECT, publicRoutes } from './routes';
+import { apiAuthPrefix, authRoutes, DEFAULT_LOGIN_REDIRECT, publicRoutes, adminRoutes, privateRoutes } from './routes';
 import { NextResponse } from 'next/server';
 
 const { auth } = NextAuth(authConfig);
@@ -8,6 +8,7 @@ const { auth } = NextAuth(authConfig);
 export default auth(req => {
   const { nextUrl } = req;
   const res = NextResponse.next();
+  const userRole = req.auth?.user.role;
 
   if (!req.cookies.get('sessionCartId')) {
     const sessionCartId = crypto.randomUUID();
@@ -24,27 +25,44 @@ export default auth(req => {
   const isLoggedIn = !!req.auth;
   // console.log('middleware:', nextUrl.pathname);
   // console.log('req auth:', !!req.auth);
-  // console.log('is logged in:', isLoggedIn);
+  console.log('is logged in:', isLoggedIn);
+  console.log('role:', req.auth?.user);
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
+
   const isPublicRoute = publicRoutes.some(route => {
     if (route === '/') {
       return nextUrl.pathname === route;
     }
     return nextUrl.pathname.startsWith(route);
   });
+
   console.log('isPublicRoute:', isPublicRoute);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
   if (isApiAuthRoute) return;
 
   if (isAuthRoute) {
-    if (isLoggedIn) return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+    if (isLoggedIn) return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
     return;
   }
 
+  const isAdminRoute = adminRoutes.some(route => nextUrl.pathname.startsWith(route));
+
+  if (isAdminRoute) {
+    if (!isLoggedIn) return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+    if (userRole !== 'ADMIN') return NextResponse.redirect(new URL('/', nextUrl));
+    return res;
+  }
+  const isPrivateRoute = privateRoutes.some(route => nextUrl.pathname.startsWith(route));
+
+  console.log('private route:', isPrivateRoute);
+  if (isPrivateRoute && !isLoggedIn) {
+    return NextResponse.redirect(new URL('/auth/login', nextUrl));
+  }
+
   if (!isPublicRoute && !isLoggedIn) {
-    return Response.redirect(new URL('/auth/login', nextUrl));
+    return NextResponse.redirect(new URL('/auth/login', nextUrl));
   }
 
   return res;

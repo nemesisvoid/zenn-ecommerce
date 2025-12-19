@@ -12,7 +12,7 @@ export type AllProductsColumnType = {
   slug: string;
   images: string[];
   price: number;
-  category?: { name: string } | null;
+  categories?: { name: string }[] | null;
   variants?: { size?: string | null; color?: string | null }[];
   stock?: number;
   ratings?: number;
@@ -39,24 +39,30 @@ export const allProductsColumn: ColumnDef<AllProductsColumnType>[] = [
             />
           </div>
           <div className='flex flex-col gap-2'>
-            <p className='text-black'>{row.original.name}</p>
-            <p className='text-xs text-muted-foreground'>{sizes.length ? 'Sizes: ' + sizes.join(', ') : ''}</p>
+            <p className='text-black text-base dark:text-white'>{row.original.name}</p>
+            {row.original.variants && (
+              <>
+                <p className='text-xs text-muted-foreground'>{row.original.variants?.length} variants</p>
+                <p className='text-xs text-muted-foreground'>{sizes.length ? 'Sizes: ' + sizes.join(', ') : ''}</p>
 
-            <p className='text-xs text-muted-foreground'>{colors.length ? 'Colors: ' + colors.join(', ') : ''}</p>
+                <p className='text-xs text-muted-foreground'>{colors.length ? 'Colors: ' + colors.join(', ') : ''}</p>
+              </>
+            )}
           </div>
         </Link>
       );
     },
   },
+
   {
     header: 'Price',
     accessorKey: 'price',
-    cell: ({ row }) => <p>{formatCurrency(row.original.price)}</p>,
+    cell: ({ row }) => <p className='text-sm dark:text-white'>{formatCurrency(row.original.price)}</p>,
   },
   {
     header: 'Category',
     accessorKey: 'category',
-    cell: ({ row }) => <p>{row.original.category?.name ?? '-'}</p>,
+    cell: ({ row }) => <p>{row.original.categories?.map(c => c.name).join(', ') || '-'}</p>,
   },
   {
     header: 'Colors',
@@ -83,6 +89,7 @@ export const allProductsColumn: ColumnDef<AllProductsColumnType>[] = [
   },
   { header: 'Stock', accessorKey: 'stock', cell: ({ row }) => <p>{row.original.stock}</p> },
   { header: 'Ratings', accessorKey: 'ratings' },
+
   {
     header: 'Action',
     accessorKey: 'action',

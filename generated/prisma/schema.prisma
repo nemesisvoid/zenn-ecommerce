@@ -116,17 +116,19 @@ model Review {
 }
 
 model Order {
-  id                String        @id @default(uuid())
+  id                String         @id @default(uuid())
   userId            String
   productId         String?
   shippingAddress   String
-  status            OrderStatus   @default(PENDING)
-  isPaid            Boolean       @default(false)
-  paidAt            DateTime?     @db.Timestamp(6)
-  isDelivered       Boolean       @default(false)
-  deliveredAt       DateTime?     @db.Timestamp(6)
+  status            OrderStatus    @default(PENDING)
+  deliveryStatus    DeliveryStatus @default(PENDING)
+  paymentStatus     PaymentStatus  @default(PENDING)
+  isPaid            Boolean        @default(false)
+  paidAt            DateTime?      @db.Timestamp(6)
+  isDelivered       Boolean        @default(false)
+  deliveredAt       DateTime?      @db.Timestamp(6)
   totalPrice        Float
-  createdAt         DateTime      @default(now())
+  createdAt         DateTime       @default(now())
   email             String
   itemsPrice        Float
   shippingPrice     Float
@@ -134,13 +136,13 @@ model Order {
   paymentMethod     PaymentMethod
   cartId            String
   paystackPayload   Json?
-  paystackReference String?       @unique
+  paystackReference String?        @unique
   phoneNo           String?
   city              String
   country           String
   postalCode        String?
-  Product           Product?      @relation(fields: [productId], references: [id])
-  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Product           Product?       @relation(fields: [productId], references: [id])
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   orderItems        OrderItem[]
 
   @@index([userId])
@@ -242,13 +244,26 @@ enum UserRole {
 }
 
 enum OrderStatus {
+  PENDING // Order created, but payment/action not initialized
+  CONFIRMED // Payment successful (or COD confirmed), ready to process
+  COMPLETED // Delivered and finished
+  CANCELLED // User or Admin cancelled
+}
+
+enum PaymentStatus {
   PENDING
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELLED
-  ERROR
   PAID
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum DeliveryStatus {
+  PENDING // Not touched yet
+  PROCESSING // Being packed
+  SHIPPED // With courier
+  DELIVERED // At customer door
+  RETURNED // Customer sent it back
 }
 
 enum PaymentMethod {

@@ -41,6 +41,7 @@ export async function POST(req: Request) {
           data: {
             status: 'PAID',
             isPaid: true,
+            paidAt: new Date(),
           },
         });
       }

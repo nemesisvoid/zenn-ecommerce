@@ -5,6 +5,7 @@ import SalesLineChart from '@/components/admin/charts/sales-line-chart';
 import { dashboardProductColumn } from '@/components/admin/tables/products/dashboard-product-column';
 
 import DashboardProductTable from '@/components/admin/tables/products/dashboard-product-table';
+import DataTable from '@/components/admin/tables/products/data-table';
 import { dashboardSaleColumn } from '@/components/admin/tables/sales/dashboard-sale-column';
 import DashboardSaleTable from '@/components/admin/tables/sales/dashboard-sale-table';
 import { formatCurrency } from '@/helper/utils';
@@ -96,8 +97,8 @@ const AdminDashboardPage = async () => {
       <div
         className='bg-white 
         w-full rounded-xl py-4 border border-gray-300 shadow-sm'>
-        <h2>Recent sales</h2>
-        <DashboardSaleTable
+        <h2 className='text-lg text-gray-600 translate-x-4'>Recent sales</h2>
+        <DataTable
           columns={dashboardSaleColumn}
           data={recentSales}
         />

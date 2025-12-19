@@ -2,10 +2,7 @@ import { auth } from '@/auth';
 import AdminInfo from '@/components/admin/admin-info';
 
 import AdminSidebar from '@/components/admin/admin-sidebar';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { BellDotIcon, SearchIcon } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
 const AdminLayout = async ({ children }: Readonly<{ children: React.ReactNode }>) => {
   const session = await auth();

@@ -22,10 +22,10 @@ export const createCart = async (data: CartActionProps) => {
     const cartItems = CartItemsSchema.parse(data);
     const productId = cartItems.productId;
     const variantId = cartItems.variantId ?? null;
-
     const product = await prisma?.product.findUnique({
       where: { id: productId },
     });
+
     if (!product) throw new Error('Product not found');
 
     let variant = null;

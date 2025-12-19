@@ -2,7 +2,6 @@ import { getProductBySlug } from '@/actions/product.actions';
 import ProductForm from '../../../../../components/admin/products/product-form';
 import { getAllCategories } from '@/actions/category.actions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import ProductDetails from '@/components/product/product-details';
 import AdminProductDetails from '@/components/admin/products/admin-product-details';
 
 const AdminProductPage = async (props: { params: Promise<{ slug: string }> }) => {

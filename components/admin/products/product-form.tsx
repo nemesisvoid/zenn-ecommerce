@@ -16,12 +16,12 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Loader2Icon } from 'lucide-react';
-import UploadProductImagWidget from '@/components/cloudinary/upload-image-widget';
 
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Badge } from '@/components/ui/badge';
 import ProductVariantForm from '@/components/admin/products/product-variant-form';
+import UploadProductImageWidget from '@/components/cloudinary/upload-image-widget';
 
 interface ProductFormProps {
   categories: { id: string; name: string }[];
@@ -103,9 +103,7 @@ const ProductForm = ({ categories, initialData }: ProductFormProps) => {
             <div className='border-b border-gray-400' />
 
             <div className='space-y-5 p-6'>
-              <div
-                className='flex items-center gap-10
-          mb-10'>
+              <div className='flex items-center gap-10 mb-10'>
                 <FormField
                   control={form.control}
                   name='name'
@@ -336,13 +334,14 @@ const ProductForm = ({ categories, initialData }: ProductFormProps) => {
                   <FormItem className='w-1/3'>
                     <FormLabel>Product Images</FormLabel>
                     <FormControl>
-                      <UploadProductImagWidget
+                      <UploadProductImageWidget
                         onUpload={uploadedUrls => {
                           const newImages = [...watchedImages, ...uploadedUrls];
                           setValue('images', newImages, { shouldValidate: true });
                         }}
                         isVariant={false}
                         isPending={isPending}
+                        title='Product Images'
                       />
                     </FormControl>
                     <FormMessage />
