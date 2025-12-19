@@ -34,10 +34,6 @@ export default {
     }),
   ],
   callbacks: {
-    async jwt({ token }) {
-      return token;
-    },
-
     // 3. Session callback: Copy the role from the token to the session user
     async session({ session, token }) {
       if (token.sub && session.user) {
@@ -50,6 +46,10 @@ export default {
       }
 
       return session;
+    },
+
+    async jwt({ token }) {
+      return token;
     },
   },
 } satisfies NextAuthConfig;

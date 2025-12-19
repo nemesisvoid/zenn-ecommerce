@@ -18,11 +18,11 @@ export const {
   ...authConfig,
   adapter: PrismaAdapter(prisma),
   session: { strategy: 'jwt' },
-  providers: [
-    Credentials({
-      async authorize() {},
-    }),
-  ],
+  // providers: [
+  //   Credentials({
+  //     async authorize() {},
+  //   }),
+  // ],
   callbacks: {
     async session({ session, token }) {
       if (session.user && token.sub) {
