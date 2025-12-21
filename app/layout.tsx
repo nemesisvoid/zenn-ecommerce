@@ -19,13 +19,13 @@ export const metadata: Metadata = {
   description: 'Shop exclusively',
 };
 
-export const dmMono = DM_Mono({
+const dmMono = DM_Mono({
   variable: '--font-dm-mono',
   subsets: ['latin'],
   weight: ['300', '400', '500'],
 });
 
-export const workSans = Work_Sans({
+const workSans = Work_Sans({
   variable: '--font-work-sans',
   subsets: ['latin'],
 });

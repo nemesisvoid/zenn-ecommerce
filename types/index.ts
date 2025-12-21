@@ -20,4 +20,5 @@ export type CartItemType = Awaited<ReturnType<typeof prisma.cartItem.findFirst>>
   variants: VariantType | null;
 };
 
+export type UserType = Awaited<ReturnType<typeof prisma.user.findUnique>>;
 export type CartItemT = Awaited<ReturnType<typeof prisma.cartItem.findFirst>>;
