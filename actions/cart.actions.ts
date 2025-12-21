@@ -6,6 +6,8 @@ import { CartItemsSchema } from '@/schemas';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 
+import { prisma } from '@/lib/prisma';
+
 interface CartActionProps {
   productId: string;
   variantId: string | null;
@@ -22,7 +24,7 @@ export const createCart = async (data: CartActionProps) => {
     const cartItems = CartItemsSchema.parse(data);
     const productId = cartItems.productId;
     const variantId = cartItems.variantId ?? null;
-    const product = await prisma?.product.findUnique({
+    const product = await prisma.product.findUnique({
       where: { id: productId },
     });
 
@@ -30,7 +32,7 @@ export const createCart = async (data: CartActionProps) => {
 
     let variant = null;
     if (variantId) {
-      variant = await prisma?.productVariant.findUnique({
+      variant = await prisma.productVariant.findUnique({
         where: {
           id: variantId,
         },
@@ -60,7 +62,7 @@ export const createCart = async (data: CartActionProps) => {
         },
       };
 
-      await prisma?.cart.create({ data: newCart });
+      await prisma.cart.create({ data: newCart });
 
       return { success: 'cart created', message: 'item added to cart' };
     } else {
@@ -73,17 +75,17 @@ export const createCart = async (data: CartActionProps) => {
           return { success: false, message: 'Not enough stock available' };
         }
 
-        await prisma?.cartItem.update({
+        await prisma.cartItem.update({
           where: { id: existingCartItem.id },
           data: { quantity: existingCartItem.quantity + 1, price: itemPrice },
         });
 
-        await prisma?.product.update({
+        await prisma.product.update({
           where: { id: productId },
           data: { stock: availabeStock - 1 },
         });
       } else {
-        await prisma?.cartItem.create({
+        await prisma.cartItem.create({
           data: {
             cartId: cart.id,
             productId,
@@ -93,7 +95,7 @@ export const createCart = async (data: CartActionProps) => {
         });
       }
 
-      const updatedCart = await prisma?.cart.findFirst({ where: userId ? { userId } : { sessionCartId }, include: { cartItems: true } });
+      const updatedCart = await prisma.cart.findFirst({ where: userId ? { userId } : { sessionCartId }, include: { cartItems: true } });
 
       if (updatedCart) {
         const calcCartItemPrice = updatedCart.cartItems.map(ci => ({
@@ -103,7 +105,7 @@ export const createCart = async (data: CartActionProps) => {
 
         const totalPrice = calcPrice(calcCartItemPrice);
 
-        await prisma?.cart.update({
+        await prisma.cart.update({
           where: { id: updatedCart.id },
           data: { ...totalPrice },
         });
@@ -127,7 +129,7 @@ export const getCart = async () => {
     const session = await auth();
     const userId = session?.user.id ? session?.user.id : undefined;
 
-    const cart = await prisma?.cart.findFirst({
+    const cart = await prisma.cart.findFirst({
       where: userId ? { userId } : { sessionCartId },
       include: {
         cartItems: {
@@ -145,7 +147,7 @@ export const getCart = async () => {
 };
 
 export const getCartItems = async () => {
-  return await prisma?.cartItem.findMany({
+  return await prisma.cartItem.findMany({
     include: { products: true, variants: true },
     orderBy: { createdAt: 'asc' },
   });
@@ -163,7 +165,7 @@ export const removeCartItem = async (productId: string, variantId?: string | nul
     if (!cart) throw new Error('Cart not found');
 
     // check for product
-    const product = await prisma?.product.findFirst({
+    const product = await prisma.product.findFirst({
       where: { id: productId },
     });
     if (!product) throw new Error('Product not found');
@@ -177,24 +179,24 @@ export const removeCartItem = async (productId: string, variantId?: string | nul
     // update cart item by variant id or product id
 
     if (isItemInCart.quantity === 1) {
-      await prisma?.cartItem.delete({
+      await prisma.cartItem.delete({
         where: { id: isItemInCart.id },
       });
       return { success: true, message: 'Item removed from cart' };
     } else {
-      await prisma?.cartItem.update({
+      await prisma.cartItem.update({
         where: { id: isItemInCart.id },
         data: { quantity: isItemInCart.quantity - 1 },
       });
     }
 
-    const updatedCart = await prisma?.cart.findFirst({
+    const updatedCart = await prisma.cart.findFirst({
       where: { id: cart.id },
       include: { cartItems: true },
     });
 
     if (updatedCart) {
-      await prisma?.cart.update({
+      await prisma.cart.update({
         where: { id: updatedCart.id },
         data: { ...calcPrice(updatedCart.cartItems) },
       });

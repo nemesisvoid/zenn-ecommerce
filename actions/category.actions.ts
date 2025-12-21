@@ -3,6 +3,7 @@
 import * as z from 'zod';
 
 import { prisma } from '@/lib/prisma';
+
 import { CreateCategorySchema } from '@/schemas';
 import { slugify } from '@/helper/utils';
 export const getAllCategories = async () => {

@@ -3,6 +3,8 @@
 import { sendMail } from '@/helper/send-mail';
 import { revalidatePath } from 'next/cache';
 
+import { prisma } from '@/lib/prisma';
+
 const orderHtml = (id: string, totalPrice: number) => {
   return `
       <div style="font-size:16px;">
@@ -37,7 +39,7 @@ export const verifyPayment = async (reference: string) => {
       throw new Error(`Paystack API error: ${res.status} ${res.statusText}`);
     }
 
-    const order = await prisma?.order.findUnique({
+    const order = await prisma.order.findUnique({
       where: { paystackReference: reference },
     });
 
@@ -45,7 +47,7 @@ export const verifyPayment = async (reference: string) => {
 
     if (!order) return { success: false, reason: 'Order not found', message: 'Order not found', paymentStatus };
 
-    if (order.isPaid) {
+    if (order.paymentStatus === 'PAID') {
       const mail = await sendMail({
         email: process.env.EMAIL_FROM || '',
         sendTo: `${order.email}, ${'samsonajibade40@gmail.com'}`,
@@ -58,18 +60,18 @@ export const verifyPayment = async (reference: string) => {
     }
 
     if (paymentStatus === 'success') {
-      const updatedOrder = await prisma?.order.update({
+      const updatedOrder = await prisma.order.update({
         where: { paystackReference: reference },
-        data: { status: 'PAID', paidAt: new Date() },
+        data: { status: 'CONFIRMED', paymentStatus: 'PAID', isPaid: true, paidAt: new Date() },
       });
 
-      const items = await prisma?.orderItem.findMany({
+      const items = await prisma.orderItem.findMany({
         where: { orderId: order.id },
       });
 
       for (const item of items!) {
         try {
-          await prisma?.product.update({
+          await prisma.product.update({
             where: { id: item.productId },
             data: { stock: { decrement: item.quantity } },
           });

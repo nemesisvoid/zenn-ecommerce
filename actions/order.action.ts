@@ -1,5 +1,6 @@
 'use server';
 
+import { prisma } from '@/lib/prisma';
 import { CartType } from '@/types';
 
 interface CreateOrderProps {
@@ -25,7 +26,7 @@ export const createOrder = async (data: CreateOrderProps) => {
   const reference = `order_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
 
   try {
-    const order = await prisma?.order.create({
+    const order = await prisma.order.create({
       data: {
         userId,
         status: 'PENDING',
@@ -82,14 +83,14 @@ export const createOrder = async (data: CreateOrderProps) => {
     console.log('data', data);
 
     if (!res.ok) {
-      await prisma?.order.update({
+      await prisma.order.update({
         where: { id: order?.id },
         data: { status: 'PENDING', paymentStatus: 'FAILED' },
       });
       throw new Error(data.message) || 'Failed to initialize transaction';
     }
 
-    await prisma?.order.update({
+    await prisma.order.update({
       where: { id: order?.id },
       data: { status: 'CONFIRMED', paymentStatus: 'PAID', paystackPayload: { initialize: data.data } },
     });
@@ -104,7 +105,7 @@ export const getOrderById = async (orderId: string, userId: string) => {
   try {
     if (!userId) throw new Error('Unauthorized! User not found');
     if (!orderId) throw new Error('Order ID is required');
-    const order = await prisma?.order.findFirst({
+    const order = await prisma.order.findFirst({
       where: { id: orderId },
       include: {
         orderItems: {
@@ -120,12 +121,12 @@ export const getOrderById = async (orderId: string, userId: string) => {
 };
 
 export const getOrderSummary = async () => {
-  const totalOrders = await prisma?.order.count();
-  const totalSales = await prisma?.order.aggregate({ _sum: { totalPrice: true } });
-  const totalUsers = await prisma?.user.count();
-  const totalProducts = await prisma?.product.count();
+  const totalOrders = await prisma.order.count();
+  const totalSales = await prisma.order.aggregate({ _sum: { totalPrice: true } });
+  const totalUsers = await prisma.user.count();
+  const totalProducts = await prisma.product.count();
 
-  const topProducts = await prisma?.product.findMany({
+  const topProducts = await prisma.product.findMany({
     select: {
       id: true,
       name: true,
@@ -145,7 +146,7 @@ export const getOrderSummary = async () => {
     take: 5,
   });
 
-  const recentSales = await prisma?.order.findMany({
+  const recentSales = await prisma.order.findMany({
     select: {
       id: true,
       user: { select: { name: true } },
