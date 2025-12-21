@@ -84,14 +84,14 @@ export const createOrder = async (data: CreateOrderProps) => {
     if (!res.ok) {
       await prisma?.order.update({
         where: { id: order?.id },
-        data: { status: 'ERROR' },
+        data: { status: 'PENDING', paymentStatus: 'FAILED' },
       });
       throw new Error(data.message) || 'Failed to initialize transaction';
     }
 
     await prisma?.order.update({
       where: { id: order?.id },
-      data: { paystackPayload: { initialize: data.data } },
+      data: { status: 'CONFIRMED', paymentStatus: 'PAID', paystackPayload: { initialize: data.data } },
     });
 
     return { auth_url: data.data.authorization_url, reference, orderId: order?.id, message: 'order success' };

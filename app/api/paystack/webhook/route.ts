@@ -35,11 +35,12 @@ export async function POST(req: Request) {
         return new Response('Order not found', { status: 400 });
       }
 
-      if (order.status !== 'PAID') {
+      if (order.paymentStatus !== 'PAID') {
         await prisma?.order.update({
           where: { id: order.id },
           data: {
-            status: 'PAID',
+            status: 'CONFIRMED',
+            paymentStatus: 'PAID',
             isPaid: true,
             paidAt: new Date(),
           },
