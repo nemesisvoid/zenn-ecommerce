@@ -10,17 +10,17 @@ export default auth(req => {
   const res = NextResponse.next();
   const userRole = req.auth?.user.role;
 
-  if (!req.cookies.get('sessionCartId')) {
-    const sessionCartId = crypto.randomUUID();
-    res.cookies.set('sessionCartId', sessionCartId, {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 30, // 30 days
-    });
-    console.log('setting sessionCartId cookie:', sessionCartId);
-  }
+  // if (!req.cookies.get('sessionCartId')) {
+  //   const sessionCartId = crypto.randomUUID();
+  //   res.cookies.set('sessionCartId', sessionCartId, {
+  //     httpOnly: true,
+  //     sameSite: 'lax',
+  //     secure: process.env.NODE_ENV === 'production',
+  //     path: '/',
+  //     maxAge: 60 * 60 * 24 * 30, // 30 days
+  //   });
+  //   console.log('setting sessionCartId cookie:', sessionCartId);
+  // }
 
   const isLoggedIn = !!req.auth;
   // console.log('middleware:', nextUrl.pathname);
@@ -54,6 +54,7 @@ export default auth(req => {
     if (userRole !== 'ADMIN') return NextResponse.redirect(new URL('/', nextUrl));
     return res;
   }
+
   const isPrivateRoute = privateRoutes.some(route => nextUrl.pathname.startsWith(route));
 
   console.log('private route:', isPrivateRoute);
