@@ -1,7 +1,6 @@
 'use server';
 
 import { CartType } from '@/types';
-import { PaymentMethod } from '@prisma/client';
 
 interface CreateOrderProps {
   cart: CartType | undefined;
@@ -43,7 +42,7 @@ export const createOrder = async (data: CreateOrderProps) => {
         shippingPrice: cart.shippingPrice,
         paystackReference: reference,
         cartId: cart.id,
-        paymentMethod: paymentMethod as PaymentMethod,
+        paymentMethod: paymentMethod as 'PAYSTACK' | 'PAYONDELIVERY',
         orderItems: {
           create: cart.cartItems.map(item => ({
             productId: item.productId,
