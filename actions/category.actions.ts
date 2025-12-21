@@ -13,7 +13,7 @@ export const getAllCategories = async () => {
 };
 
 export const getProductsByCategory = async (category: string) => {
-  const data = await prisma.category.findUniqueOrThrow({
+  const data = await prisma.category.findUnique({
     where: { slug: category },
     include: { products: { select: { id: true, name: true, images: true } } },
   });
