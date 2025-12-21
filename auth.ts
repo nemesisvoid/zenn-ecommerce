@@ -8,6 +8,8 @@ import { prisma } from './lib/prisma';
 import { getUserById } from './data/user';
 import { cookies } from 'next/headers';
 import Credentials from 'next-auth/providers/credentials';
+import bcrypt from 'bcryptjs';
+import { LoginSchema } from './schemas';
 
 export const {
   handlers: { GET, POST },
@@ -18,11 +20,24 @@ export const {
   ...authConfig,
   adapter: PrismaAdapter(prisma),
   session: { strategy: 'jwt' },
-  // providers: [
-  //   Credentials({
-  //     async authorize() {},
-  //   }),
-  // ],
+  providers: [
+    Credentials({
+      authorize: async credentials => {
+        const validatedFields = LoginSchema.safeParse(credentials);
+        if (validatedFields.success) {
+          const { email, password } = validatedFields.data;
+
+          // Use Prisma directly here
+          const user = await prisma.user.findUnique({ where: { email } });
+          if (!user || !user.password) return null;
+
+          const passwordMatch = await bcrypt.compare(password, user.password);
+          if (passwordMatch) return user;
+        }
+        return null;
+      },
+    }),
+  ],
   callbacks: {
     async session({ session, token }) {
       if (session.user && token.sub) {

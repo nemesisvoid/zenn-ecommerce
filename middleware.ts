@@ -1,6 +1,6 @@
 import authConfig from './auth.config';
 import NextAuth from 'next-auth';
-import { apiAuthPrefix, authRoutes, DEFAULT_LOGIN_REDIRECT, publicRoutes } from './routes';
+import { apiAuthPrefix, authRoutes, DEFAULT_LOGIN_REDIRECT, adminRoutes, privateRoutes, publicRoutes } from './routes';
 import { NextResponse } from 'next/server';
 
 const { auth } = NextAuth(authConfig);
@@ -8,6 +8,7 @@ const { auth } = NextAuth(authConfig);
 export default auth(req => {
   const { nextUrl } = req;
   const res = NextResponse.next();
+  const userRole = req.auth?.user.role;
 
   if (!req.cookies.get('sessionCartId')) {
     const sessionCartId = crypto.randomUUID();
@@ -35,6 +36,20 @@ export default auth(req => {
   });
 
   console.log('isPublicRoute:', isPublicRoute);
+
+  const isAdminRoute = adminRoutes.some(route => nextUrl.pathname.startsWith(route));
+
+  if (isAdminRoute) {
+    if (!isLoggedIn) return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+    if (userRole !== 'ADMIN') return NextResponse.redirect(new URL('/', nextUrl));
+    return res;
+  }
+  const isPrivateRoute = privateRoutes.some(route => nextUrl.pathname.startsWith(route));
+
+  console.log('private route:', isPrivateRoute);
+  if (isPrivateRoute && !isLoggedIn) {
+    return NextResponse.redirect(new URL('/auth/login', nextUrl));
+  }
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
   if (isApiAuthRoute) return;
