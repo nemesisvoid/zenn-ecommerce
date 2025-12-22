@@ -21,6 +21,7 @@ export const {
   adapter: PrismaAdapter(prisma),
   session: { strategy: 'jwt' },
   providers: [
+    ...authConfig.providers,
     Credentials({
       authorize: async credentials => {
         const validatedFields = LoginSchema.safeParse(credentials);

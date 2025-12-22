@@ -41,6 +41,7 @@ const RegisterForm = () => {
       register(values).then(data => {
         setError(data.error);
         setSuccess(data.success);
+        console.log(data);
       });
       if (success) router.push('/auth/login');
     });
