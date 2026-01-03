@@ -17,8 +17,9 @@ const ProductDetails = ({ product, cart }: ProductVariantType) => {
   const hasVariants = product.variants.length > 0;
 
   const uniqueColors = useMemo(() => {
-    return Array.from(new Set(product.variants.map(v => v.color).filter(Boolean)));
-  }, [product.variants]);
+    return Array.from(new Set(product.colorImages.map(v => v.color).filter(Boolean)));
+  }, [product.colorImages]);
+  console.log('unique', uniqueColors);
 
   const uniqueSizes = useMemo(() => {
     return Array.from(new Set(product.variants.map(v => v.size).filter(Boolean)));
@@ -62,7 +63,7 @@ const ProductDetails = ({ product, cart }: ProductVariantType) => {
       : selectedVariant.price ?? product.price
     : product.price;
 
-  const imagesToShow = product?.variants?.find(v => v.color === selectedColor)?.images || product.images;
+  const imagesToShow = product?.colorImages?.find(v => v.color === selectedColor)?.images || product.images;
 
   return (
     <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>

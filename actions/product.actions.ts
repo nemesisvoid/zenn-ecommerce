@@ -77,7 +77,7 @@ export const createProduct = async (productData: z.infer<typeof CreateProductSch
         name: data.name,
         slug: slugify(data.name),
         categories: {
-          connect: [...data.categories.map((id: string) => ({ id }))],
+          connect: [...data.categories!.map((id: string) => ({ id })), { slug: 'all-products' }],
         },
         colorImages: {
           create: data.colorImages || [],
@@ -123,8 +123,11 @@ export const editProduct = async (id: string, productData: z.infer<typeof Create
         hasVariants: data.hasVariants,
         discountPercent: data.discountPercent,
         categories: {
-          set: data.categories.map(categoryId => ({ id: categoryId })),
+          connect: [...data.categories.map((categoryId: string) => ({ id: categoryId })), { slug: 'all-products' }],
         },
+        // categories: {
+        //   set: data.categories.map(categoryId => ({ id: categoryId })),
+        // },
         colorImages: {
           deleteMany: {},
           create: data.colorImages?.map(cl => ({

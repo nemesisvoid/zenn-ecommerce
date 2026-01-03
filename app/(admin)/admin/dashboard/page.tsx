@@ -40,7 +40,7 @@ const AdminDashboardPage = async () => {
         text='Overview of overall data'
       />
 
-      <div className='flex items-center justify-between gap-10 max-md:flex-wrap mb-10'>
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 sm:gap-6 md:gap-10  mb-10'>
         <AdminStatCard
           title='Total Revenue'
           text={formatCurrency(data.totalSales)}
@@ -74,19 +74,18 @@ const AdminDashboardPage = async () => {
         />
       </div>
 
-      <div className='flex flex-col lg:flex-row gap-10 w-full mb-10'>
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-10 w-full mb-10 '>
         <div
-          className='bg-white pr-10 
-        w-1/2 rounded-2xl py-4 shadow-sm'>
-          <h2 className='text-lg text-gray-600 translate-x-10 mb-5'>Revenue</h2>
-
+          className='bg-white px-1 pr-8 
+        rounded-2xl sm:py-4 shadow-sm admin-card h-64 sm:h-80 lg:h-[60vh]'>
+          <h2 className='text-lg text-gray-600 translate-x-10 mb-5 dark:text-white/90'>Revenue</h2>
           <SalesLineChart data={stats} />
         </div>
 
         <div
           className='bg-white px-8 
-        w-1/2 rounded-xl py-4 border border-gray-300 shadow-sm'>
-          <h2 className='text-lg text-gray-600 translate-x-4'>Top products</h2>
+         rounded-xl py-4 border border-gray-300 shadow-sm admin-card'>
+          <h2 className='text-lg text-gray-600 translate-x-4 dark:text-white/90'>Top products</h2>
           <DashboardProductTable
             columns={dashboardProductColumn}
             data={topProducts}
@@ -95,9 +94,9 @@ const AdminDashboardPage = async () => {
       </div>
 
       <div
-        className='bg-white 
+        className='admin-card
         w-full rounded-xl py-4 border border-gray-300 shadow-sm'>
-        <h2 className='text-lg text-gray-600 translate-x-4'>Recent sales</h2>
+        <h2 className='text-lg text-gray-600 translate-x-5 dark:text-white/90 mb-6'>Recent sales</h2>
         <DataTable
           columns={dashboardSaleColumn}
           data={recentSales}

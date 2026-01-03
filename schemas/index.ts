@@ -73,7 +73,7 @@ export const CreateProductSchema = z.object({
   name: z.string().min(3, { message: 'Product name must be at least 3 characters' }),
   price: z.coerce.number().nonnegative('Price must be a positive number'),
   description: z.string().min(3, { message: 'Description must be at least 3 characters' }),
-  categories: z.array(z.string()).min(1, { message: 'Category is required' }),
+  categories: z.array(z.string()).optional(),
   images: z.array(z.string()).min(1, { message: 'At least one image is required' }),
   stock: z.coerce.number().nonnegative('Stock must be a positive number'),
   discountPercent: z.coerce.number().nonnegative('Discount percent must be a positive number').optional(),

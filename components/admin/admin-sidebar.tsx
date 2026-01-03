@@ -1,6 +1,6 @@
 'use client';
 
-import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
 import { sidebarLinks } from '@/constants';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -8,13 +8,14 @@ import { usePathname } from 'next/navigation';
 
 const AdminSidebar = () => {
   const pathname = usePathname();
+  const { state } = useSidebar();
 
   return (
     <Sidebar
       collapsible='icon'
       variant='floating'
       className='backdrop-blur-sm'>
-      <SidebarContent className='mt-1 px-3 py-4'>
+      <SidebarContent className='mt-1 px-3 py-4 '>
         <SidebarHeader className='px-2 pb-2'>
           <div className='flex items-center justify-center gap-2'>
             <Image
@@ -39,20 +40,20 @@ const AdminSidebar = () => {
                     title={item.name}
                     aria-current={isActive ? 'page' : undefined}
                     className={[
-                      'group relative flex items-center gap-3 rounded-xl px-3 py-4 transition-all',
+                      'group relative flex items-center gap-3 rounded-full px-0 py-4 transition-all',
                       'outline-none ring-0 focus-visible:ring-2 focus-visible:ring-sidebar-ring/50',
-                      isActive ? 'text-black shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/60',
+                      isActive ? 'text-black shadow-sm' : 'text-muted-foreground hover:text-foreground',
                     ].join(' ')}>
                     <span
                       className={[
                         'flex size-8 items-center justify-center rounded-full transition-all',
-                        isActive
-                          ? ' text-black '
-                          : 'bg-sidebar-accent/50 text-muted-foreground group-hover:text-foreground group-hover:bg-sidebar-accent',
+                        isActive && state !== 'collapsed'
+                          ? 'dark:text-white shadow-sm group-hover:bg-sidebar-accent dark:bg-sidebar-accent/50'
+                          : 'text-muted-foreground group-hover:text-foreground',
                       ].join(' ')}>
                       <item.icon className='size-4' />
                     </span>
-                    <span className={isActive ? 'font-medium' : ''}>{item.name}</span>
+                    <span className={isActive ? 'font-medium dark:text-white' : ''}>{item.name}</span>
                     {/* 
                     {isActive && <span className='absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-r bg-white/70' />} */}
                   </Link>

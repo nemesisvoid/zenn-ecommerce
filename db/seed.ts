@@ -1,6 +1,4 @@
-import { categories, products, productVariants, users } from '@/sample/sample-data';
-
-import { prisma } from '../lib/prisma';
+import { prisma } from '@/lib/prisma';
 async function main() {
   try {
     // Clear existing data
@@ -10,19 +8,18 @@ async function main() {
     await prisma.user.deleteMany();
 
     // Seed categories
-    const createdCategories = await prisma.category.createMany({ data: categories });
+    const allProductsCategory = await prisma.category.upsert({
+      where: { slug: 'all-products' },
+      update: {},
+      create: {
+        name: 'All Products',
+        slug: 'all-products',
+        description: 'All Products Category',
+        coverImage: '/all-products-cover-img.png',
+      },
+    });
 
-    // Seed products
-    const createProduct = await prisma.product.createMany({ data: products });
-
-    // Seed product variants
-    await prisma.productVariant.createMany({ data: productVariants });
-
-    // Seed users
-    const createdUsers = await prisma.user.createMany({ data: users });
-
-    console.log(createdUsers, createdCategories);
-
+    console.log({ allProductsCategory });
     console.log('Database seeded successfully! 🌱');
   } catch (error) {
     console.error('Error seeding database:', error);

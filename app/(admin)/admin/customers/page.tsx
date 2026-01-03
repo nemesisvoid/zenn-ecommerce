@@ -3,6 +3,7 @@ import AdminStatCard from '../../../../components/admin/admin-stat-card';
 import AllCustomersTable from '@/components/admin/tables/users/all-customers-table';
 import { allCustomersColumn } from '@/components/admin/tables/users/all-customers-column';
 import { getAllCustomers } from '@/actions/user.action';
+import DataTable from '@/components/admin/tables/products/data-table';
 
 const CustomersPage = async () => {
   const getUsers = await getAllCustomers();
@@ -35,9 +36,9 @@ const CustomersPage = async () => {
         />
       </div>
 
-      <div className='table-wrapper'>
+      <div className='admin-card'>
         <h2 className='table-header'>All Customers List</h2>
-        <AllCustomersTable
+        <DataTable
           data={newData ?? []}
           columns={allCustomersColumn}
         />

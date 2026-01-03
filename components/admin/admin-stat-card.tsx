@@ -33,7 +33,7 @@ const VARIANT_STYLES: Record<NonNullable<AdminStatCardProps['variant']>, { cardB
 const AdminStatCard = ({ title, text, subtext, icon, variant = 'neutral' }: AdminStatCardProps) => {
   const palette = VARIANT_STYLES[variant];
   return (
-    <div className={`${palette.cardBg} bg-white rounded-xl shadow-sm px-4 py-3 border border-gray-300`}>
+    <div className={`${palette.cardBg} bg-white rounded-xl shadow-sm px-4 py-3 border border-gray-300 admin-card`}>
       <div className='flex items-center justify-between gap-5 mb-4'>
         <div>
           <h3 className='text-base'>{title}</h3>

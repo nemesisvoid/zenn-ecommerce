@@ -15,7 +15,7 @@ const AdminLayout = async ({ children }: Readonly<{ children: React.ReactNode }>
   return (
     <SidebarProvider>
       <AdminSidebar />
-      <main className='overflow-x-hidden dark:bg-[#22282E] bg-[#F9F7F7] w-full h-full px-5 py-5'>
+      <main className='overflow-x-hidden dark:bg-[#22282E] bg-[#efebeb] w-full h-full px-5 py-5'>
         <AdminInfo session={session} />
         <div className='min-h-screen'>{children}</div>
       </main>

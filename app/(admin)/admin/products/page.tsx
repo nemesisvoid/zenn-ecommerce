@@ -10,7 +10,7 @@ const AdminProductsPage = async () => {
   const products = await getAllProducts();
   console.log('products', products);
   return (
-    <div className='table-wrapper'>
+    <div className='admin-card'>
       <div className='flex justify-between'>
         <h2 className='table-header'>All Products List</h2>
 

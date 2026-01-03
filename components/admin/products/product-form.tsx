@@ -95,7 +95,7 @@ const ProductForm = ({ categories, initialData }: ProductFormProps) => {
           action=''
           onSubmit={handleSubmit(onSubmit, err => console.log('form error:', err))}>
           {/*  PRODUCT FORM */}
-          <div className='bg-white text-gray-600 rounded-md py-4 mb-10'>
+          <div className='bg-white text-gray-600 rounded-md py-4 mb-10 dark:bg-dark-100 dark:text-white'>
             <div>
               <h2 className='text-sm font-medium mx-5 mb-2'>Product Information</h2>
             </div>
@@ -103,12 +103,12 @@ const ProductForm = ({ categories, initialData }: ProductFormProps) => {
             <div className='border-b border-gray-400' />
 
             <div className='space-y-5 p-6'>
-              <div className='flex items-center gap-10 mb-10'>
+              <div className='flex flex-col lg:flex-row lg:items-center gap-10 mb-10'>
                 <FormField
                   control={form.control}
                   name='name'
                   render={({ field }) => (
-                    <FormItem className='w-1/2'>
+                    <FormItem className='w-full lg:w-1/2 '>
                       <FormLabel>Product Name</FormLabel>
                       <FormControl>
                         <Input
@@ -256,7 +256,7 @@ const ProductForm = ({ categories, initialData }: ProductFormProps) => {
               /> */}
               </div>
 
-              <div className='grid grid-cols-3 grid-rows-2 gap-6 mb-10'>
+              <div className='grid lg:grid-cols-3 grid-rows-2 gap-6 mb-10'>
                 <FormField
                   control={form.control}
                   name='price'
@@ -352,7 +352,7 @@ const ProductForm = ({ categories, initialData }: ProductFormProps) => {
           </div>
 
           {/*  PRODUCT VARIANTS FORM */}
-          <div className='bg-white text-gray-600 rounded-md py-4 mb-10'>
+          <div className='admin-card'>
             <h2 className='text-sm font-medium mx-5 mb-2'>Product Variant</h2>
             <div className='border-b border-gray-400' />
 

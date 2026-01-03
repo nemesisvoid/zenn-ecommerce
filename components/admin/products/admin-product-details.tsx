@@ -69,7 +69,7 @@ const AdminProductDetails = ({ product }: AdminProductDetailsProps) => {
               {totalStock > 0 ? 'In Stock' : 'Out of Stock'}
             </span>
           </div>
-          <h1 className='text-3xl font-bold text-gray-900 tracking-tight'>{product.name}</h1>
+          <h1 className='text-3xl font-bold text-gray-900 tracking-tight dark:text-white'>{product.name}</h1>
           <p className='text-gray-500 text-sm mt-1 flex items-center gap-2'>ID: {product.id}</p>
         </div>
 
@@ -87,11 +87,11 @@ const AdminProductDetails = ({ product }: AdminProductDetailsProps) => {
         {/* --- LEFT COLUMN (2/3) --- */}
         <div className='lg:col-span-2 space-y-8'>
           {/* 1. Main Stats & Categories */}
-          <div className='bg-white border border-gray-100 rounded-2xl p-6 shadow-sm'>
+          <div className='bg-white border border-gray-100 rounded-2xl p-6 shadow-sm admin-card'>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
               {/* Description */}
               <div className='space-y-4'>
-                <h3 className='text-sm font-semibold text-gray-900 flex items-center gap-2'>About this product</h3>
+                <h3 className='text-sm font-semibold text-gray-900 flex items-center gap-2 dark:text-white'>About this product</h3>
                 <p className='text-sm text-gray-600 leading-relaxed'>{product.description}</p>
                 <div className='pt-4'>
                   <p className='text-xs font-medium text-gray-500 uppercase tracking-wide mb-3'>Categories</p>
