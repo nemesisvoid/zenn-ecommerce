@@ -1,5 +1,5 @@
 import { getUserById } from '@/actions/user.action';
-import AdminUserDetails from '@/components/admin/tables/users/admin-user-details';
+import AdminUserDetails from '@/components/admin/users/admin-user-details';
 import AdminUserForm from '@/components/admin/users/admin-user-form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 

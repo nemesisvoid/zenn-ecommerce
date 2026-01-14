@@ -105,12 +105,12 @@ const CategoryForm = ({ initialData, products }: CategoryFormProps) => {
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit(onSubmit, err => console.log('form error', err))}>
-        <div className='bg-white text-gray-600 rounded-md py-4 mb-10'>
+        <div className='admin-card rounded-md py-4 px-0 mb-10'>
           <div>
             <h2 className='text-sm font-medium mx-5 mb-2'>Category Information</h2>
           </div>
 
-          <div className='border-b border-gray-400' />
+          <div className='border-b border-gray-300 dark:border-gray-600' />
           <div className='p-6'>
             <div className='grid grid-cols-2 gap-10 mb-10'>
               <FormField
@@ -177,28 +177,28 @@ const CategoryForm = ({ initialData, products }: CategoryFormProps) => {
           </div>
         </div>
 
-        <div className='bg-white text-gray-600 rounded-md py-4 mb-10'>
+        <div className='admin-card rounded-md py-4 px-0 mb-10'>
           <div>
             <h2 className='text-sm font-medium mx-5 mb-2'>Products in Category ({watchedProducts.length})</h2>
           </div>
 
-          <div className='border-b border-gray-400' />
+          <div className='border-b border-gray-300 dark:border-gray-600' />
 
           <div className='p-4'>
             {watchedProducts ? (
-              <div className='grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-4'>
+              <div className='grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4'>
                 {watchedProducts.map(product => {
                   const imageSrc = product.image || product.images?.[0];
                   return (
                     <div
                       key={product.id}
-                      className='pb-4 shadow-md rounded-md'>
+                      className='pb-4 shadow-md rounded-xs mb-4'>
                       <div className='relative aspect-square'>
                         <Image
                           src={imageSrc}
                           alt=''
                           fill
-                          className='object-cover rounded-md hover:opacity-80 transition-opacity  duration-300'
+                          className='object-cover rounded-xs hover:opacity-80 transition-opacity  duration-300'
                         />
                         {/* <div className='absolute top-1 right-1'>
                         <Button

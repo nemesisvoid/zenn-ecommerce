@@ -2,12 +2,11 @@ import { getMonthlySales, getOrderSummary } from '@/actions/order.action';
 import AdminHeader from '@/components/admin/admin-header';
 import AdminStatCard from '@/components/admin/admin-stat-card';
 import SalesLineChart from '@/components/admin/charts/sales-line-chart';
-import { dashboardProductColumn } from '@/components/admin/tables/products/dashboard-product-column';
+import { dashboardProductColumn } from '@/components/admin/table/products/dashboard-product-column';
 
-import DashboardProductTable from '@/components/admin/tables/products/dashboard-product-table';
-import DataTable from '@/components/admin/tables/products/data-table';
-import { dashboardSaleColumn } from '@/components/admin/tables/sales/dashboard-sale-column';
-import DashboardSaleTable from '@/components/admin/tables/sales/dashboard-sale-table';
+import DataTable from '@/components/admin/table/data-table';
+import { dashboardSaleColumn } from '@/components/admin/table/sales/dashboard-sale-column';
+
 import { formatCurrency } from '@/helper/utils';
 import { BoxIcon, DollarSignIcon, ShoppingBasketIcon, UsersRoundIcon } from 'lucide-react';
 import React from 'react';
@@ -86,9 +85,9 @@ const AdminDashboardPage = async () => {
           className='bg-white px-8 
          rounded-xl py-4 border border-gray-300 shadow-sm admin-card'>
           <h2 className='text-lg text-gray-600 translate-x-4 dark:text-white/90'>Top products</h2>
-          <DashboardProductTable
-            columns={dashboardProductColumn}
+          <DataTable
             data={topProducts}
+            columns={dashboardProductColumn}
           />
         </div>
       </div>
@@ -99,7 +98,7 @@ const AdminDashboardPage = async () => {
         <h2 className='text-lg text-gray-600 translate-x-5 dark:text-white/90 mb-6'>Recent sales</h2>
         <DataTable
           columns={dashboardSaleColumn}
-          data={recentSales}
+          data={recentSales ?? []}
         />
       </div>
     </div>

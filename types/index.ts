@@ -5,6 +5,7 @@ export type CategoryListType = Awaited<ReturnType<typeof prisma.category.findMan
 export type ProductType = Awaited<ReturnType<typeof prisma.product.findFirst>> & {
   variants: Awaited<ReturnType<typeof prisma.productVariant.findMany>>;
   colorImages: Awaited<ReturnType<typeof prisma.productColorImage.findMany>>;
+  categories: Awaited<ReturnType<typeof prisma.category.findMany>>;
 };
 
 export type ProductListType = Awaited<ReturnType<typeof prisma.product.findMany>>;

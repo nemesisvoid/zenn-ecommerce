@@ -1,9 +1,9 @@
 import { UsersRoundIcon } from 'lucide-react';
 import AdminStatCard from '../../../../components/admin/admin-stat-card';
 import AllCustomersTable from '@/components/admin/tables/users/all-customers-table';
-import { allCustomersColumn } from '@/components/admin/tables/users/all-customers-column';
+import { allCustomersColumn } from '@/components/admin/table/users/all-customers-column';
 import { getAllCustomers } from '@/actions/user.action';
-import DataTable from '@/components/admin/tables/products/data-table';
+import DataTable from '@/components/admin/table/data-table';
 
 const CustomersPage = async () => {
   const getUsers = await getAllCustomers();

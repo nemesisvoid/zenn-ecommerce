@@ -1,8 +1,8 @@
 import Image from 'next/image';
 
-import { userTransactionColumn } from '@/components/admin/tables/users/user-transaction-column';
+import { userTransactionColumn } from '@/components/admin/table/users/user-transaction-column';
 import UserStatCard from '@/components/admin/users/user-stat-card';
-import DataTable from '../products/data-table';
+import DataTable from '../table/data-table';
 import { formatCurrency } from '@/helper/utils';
 import { BoxIcon, DollarSignIcon } from 'lucide-react';
 import { UserType } from '@/types';

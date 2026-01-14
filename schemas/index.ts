@@ -88,3 +88,45 @@ export const CreateCategorySchema = z.object({
   coverImage: z.string().url().min(1, { message: 'Category cover image must have a cover image' }),
   products: z.array(z.object({ id: z.string(), name: z.string(), image: z.string().optional() })).optional(),
 });
+
+export const GeneralSettingsSchema = z.object({
+  storeName: z.string().min(3, { message: 'Store name must be at least 3 characters' }),
+  storeEmail: z.string().email({ message: 'Enter a valid email' }),
+  storePhone: z.string().min(7, { message: 'Store phone must be at least 7 characters' }),
+  storeAddress: z.string().min(10, { message: 'Store address must be at least 10 characters' }).optional().or(z.literal('')),
+  // storeCity: z.string().min(3, { message: 'Store city must be at least 3 characters' }).optional(),
+  // storeCountry: z.string().min(3, { message: 'Store country must be at least 3 characters' }).optional(),
+  // storePostalCode: z.string().min(3, { message: 'Store postal code must be at least 3 characters' }).optional(),
+  // storeDescription: z.string().min(3, { message: 'Store description must be at least 3 characters' }).optional(),
+  // storeCoverImage: z.string().url().min(1, { message: 'Store cover image must have a cover image' }).optional(),
+});
+
+export const ShippingSettingsSchema = z.object({
+  shippingFee: z.coerce.number().nonnegative('Default shipping cost must be a positive number'),
+  freeShippingThreshold: z.coerce.number().nonnegative('Free shipping threshold must be a positive number'),
+  taxRate: z.coerce.number().nonnegative('Tax rate must be a positive number').optional(),
+  // paymentMethod: z.array(
+  //   z.object({
+  //     paystack: z.boolean().default(false),
+  //     payOnDelivery: z.boolean().default(false),
+  //   })
+  // ),
+
+  // shippingMethods: z.array(
+  //   z.object({
+  //     name: z.string().min(3, { message: 'Shipping method name must be at least 3 characters' }),
+  //     price: z.coerce.number().nonnegative('Shipping method price must be a positive number'),
+  //   }),
+  // ),
+});
+
+export const SystemSettingsSchema = z.object({
+  currency: z.string().min(1, { message: 'Currency is required' }),
+  timezone: z.string().min(1, { message: 'Timezone is required' }),
+  dateFormat: z.string().min(1, { message: 'Date format is required' }),
+  timeFormat: z.string().min(1, { message: 'Time format is required' }),
+  maintenanceMode: z.boolean().default(false),
+  enableReviews: z.boolean().default(true),
+});
+
+export const SettingsSchema = GeneralSettingsSchema.partial().merge(ShippingSettingsSchema.partial()).merge(SystemSettingsSchema.partial());

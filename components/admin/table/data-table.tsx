@@ -7,12 +7,12 @@ import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 
-interface AllProductsTable<TData, TValue> {
+interface DataTable<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   pageSize: number;
 }
-const DataTable = <TData, TValue>({ columns, data, pageSize = 10 }: AllProductsTable<TData, TValue>) => {
+const DataTable = <TData, TValue>({ columns, data, pageSize = 10 }: DataTable<TData, TValue>) => {
   const [columnVisibility, setColumnVisibility] = useState({});
 
   const [pagination, setPagination] = useState({

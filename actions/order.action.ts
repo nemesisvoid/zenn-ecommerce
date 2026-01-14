@@ -210,3 +210,17 @@ function fillLast12Months(points: { month: string; revenue: number }[]) {
   }
   return out;
 }
+
+export const getAllOrders = async () => {
+  try {
+    const orders = await prisma.order.findMany({
+      include: {
+        orderItems: true,
+        user: { select: { id: true, name: true, email: true } },
+      },
+    });
+    return orders;
+  } catch (error) {
+    console.error('an error occurred while fetching orders:', error);
+  }
+};

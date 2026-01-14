@@ -239,6 +239,21 @@ model Session {
   @@index([userId])
 }
 
+model Settings {
+  id String @unique @default(uuid())
+
+  storeName             String  @default("Zenn")
+  storeEmail            String?
+  supportEmail          String?
+  storePhone            String?
+  storeAddress          String?
+  shippingFee           Decimal @default(0)
+  taxRate               Decimal @default(0)
+  freeShippingThreshold Decimal @default(0)
+
+  maintenanceMode Boolean @default(false)
+}
+
 enum UserRole {
   ADMIN
   USER

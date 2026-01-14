@@ -121,6 +121,7 @@ const ProductForm = ({ categories, initialData }: ProductFormProps) => {
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
                   name='categories'

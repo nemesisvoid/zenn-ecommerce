@@ -26,6 +26,7 @@ export const getProductBySlug = async (slug: string) => {
     include: {
       variants: true,
       colorImages: true,
+      categories: true,
     },
   });
 

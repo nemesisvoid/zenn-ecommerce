@@ -26,7 +26,7 @@ const CategoriesPage = async () => {
             href={`/admin/categories/${cat.slug}`}
             key={cat.id}>
             <div className='admin-card px-4 rounded-md shadow-sm'>
-              <div className='relative aspect-square w-full h-22'>
+              <div className='relative aspect-square w-full '>
                 <Image
                   src={cat.coverImage}
                   alt='category image'

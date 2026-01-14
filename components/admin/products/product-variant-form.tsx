@@ -233,7 +233,7 @@ const ProductVariantForm = ({ form, isPending }: ProductVariantFormProps) => {
       {fields.length > 0 && (
         <div className='border rounded-md overflow-hidden'>
           <table className='w-full text-sm text-left'>
-            <thead className='bg-gray-100 border-b'>
+            <thead className='bg-gray-100 border-b dark:bg-dark-100'>
               <tr>
                 <th className='p-3'>Color</th>
                 <th className='p-3'>Size</th>

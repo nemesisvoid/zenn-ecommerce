@@ -1,7 +1,7 @@
 import { getAllProducts } from '@/actions/product.actions';
 
-import { allProductsColumn } from '@/components/admin/tables/products/all-products-column';
-import DataTable from '@/components/admin/tables/products/data-table';
+import { allProductsColumn } from '@/components/admin/table/products/all-products-column';
+import DataTable from '@/components/admin/table/data-table';
 
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';

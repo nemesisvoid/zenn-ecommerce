@@ -2,20 +2,15 @@
 
 import { formatCurrency } from '@/helper/utils';
 import { ProductType, CategoryType, VariantType, ColorImageType } from '@/types'; // Adjust imports to match your project
-import { Copy, Edit3, ExternalLink, Box, Tag, Layers, CheckCircle, AlertCircle, Hash, Image as ImageIcon } from 'lucide-react';
+import { Copy, ExternalLink, Box, Tag, Layers, CheckCircle, Image as ImageIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useState, useMemo } from 'react';
 
 // Extended interface to match your Prisma "include" queries
-interface ExtendedProduct extends ProductType {
-  categories: { id: string; name: string; coverImage: string }[];
-  variants: any[]; // Replace with your strict Variant type
-  colorImages: { color: string; images: string[] }[];
-}
 
 interface AdminProductDetailsProps {
-  product: ExtendedProduct;
+  product: ProductType;
 }
 
 const AdminProductDetails = ({ product }: AdminProductDetailsProps) => {
@@ -45,6 +40,8 @@ const AdminProductDetails = ({ product }: AdminProductDetailsProps) => {
   };
 
   console.log('selected', selectedColorView, currentGalleryImages);
+
+  console.log('cat', product);
 
   return (
     <div className='w-full max-w-7xl mx-auto p-6 space-y-8'>
@@ -153,9 +150,9 @@ const AdminProductDetails = ({ product }: AdminProductDetailsProps) => {
 
           {/* 2. Variants Table (The Upgrade) */}
           {product.hasVariants && (
-            <div className='bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden'>
+            <div className='bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden admin-card'>
               <div className='px-6 py-4 border-b border-gray-100 flex justify-between items-center'>
-                <h3 className='text-sm font-semibold text-gray-900 flex items-center gap-2'>
+                <h3 className='text-sm font-semibold text-gray-900 flex items-center gap-2 dark:text-white'>
                   <Layers
                     size={16}
                     className='text-blue-600'
@@ -167,7 +164,7 @@ const AdminProductDetails = ({ product }: AdminProductDetailsProps) => {
 
               <div className='overflow-x-auto'>
                 <table className='w-full text-sm text-left'>
-                  <thead className='text-xs text-gray-500 uppercase bg-gray-50/50'>
+                  <thead className='text-xs text-gray-500 uppercase bg-gray-50/50 dark:bg-dark-100 dark:text-white'>
                     <tr>
                       <th className='px-6 py-3 font-medium'>Details (Color / Size)</th>
                       <th className='px-6 py-3 font-medium'>Price Override</th>
@@ -236,7 +233,7 @@ const AdminProductDetails = ({ product }: AdminProductDetailsProps) => {
 
         {/* --- RIGHT COLUMN (Media) --- */}
         <div className='space-y-6'>
-          <div className='bg-white border border-gray-100 rounded-2xl p-4 shadow-sm sticky top-6'>
+          <div className='admin-card border border-gray-100 rounded-2xl p-4 shadow-sm sticky top-6'>
             <div className='flex items-center justify-between mb-4 px-1'>
               <h3 className='text-sm font-semibold text-gray-900 flex items-center gap-2'>
                 <ImageIcon size={16} />
