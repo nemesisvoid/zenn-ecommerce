@@ -64,3 +64,27 @@ export const uniqueArray = (arr: any[], attr: string) => {
   const unique = Array.from(new Set(arr.map(item => item[attr])));
   return unique;
 };
+
+export const handleImageUpload = async (images: (File | string)[], uploadPresetName: string, uploadPresetFolderName: string) => {
+  const imagesToUpload = images.filter((img: File | string) => img instanceof File);
+
+  const imageUrls = images.filter((img): img is string => typeof img === 'string');
+
+  const uploadPromiseImage = imagesToUpload.map(async file => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', uploadPresetName);
+    formData.append('folder', uploadPresetFolderName);
+
+    const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+      method: 'POST',
+      body: formData,
+    });
+    const result = await response.json();
+    if (!result) throw new Error('Error uploading images to cloudinary');
+    return result.secure_url as string;
+  });
+
+  const uploadedImages = await Promise.all(uploadPromiseImage);
+  return [...imageUrls, ...uploadedImages];
+};

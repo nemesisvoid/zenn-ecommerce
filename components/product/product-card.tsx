@@ -15,18 +15,19 @@ type ProductCardProps = {
 const ProductCard = ({ product }: { product: ProductCardProps }) => {
   // const [isImageLoaded, setIsImageLoaded] = useState(true);
   // const handleImageLoad = () => setIsImageLoaded(false);
+  console.log('prod', product.images);
   return (
     <Link href={`product/${product?.slug}`}>
       <div className='relative w-full h-72 aspect-square mb-4'>
         <Image
-          src={product?.coverImage ? product?.coverImage : null}
+          src={product?.images ? product.images[0] : product.images[1]}
           fill
           alt={`${product?.name} image`}
           className='object-cover absolute w-full z-10  rounded-md hover:opacity-0 transition-opacity  duration-300'
           sizes='50vw'
         />
         <Image
-          src={product?.images ? product?.images[0] : ''}
+          src={product?.images ? product?.images[1] : product?.images[0]}
           fill
           sizes='50vw'
           alt={`${product?.name} image`}
@@ -34,7 +35,7 @@ const ProductCard = ({ product }: { product: ProductCardProps }) => {
         />
       </div>
       <div>
-        <p className='text-xl mb-1'>{product?.name}</p>
+        <p className='text-xl mb-1 truncate'>{product?.name}</p>
         <p className='text-lg font-medium'>{formatCurrency(product?.price)}</p>
       </div>
     </Link>

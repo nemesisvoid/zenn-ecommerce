@@ -1,6 +1,9 @@
 import { PaymentMethods } from '@/constants';
-import { products } from '@/sample/sample-data';
 import * as z from 'zod';
+
+// Allow image entries to be either a URL string or a browser `File` object.
+// On the server (Node) `File` may be undefined, so fall back to `z.any()`.
+const FileTypeSchema = typeof File !== 'undefined' ? z.instanceof(File) : z.any();
 
 export const LoginSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email' }),
@@ -66,7 +69,7 @@ export const CreateProductVariantSchema = z.object({
 
 export const CreateProductColorImageSchema = z.object({
   color: z.string().min(1, 'Color name is required'),
-  images: z.array(z.string().url()).min(1, 'At least one image is required for the color'),
+  images: z.array(z.union([z.string().url(), FileTypeSchema])).min(1, 'At least one image is required for the color'),
 });
 
 export const CreateProductSchema = z.object({
@@ -74,7 +77,7 @@ export const CreateProductSchema = z.object({
   price: z.coerce.number().nonnegative('Price must be a positive number'),
   description: z.string().min(3, { message: 'Description must be at least 3 characters' }),
   categories: z.array(z.string()).optional(),
-  images: z.array(z.string()).min(1, { message: 'At least one image is required' }),
+  images: z.array(z.union([z.string().url(), FileTypeSchema])).min(1, { message: 'At least one image is required' }),
   stock: z.coerce.number().nonnegative('Stock must be a positive number'),
   discountPercent: z.coerce.number().nonnegative('Discount percent must be a positive number').optional(),
   colorImages: z.array(CreateProductColorImageSchema).optional(),

@@ -22,6 +22,8 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Badge } from '@/components/ui/badge';
 import ProductVariantForm from '@/components/admin/products/product-variant-form';
 import UploadProductImageWidget from '@/components/cloudinary/upload-image-widget';
+import ImageUploader from '@/components/misc/image-uploader';
+import { handleImageUpload } from '@/helper/utils';
 
 interface ProductFormProps {
   categories: { id: string; name: string }[];
@@ -33,11 +35,6 @@ const ProductForm = ({ categories, initialData }: ProductFormProps) => {
   const router = useRouter();
 
   const isEditing = !!initialData;
-  const title = isEditing ? 'Edit Product' : 'Create Product';
-  const description = isEditing ? 'Update product details and variants.' : 'Add a new product to your store.';
-
-  // Get the first available image for the "Hero" preview
-  const previewImage = initialData?.colorImages?.[0]?.images?.[0] || null;
 
   const form = useForm<z.infer<typeof CreateProductSchema>>({
     resolver: zodResolver(CreateProductSchema) as unknown as Resolver<z.infer<typeof CreateProductSchema>>,
@@ -63,14 +60,27 @@ const ProductForm = ({ categories, initialData }: ProductFormProps) => {
           variants: [],
         },
   });
-  const { handleSubmit, setValue } = form;
+  const { handleSubmit, watch } = form;
+
+  const watchedImages = watch('images');
+  console.log('watched images', watchedImages);
 
   const onSubmit = async (data: z.infer<typeof CreateProductSchema>) => {
     startTransition(async () => {
       try {
+        const finalImageUrls = await handleImageUpload(data.images, 'product-images', 'ecommerce-product-images');
+
+        const finalData = { ...data, images: finalImageUrls };
+
         if (initialData) {
-          const res = await editProduct(initialData.id, data);
-          if (res.success) toast.success('Product updated successfully');
+          console.log('data passed', data);
+          const res = await editProduct(initialData.id, finalData);
+
+          if (res.success) {
+            toast.success(res.message);
+          } else {
+            toast.error(res.message);
+          }
         } else {
           const res = await createProduct(data);
           if (res.success) toast.success('Product created successfully');
@@ -84,8 +94,6 @@ const ProductForm = ({ categories, initialData }: ProductFormProps) => {
       }
     });
   };
-
-  const watchedImages = form.watch('images');
 
   return (
     <>
@@ -328,7 +336,7 @@ const ProductForm = ({ categories, initialData }: ProductFormProps) => {
                 />
               </div>
 
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name='images'
                 render={({ field }) => (
@@ -336,13 +344,30 @@ const ProductForm = ({ categories, initialData }: ProductFormProps) => {
                     <FormLabel>Product Images</FormLabel>
                     <FormControl>
                       <UploadProductImageWidget
-                        onUpload={uploadedUrls => {
-                          const newImages = [...watchedImages, ...uploadedUrls];
+                        onUpload={() => {
+                          const newImages = [...watchedImages];
                           setValue('images', newImages, { shouldValidate: true });
                         }}
                         isVariant={false}
                         isPending={isPending}
                         title='Product Images'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              /> */}
+              <FormField
+                control={form.control}
+                name='images'
+                render={({ field }) => (
+                  <FormItem className='w-1/2'>
+                    <FormLabel>Product Images</FormLabel>
+                    <FormControl>
+                      <ImageUploader
+                        value={field.value}
+                        onChange={field.onChange}
+                        disabled={isPending}
                       />
                     </FormControl>
                     <FormMessage />

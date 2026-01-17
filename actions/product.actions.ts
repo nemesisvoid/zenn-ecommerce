@@ -107,12 +107,27 @@ export const createProduct = async (productData: z.infer<typeof CreateProductSch
 export const editProduct = async (id: string, productData: z.infer<typeof CreateProductSchema>) => {
   const validatedProduct = CreateProductSchema.safeParse(productData);
 
+  console.log('server data', productData);
+  console.log('img', productData.categories);
+  if (!id) throw new Error('Product ID is required');
+
   if (!validatedProduct.success) throw new Error(validatedProduct.error.message);
 
   const { data } = validatedProduct;
-  const variants = data.variants?.length ? { deleteMany: {}, create: data.variants } : undefined;
 
   try {
+    const defaultCategory = await prisma.category.upsert({
+      where: { slug: 'all-products' },
+      update: {},
+      create: {
+        name: 'All Products',
+        slug: 'all-products',
+        coverImage: '/all-products-cover-img.png',
+      },
+    });
+
+    const variants = data.variants?.length ? { deleteMany: {}, create: data.variants } : undefined;
+
     const res = await prisma.product.update({
       where: { id },
       data: {
@@ -124,18 +139,19 @@ export const editProduct = async (id: string, productData: z.infer<typeof Create
         hasVariants: data.hasVariants,
         discountPercent: data.discountPercent,
         categories: {
-          connect: [...data.categories.map((categoryId: string) => ({ id: categoryId })), { slug: 'all-products' }],
+          set: [...data.categories.map(id => ({ id })), { id: defaultCategory.id }],
         },
-        // categories: {
-        //   set: data.categories.map(categoryId => ({ id: categoryId })),
-        // },
-        colorImages: {
-          deleteMany: {},
-          create: data.colorImages?.map(cl => ({
-            color: cl.color,
-            images: cl.images,
-          })),
-        },
+
+        colorImages:
+          data.colorImages && data.colorImages.length > 0
+            ? {
+                deleteMany: {},
+                create: data.colorImages?.map(cl => ({
+                  color: cl.color,
+                  images: cl.images,
+                })),
+              }
+            : undefined,
         variants: variants,
       },
     });

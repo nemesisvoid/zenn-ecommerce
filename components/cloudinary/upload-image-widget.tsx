@@ -42,6 +42,7 @@ const UploadProductImageWidget = ({ onUpload, isVariant, isPending, title }: Upl
         return (
           <Button
             className='button text-sm rounded-sm py-5 cursor-pointer w-1/2'
+            type='button'
             onClick={() => open()}
             disabled={isPending}>
             Upload {title}
