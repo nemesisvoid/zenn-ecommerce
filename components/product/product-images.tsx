@@ -11,8 +11,8 @@ const ProductImages = ({ images }: { images: string[] }) => {
   };
 
   return (
-    <div className='flex gap-6'>
-      <div className='flex flex-col gap-6'>
+    <div className='flex flex-col md:flex-row gap-6'>
+      <div className='flex md:flex-col flex-wrap gap-6'>
         {images.map((image, i) => (
           <div
             onClick={() => handleCurrentImage(i)}
@@ -28,7 +28,7 @@ const ProductImages = ({ images }: { images: string[] }) => {
         ))}
       </div>
 
-      <div className='relative aspect-square w-full self-start'>
+      <div className='relative aspect-square w-full self-star'>
         <Image
           fill
           src={images[currentImageIndex]}
