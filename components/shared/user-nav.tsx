@@ -11,10 +11,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-import { ShoppingBagIcon, UserIcon } from 'lucide-react';
+import { MoonIcon, ShoppingBagIcon, SunIcon, UserIcon } from 'lucide-react';
 import { logout } from '@/actions/login.action';
 import { Button } from '../ui/button';
 import { CartType } from '@/types';
+import { useTheme } from 'next-themes';
 
 type UserNavProps = {
   isLoggedIn: boolean;
@@ -24,6 +25,7 @@ type UserNavProps = {
 };
 const UserNav = ({ isLoggedIn, userRole, cartItemsCount }: UserNavProps) => {
   console.log(isLoggedIn);
+  const { theme, setTheme } = useTheme();
   return (
     <div>
       <ul className='flex items-center gap-8 list-none'>
@@ -64,6 +66,13 @@ const UserNav = ({ isLoggedIn, userRole, cartItemsCount }: UserNavProps) => {
                 <DropdownMenuLabel>Settings</DropdownMenuLabel>
                 <DropdownMenuItem>
                   <Link href='/login'>Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Button
+                    onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                    className='w-full flex justify-start cursor-pointer bg-transparent hover:bg-transparent'>
+                    {theme === 'light' ? <MoonIcon className='size-5' /> : <SunIcon className='size-5' />}
+                  </Button>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Button

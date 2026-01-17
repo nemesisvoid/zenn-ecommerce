@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import { navLinks } from '@/constants';
 import Logo from './logo';
+import { Input } from '../ui/input';
+import SearchBar from './search-bar';
 
 const NavLinks = () => {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -93,12 +95,9 @@ const NavLinks = () => {
           )}
         </AnimatePresence>
       </button>
-      <div className='block lg:hidden mt-4 self-center -translate-y-2.5'>
-        <Logo />
-      </div>
 
       {/* Desktop Navigation */}
-      <div className='hidden lg:block'>
+      <div className='hidden md:block'>
         <Logo />
       </div>
 
@@ -107,7 +106,7 @@ const NavLinks = () => {
           <li key={link.link}>
             <Link
               href={link.link}
-              className='text-gray-700 hover:text-gray-900 transition-colors duration-300'>
+              className='text-gray-700 hover:text-gray-900 transition-colors duration-300 dark:text-white'>
               {link.name}
             </Link>
           </li>
@@ -129,21 +128,23 @@ const NavLinks = () => {
               initial='initial'
               animate='animate'
               exit='initial'
-              className='flex flex-col h-full justify-center items-center gap-8'>
-              {navLinks.map((link, index) => (
-                <div
-                  key={index}
-                  className='overflow-hidden'>
-                  <motion.div variants={navItemVars}>
-                    <Link
-                      href={link.link}
-                      className='text-3xl font-medium text-gray-800 hover:text-gray-950'
-                      onClick={() => setIsNavOpen(false)}>
-                      {link.name}
-                    </Link>
-                  </motion.div>
-                </div>
-              ))}
+              className='flex flex-col h-full justify-center items-start gap-8'>
+              <>
+                {navLinks.map((link, index) => (
+                  <div
+                    key={index}
+                    className='overflow-hidden'>
+                    <motion.div variants={navItemVars}>
+                      <Link
+                        href={link.link}
+                        className='text-3xl font-medium text-gray-800 hover:text-gray-950'
+                        onClick={() => setIsNavOpen(false)}>
+                        {link.name}
+                      </Link>
+                    </motion.div>
+                  </div>
+                ))}
+              </>
             </motion.div>
           </motion.div>
         )}

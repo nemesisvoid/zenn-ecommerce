@@ -17,7 +17,9 @@ const ProductCard = ({ product }: { product: ProductCardProps }) => {
   // const handleImageLoad = () => setIsImageLoaded(false);
   console.log('prod', product.images);
   return (
-    <Link href={`product/${product?.slug}`}>
+    <Link
+      href={`product/${product?.slug}`}
+      className='shadow-md rounded-md'>
       <div className='relative w-full h-72 aspect-square mb-4'>
         <Image
           src={product?.images ? product.images[0] : product.images[1]}
@@ -34,7 +36,7 @@ const ProductCard = ({ product }: { product: ProductCardProps }) => {
           className='object-cover absolute w-full rounded-md'
         />
       </div>
-      <div>
+      <div className='p-4'>
         <p className='text-xl mb-1 truncate'>{product?.name}</p>
         <p className='text-lg font-medium'>{formatCurrency(product?.price)}</p>
       </div>

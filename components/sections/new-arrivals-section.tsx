@@ -1,12 +1,9 @@
 import React from 'react';
 import ProductList from '../product/product-list';
-import { getAllProducts, getProductsByNewArrivals } from '@/actions/product.actions';
+import { getProductsByNewArrivals } from '@/actions/product.actions';
 
 const NewArrivalsSection = async () => {
   const products = await getProductsByNewArrivals();
-  console.log('here', products);
-  const test = await getProductsByNewArrivals();
-  console.log('test imgs', test);
   return (
     <section className='container mt-24 mb-40'>
       <h2 className='section-header'>New Arrivals</h2>
