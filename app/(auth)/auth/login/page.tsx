@@ -3,7 +3,7 @@ import React from 'react';
 
 const LoginPage = () => {
   return (
-    <div className='min-h-screen flex items-center justify-center animated-gradient w-full'>
+    <div className='min-h-screen flex items-center justify-center w-full'>
       <LoginForm />
     </div>
   );

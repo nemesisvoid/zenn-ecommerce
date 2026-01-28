@@ -4,9 +4,13 @@ import AllCustomersTable from '@/components/admin/tables/users/all-customers-tab
 import { allCustomersColumn } from '@/components/admin/table/users/all-customers-column';
 import { getAllCustomers } from '@/actions/user.action';
 import DataTable from '@/components/admin/table/data-table';
+import { auth } from '@/auth';
 
 const CustomersPage = async () => {
   const getUsers = await getAllCustomers();
+
+  const user = await auth();
+  console.log('logged in user', user);
 
   const newData = getUsers?.map(user => ({
     name: user.firstName ? `${user.firstName} ${user.lastName}` : user.name,

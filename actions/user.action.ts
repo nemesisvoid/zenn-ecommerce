@@ -1,7 +1,10 @@
 'use server';
 
+import * as z from 'zod';
+
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { AdminUserSchema, AdminUserSettingsSchema } from '@/schemas';
 
 export const getAllCustomers = async () => {
   try {
@@ -26,6 +29,41 @@ export const getAllCustomers = async () => {
     return res;
   } catch (err) {
     console.log('error fetching users', err);
+  }
+};
+
+export const editUser = async (id: string, userData: z.infer<typeof AdminUserSettingsSchema>) => {
+  const user = await auth();
+  const loggedInUserRole = user?.user.role;
+  if (loggedInUserRole !== 'ADMIN') throw new Error('only admins can update users');
+
+  const validatedData = AdminUserSettingsSchema.safeParse(userData);
+  if (!validatedData.success) throw new Error('error validating fields');
+
+  const { data } = validatedData;
+
+  try {
+    await prisma.user.update({
+      where: { id },
+      data: {
+        name: data.name,
+        email: data.email,
+        address: data.address,
+        role: data.role,
+        phone: data.phone,
+        adminNotes: data.adminNotes,
+        isEmailVerified: data.isEmailVerified,
+        status: data.userStatus,
+        emailVerified: data.isEmailVerified ? new Date() : null,
+      },
+    });
+
+    return { success: true, message: 'User updated successfully' };
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.log('error editing user', err);
+      return { success: false, message: err.message };
+    }
   }
 };
 

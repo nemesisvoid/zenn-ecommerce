@@ -9,6 +9,7 @@ export default auth(req => {
   const { nextUrl } = req;
   const res = NextResponse.next();
   const userRole = req.auth?.user.role;
+  console.log('middleware user role', userRole);
 
   if (!req.cookies.get('sessionCartId')) {
     const sessionCartId = crypto.randomUUID();
@@ -38,12 +39,15 @@ export default auth(req => {
   console.log('isPublicRoute:', isPublicRoute);
 
   const isAdminRoute = adminRoutes.some(route => nextUrl.pathname.startsWith(route));
+  console.log('');
 
   if (isAdminRoute) {
     if (!isLoggedIn) return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
     if (userRole !== 'ADMIN') return NextResponse.redirect(new URL('/', nextUrl));
+    console.log('middle', res);
     return res;
   }
+
   const isPrivateRoute = privateRoutes.some(route => nextUrl.pathname.startsWith(route));
 
   console.log('private route:', isPrivateRoute);

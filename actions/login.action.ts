@@ -18,10 +18,13 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
 
     return { success: true, message: 'login successful' };
   } catch (error) {
+    console.log('error type ***:', error);
     if (error instanceof AuthError) {
       switch (error.type) {
         case 'CredentialsSignin':
           return { error: 'invalid credentials' };
+        case 'CallbackRouteError':
+          return { error: 'Please verify your email before logging in' };
         case 'OAuthSignInError':
           return { error: 'invalid credentials' };
 

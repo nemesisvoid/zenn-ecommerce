@@ -1,4 +1,5 @@
 import { PaymentMethods } from '@/constants';
+import { AccountStatus, UserRole } from '@prisma/client';
 import * as z from 'zod';
 
 // Allow image entries to be either a URL string or a browser `File` object.
@@ -133,3 +134,30 @@ export const SystemSettingsSchema = z.object({
 });
 
 export const SettingsSchema = GeneralSettingsSchema.partial().merge(ShippingSettingsSchema.partial()).merge(SystemSettingsSchema.partial());
+
+export const AdminUserSchema = z.object({
+  name: z.string().min(3, { message: 'Name must be at least 3 characters' }).nullish(),
+  email: z.string().email({ message: 'Enter a valid email' }).optional(),
+  address: z.string().min(3, { message: 'Address must be at least 3 characters' }).nullish(),
+  phone: z.string().min(11, { message: 'Phone number must be at least 11 characters' }).nullish(),
+});
+
+export const AdminUserAccountManagementSchema = z.object({
+  role: z.nativeEnum(UserRole).optional(),
+  isEmailVerified: z.boolean().default(false).optional(),
+  userStatus: z.nativeEnum(AccountStatus).optional(),
+  resetPasswordLink: z.string().url().optional(),
+  adminNotes: z.string().min(3, { message: 'Admin notes must be at least 3 characters' }).optional(),
+});
+
+export const AdminUserSettingsSchema = AdminUserSchema.partial()
+  .merge(AdminUserAccountManagementSchema.partial())
+  .refine(
+    data => {
+      return data.userStatus === 'BANNED' || data.userStatus === 'SUSPENDED' ? !!data.adminNotes : true;
+    },
+    {
+      path: ['adminNotes'],
+      message: 'Admin notes are required when suspending or banning a user',
+    },
+  );

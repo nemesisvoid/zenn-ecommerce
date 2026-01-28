@@ -27,12 +27,14 @@ export const {
         const validatedFields = LoginSchema.safeParse(credentials);
         if (validatedFields.success) {
           const { email, password } = validatedFields.data;
-
           // Use Prisma directly here
           const user = await prisma.user.findUnique({ where: { email } });
           if (!user || !user.password) return null;
 
+          if (!user?.isEmailVerified) throw new Error('Please verify your email before logging in.');
+
           const passwordMatch = await bcrypt.compare(password, user.password);
+
           if (passwordMatch) return user;
         }
         return null;
@@ -53,21 +55,16 @@ export const {
     },
 
     async jwt({ token, user, trigger }) {
-      console.log('token', token);
       if (!token.sub) return token;
       const existingUser = await getUserById(token.sub);
-      console.log({ existingUser });
+
       if (!existingUser) return token;
 
       token.name = token.name || `${existingUser.firstName} ${existingUser.lastName}`;
       token.role = existingUser.role;
-      console.log('token', token);
-
       if (trigger === 'signIn' || trigger === 'signUp') {
         const cookie = await cookies();
         const sessionCartId = cookie.get('sessionCartId')?.value;
-
-        console.log('sessionCartId', sessionCartId);
 
         if (sessionCartId) {
           const sessionCart = await prisma.cart.findFirst({

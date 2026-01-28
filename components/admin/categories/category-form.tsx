@@ -112,7 +112,7 @@ const CategoryForm = ({ initialData, products }: CategoryFormProps) => {
 
           <div className='border-b border-gray-300 dark:border-gray-600' />
           <div className='p-6'>
-            <div className='grid grid-cols-2 gap-10 mb-10'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-10 mb-10'>
               <FormField
                 control={form.control}
                 name='name'

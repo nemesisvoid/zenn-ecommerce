@@ -28,7 +28,7 @@ const ProductImages = ({ images }: { images: string[] }) => {
         ))}
       </div>
 
-      <div className='relative aspect-square w-full self-star'>
+      <div className='relative aspect-square w-full self-start'>
         <Image
           fill
           src={images[currentImageIndex]}

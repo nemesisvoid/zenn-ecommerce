@@ -45,3 +45,14 @@ export const sendMail = async ({ email, sendTo, subject, text, html }: SendMailP
     return;
   }
 };
+export const sendVerificationMail = async (email: string, token: string) => {
+  const verifyUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/verify-email?token=${token}&email=${email}`;
+
+  await transporter.sendMail({
+    to: email,
+    subject: 'Verify your email address',
+    html: `<p>Please click the link below to verify your email address:</p>
+           <a href="${verifyUrl}">${verifyUrl}</a>
+          <p>This link will expire in 15 minutes.</p>`,
+  });
+};

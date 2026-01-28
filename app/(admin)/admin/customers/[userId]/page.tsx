@@ -1,4 +1,5 @@
 import { getUserById } from '@/actions/user.action';
+import AdminUserAccountManagementForm from '@/components/admin/users/admin-user-account-mangement-form';
 import AdminUserDetails from '@/components/admin/users/admin-user-details';
 import AdminUserForm from '@/components/admin/users/admin-user-form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -7,6 +8,15 @@ const CustomersDetailsPage = async (props: { params: Promise<{ userId: string }>
   const { userId } = await props.params;
 
   const user = await getUserById(userId);
+  const initialData = {
+    name: user?.name,
+    email: user?.email,
+    address: user?.address,
+    role: user?.role,
+    phone: user?.phone,
+    isEmailVerified: user?.isEmailVerified,
+    userStatus: user?.status,
+  };
 
   if (!user)
     return (
@@ -52,8 +62,13 @@ const CustomersDetailsPage = async (props: { params: Promise<{ userId: string }>
         />
       </TabsContent>
 
-      <TabsContent value='edit-product'>
-        <AdminUserForm initialData={user} />
+      <TabsContent value='edit-user'>
+        <div>
+          <AdminUserForm
+            id={user.id}
+            initialData={initialData}
+          />
+        </div>
       </TabsContent>
     </Tabs>
   );

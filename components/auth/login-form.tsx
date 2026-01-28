@@ -14,10 +14,15 @@ import { Button } from '../ui/button';
 import FormError from '../misc/form-error';
 import FormSuccess from '../misc/form-success';
 import { login } from '@/actions/login.action';
+import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import BackButton from './back-button';
 
 const LoginForm = () => {
   const [error, setError] = useState<string | undefined>('');
   const [success, setSuccess] = useState<string | undefined>('');
+  const searchParams = useSearchParams();
+  const isVerified = searchParams.get('verified');
   // todo const [showPassword, setShowPassword] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -95,6 +100,21 @@ const LoginForm = () => {
             />
           </div>
           <FormError message={error} />
+          {/* <div className='flex items-center justify-between'> */}
+          {/*   <div className='flex items-center'> */}
+          {/*     <input */}
+          {/*       id='remember' */}
+          {/*       aria-describedby='remember' */}
+          {/*       type='checkbox' */}
+          {/*       className='w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500' */}
+
+          {error?.includes('verify') && (
+            <BackButton
+              label='Verify your email'
+              link='/auth/error'
+            />
+          )}
+          <FormSuccess message={isVerified ? 'Email verified successfully. Please login.' : ''} />
           <FormSuccess message={success} />
           <Button
             className='w-full text-xl py-6 cursor-pointer'

@@ -51,7 +51,9 @@
 }
 
 body {
-  font-family: Dm Mono, sans-serif;
+  font-family:
+    Dm Mono,
+    sans-serif;
 }
 
 :root {
@@ -180,6 +182,10 @@ select:-webkit-autofill:focus {
 
   .admin-card {
     @apply bg-white text-gray-700 rounded-lg py-5 mb-10 dark:bg-dark-100 dark:text-white/90 dark:border-gray-600;
+  }
+
+  .bg-img {
+    @apply bg-cover bg-center bg-no-repeat bg-[url('/bg-img-2.png')];
   }
 }
 

@@ -9,7 +9,7 @@ interface BackButtonProps {
 const BackButton = ({ link, label }: BackButtonProps) => {
   return (
     <Button
-      className='font-normal w-full'
+      className='text-dark-100 font-normal w-full'
       size='sm'
       variant='link'
       asChild>
