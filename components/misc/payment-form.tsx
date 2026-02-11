@@ -3,12 +3,12 @@
 import * as z from 'zod';
 
 import { useForm } from 'react-hook-form';
-import { Form, FormControl, FormField, FormItem, FormLabel } from '../ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 
 import { OrderSchema } from '@/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../ui/input';
-import { CartType } from '@/types';
+import { CartItemType, CartType } from '@/types';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { PaymentMethods } from '@/constants';
 import { Button } from '../ui/button';
@@ -22,9 +22,10 @@ import { useRouter } from 'next/navigation';
 type PaymentFormProps = {
   user: { id: string | undefined; name: string | undefined | null; email: string | undefined | null };
   cart: CartType | undefined;
+  selectedProducts: CartItemType[];
 };
 
-export const PaymentForm = ({ user, cart }: PaymentFormProps) => {
+export const PaymentForm = ({ user, cart, selectedProducts }: PaymentFormProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const form = useForm<z.infer<typeof OrderSchema>>({
@@ -58,8 +59,8 @@ export const PaymentForm = ({ user, cart }: PaymentFormProps) => {
       <form
         action=''
         onSubmit={form.handleSubmit(handleCreateOrder)}>
-        <div className='flex gap-14 justify-center'>
-          <div className='space-y-6 w-[40%]'>
+        <div className='flex flex-col md:flex-row gap-12 lg:gap-20 justify-center'>
+          <div className='space-y-6 md:w-[40%]'>
             <div className='space-y-10'>
               <h3 className='font-medium'>Customer Details</h3>
               <FormField
@@ -100,6 +101,7 @@ export const PaymentForm = ({ user, cart }: PaymentFormProps) => {
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -130,7 +132,7 @@ export const PaymentForm = ({ user, cart }: PaymentFormProps) => {
                 )}
               />
 
-              <div className='flex items-center'>
+              <div className='flex items-center sm:gap-6 justify-between'>
                 <FormField
                   name='city'
                   render={({ field }) => (
@@ -158,45 +160,29 @@ export const PaymentForm = ({ user, cart }: PaymentFormProps) => {
             </div>
           </div>
 
-          <aside className='w-1/2 flex flex-col gap-14'>
+          <aside className='md:w-1/2 flex flex-col gap-14'>
             <div className='space-y-10'>
               <h3 className='font-medium'>Order Summary</h3>
               <div className='flex flex-col gap-6'>
-                {cart?.cartItems?.map(item => (
+                {selectedProducts.map((item, index) => (
                   <figure
-                    key={item.id}
+                    key={index}
                     className='flex item-center gap-5'>
-                    {item?.variants
-                      ? item.variants?.images.slice(1, 2).map(img => (
-                          <div
-                            key={img}
-                            className='relative aspect-square size-20'>
-                            <Image
-                              src={img}
-                              fill
-                              alt='product image'
-                              className='object-cover rounded-md'
-                            />
-                          </div>
-                        ))
-                      : item.products?.images.slice(1, 2).map(img => (
-                          <div
-                            key={img}
-                            className='relative aspect-square size-20'>
-                            <Image
-                              src={img}
-                              fill
-                              alt='product image'
-                              className='object-cover rounded-md'
-                            />
-                          </div>
-                        ))}
+                    <div className='relative aspect-square size-20'>
+                      <Image
+                        src={item.images[0]}
+                        fill
+                        alt='product image'
+                        className='object-cover rounded-md'
+                      />
+                    </div>
 
                     <div className='flex flex-col justify-between'>
                       <div className='flex flex-col gap-1'>
                         <p className='text-sm'>{item.products?.name}</p>
                         <p className='text-xs'>x{item.quantity}</p>
                       </div>
+                      <p className='text-sm'>{item.variantId ? item.color : ''}</p>
                       <p>{formatCurrency(item.price)}</p>
                     </div>
                   </figure>
@@ -240,7 +226,7 @@ export const PaymentForm = ({ user, cart }: PaymentFormProps) => {
             </div>
 
             <Button
-              className='text-xl cursor-pointer mt-auto w-fit px-10 rounded-3xl py-6'
+              className='text-xl cursor-pointer mt-auto w-fit px-10 rounded-3xl py-6 md:translate-x-5'
               disabled={isPending}
               type='submit'>
               Place Order

@@ -5,7 +5,8 @@ import * as z from 'zod';
 import { prisma } from '@/lib/prisma';
 
 import { CreateCategorySchema } from '@/schemas';
-import { slugify } from '@/helper/utils';
+import { compareData, slugify } from '@/helper/utils';
+import { logActivity } from './activity.action';
 export const getAllCategories = async () => {
   const data = await prisma.category.findMany();
   console.log(data);
@@ -60,6 +61,15 @@ export const createCategory = async (categoryData: z.infer<typeof CreateCategory
         },
       },
     });
+
+    await logActivity({
+      action: 'CREATE',
+      entity: 'CATEGORY',
+      entityId: cat.id,
+      entityName: cat.name,
+      details: null,
+    });
+
     return { success: true, message: 'Category created successfully', category: cat };
   } catch (error) {
     console.log('error creating category', error);
@@ -69,9 +79,12 @@ export const createCategory = async (categoryData: z.infer<typeof CreateCategory
 export const editCategory = async (id: string, categoryData: z.infer<typeof CreateCategorySchema>) => {
   const validatedData = CreateCategorySchema.safeParse(categoryData);
   if (!validatedData.success) return { success: false, message: validatedData.error.message };
+  const oldCategoryData = await prisma.category.findUnique({ where: { id } });
 
   const { data } = validatedData;
   const productIds = validatedData.data?.products?.map(p => p.id);
+
+  const changes = compareData(oldCategoryData, data);
 
   try {
     await prisma.category.update({
@@ -86,6 +99,17 @@ export const editCategory = async (id: string, categoryData: z.infer<typeof Crea
         },
       },
     });
+
+    if (changes) {
+      await logActivity({
+        action: 'UPDATE',
+        entity: 'CATEGORY',
+        entityId: id,
+        entityName: data.name,
+        details: changes,
+      });
+    }
+
     return { success: true, message: 'Category updated successfully' };
   } catch (error) {
     console.log('error creating category', error);

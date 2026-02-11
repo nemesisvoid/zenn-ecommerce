@@ -52,9 +52,15 @@ export async function POST(req: Request) {
       //   data: { stock: { decrement: item.quantity } },
       // });
 
-      await prisma?.cartItem.deleteMany({
+      console.log('deleting...');
+      const deleted = await prisma?.cartItem.deleteMany({
         where: { cartId: order.cartId },
       });
+      if (!deleted) {
+        console.warn('Error deleting cart items');
+        // return new Response('Error deleting cart items', { status: 500 });
+      }
+      console.log('deleted cart');
     } catch (err) {
       console.log('webhook err:', err);
       return new Response('Error updating order', { status: 500 });

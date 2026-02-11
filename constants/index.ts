@@ -63,13 +63,13 @@ export const sidebarLinks = [
     icon: ChartBarStackedIcon,
   },
   {
-    name: 'Sales',
-    link: '/admin/sales',
-    icon: DollarSignIcon,
+    name: 'Activities',
+    link: '/admin/activities',
+    icon: ChartBarBigIcon,
   },
   {
-    name: 'Customers',
-    link: '/admin/customers',
+    name: 'Users',
+    link: '/admin/users',
     icon: UsersIcon,
   },
   {

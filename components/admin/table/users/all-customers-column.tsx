@@ -26,7 +26,7 @@ export const allCustomersColumn: ColumnDef<AllCustomersColumnType>[] = [
     accessorKey: 'name',
     cell: ({ row }) => {
       return (
-        <Link href={`/admin/customers/${row.original.id}`}>
+        <Link href={`/admin/users/${row.original.id}`}>
           <div className='flex items-center gap-2'>
             <Image
               src={row.original.avatar ? row.original.avatar : '/avatar-fallback.png'}

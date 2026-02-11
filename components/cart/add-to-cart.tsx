@@ -22,6 +22,7 @@ const AddToCart = ({ product, selectedVariant, price, canAddToCart }: AddToCartT
   const productId = product.id;
 
   const [isPending, startTransition] = useTransition();
+
   const handleAddToCart = async () => {
     startTransition(async () => {
       const newData = {

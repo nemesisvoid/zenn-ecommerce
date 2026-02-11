@@ -89,7 +89,8 @@ export const CreateProductSchema = z.object({
 export const CreateCategorySchema = z.object({
   name: z.string().min(3, { message: 'Category name must be at least 3 characters' }),
   description: z.string().min(3, { message: 'Category description must be at least 3 characters' }).optional(),
-  coverImage: z.string().url().min(1, { message: 'Category cover image must have a cover image' }),
+  // coverImage: z.string().url().min(1, { message: 'Category cover image must have a cover image' }),
+  coverImage: z.union([z.string().url(), FileTypeSchema]),
   products: z.array(z.object({ id: z.string(), name: z.string(), image: z.string().optional() })).optional(),
 });
 

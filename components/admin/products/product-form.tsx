@@ -82,7 +82,7 @@ const ProductForm = ({ categories, initialData }: ProductFormProps) => {
             toast.error(res.message);
           }
         } else {
-          const res = await createProduct(data);
+          const res = await createProduct(finalData);
           if (res.success) toast.success('Product created successfully');
           router.refresh();
           router.push('/admin/products');
@@ -368,6 +368,7 @@ const ProductForm = ({ categories, initialData }: ProductFormProps) => {
                         value={field.value}
                         onChange={field.onChange}
                         disabled={isPending}
+                        uploadMultiple={true}
                       />
                     </FormControl>
                     <FormMessage />

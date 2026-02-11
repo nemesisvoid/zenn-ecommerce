@@ -65,7 +65,7 @@ const UserNav = ({ isLoggedIn, userRole, cartItemsCount }: UserNavProps) => {
 
                 <DropdownMenuLabel>Settings</DropdownMenuLabel>
                 <DropdownMenuItem>
-                  <Link href='/login'>Profile</Link>
+                  <Link href='/user/settings'>Profile</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Button

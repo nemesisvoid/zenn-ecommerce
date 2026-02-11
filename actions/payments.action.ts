@@ -4,6 +4,7 @@ import { sendMail } from '@/helper/send-mail';
 import { revalidatePath } from 'next/cache';
 
 import { prisma } from '@/lib/prisma';
+import { receiptEmailHtml } from '@/helper/utils';
 
 const orderHtml = (id: string, totalPrice: number) => {
   return `
@@ -19,6 +20,7 @@ const orderHtml = (id: string, totalPrice: number) => {
 
 export const verifyPayment = async (reference: string) => {
   if (!reference) throw new Error('Missing payment reference  required for payment verification');
+
   const secret = process.env.PAYSTACK_SECRET_KEY;
   if (!secret) throw new Error('Paystack secret key is not configured');
 
@@ -32,12 +34,15 @@ export const verifyPayment = async (reference: string) => {
     });
 
     const data = await res.json();
-    console.log('data here', data);
+
+    if (!res.ok || !data.status) {
+      return { success: false, reason: 'Paystack API error', message: 'Paystack API error', paymentStatus: data.status };
+      // throw new Error(`Paystack API error: ${res.status} ${res.statusText}`);
+    }
+
     const paymentStatus = data.data.status;
 
-    if (!res.ok) {
-      throw new Error(`Paystack API error: ${res.status} ${res.statusText}`);
-    }
+    console.log('paystack payment status', paymentStatus);
 
     const order = await prisma.order.findUnique({
       where: { paystackReference: reference },
@@ -48,14 +53,6 @@ export const verifyPayment = async (reference: string) => {
     if (!order) return { success: false, reason: 'Order not found', message: 'Order not found', paymentStatus };
 
     if (order.paymentStatus === 'PAID') {
-      const mail = await sendMail({
-        email: process.env.EMAIL_FROM || '',
-        sendTo: `${order.email}, ${'samsonajibade40@gmail.com'}`,
-        subject: 'Order Payment Successful',
-        // text: `Your payment for order ${order.id} was successful.`,
-        html: orderHtml(order.id, order.totalPrice),
-      });
-      console.log('mail here:', mail);
       return { success: true, message: 'Order already paid', order, paymentStatus };
     }
 
@@ -80,15 +77,13 @@ export const verifyPayment = async (reference: string) => {
         }
       }
 
-      const mail = await sendMail({
+      await sendMail({
         email: process.env.EMAIL_FROM || '',
         sendTo: `${order.email}, ${'samsonajibade40@gmail.com'}`,
         subject: 'Order Payment Successful',
-        // text: `Your payment for order ${order.id} was successful.`,
-        html: orderHtml(order.id, order.totalPrice),
+        html: receiptEmailHtml(order),
       });
 
-      console.log('mail here:', mail);
       revalidatePath(`order/${order.id}`);
       return { success: true, message: 'Payment verified and order updated', order: updatedOrder, paymentStatus };
     }

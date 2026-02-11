@@ -15,7 +15,7 @@ const CheckoutComplete = () => {
 
   useEffect(() => {
     if (!ref) {
-      setMessage('No payment reference found in url.');
+      setMessage('No payment reference found');
       return;
     }
 
@@ -48,9 +48,7 @@ const CheckoutComplete = () => {
 
   return (
     <div className=''>
-      <h2 className='text-2xl font-medium text-center'>Processing Payment....</h2>
-
-      <p>{isPending ? 'Verifying payment - please wait...' : message ?? 'Verifying'}</p>
+      <p className='text-xl text-center my-5'>{isPending ? 'Verifying payment - please wait...' : (message ?? 'Verifying')}</p>
     </div>
   );
 };

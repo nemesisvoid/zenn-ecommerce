@@ -9,7 +9,7 @@ import { CartItemType, CartType } from '@/types';
 import { createCart, removeCartItem } from '@/actions/cart.actions';
 import { useTransition } from 'react';
 import { toast } from 'sonner';
-import { formatCurrency } from '@/helper/utils';
+import { formatCurrency, renderProduct } from '@/helper/utils';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -20,47 +20,49 @@ type CartDetailsProps = {
 };
 const CartDetails = ({ cart, cartItems }: CartDetailsProps) => {
   const router = useRouter();
-  // console.log('var', cartItems.variants);
-  // console.log('itemVariant', itemVariant);
-  // cartItems?.map(item => item.variants?.map(v => v.images));
   const [isPending, startTransition] = useTransition();
-  console.log('cartItems', cartItems);
+  const selectedProduct = renderProduct(cartItems);
+
   return (
     <div>
       <h2 className='text-xl md:text-3xl font-medium mb-10'>Cart</h2>
-      <div className='flex justify-between mt-1'>
-        <div className='border border-gray-300 rounded-xl p-4'>
+      <div className='flex flex-col md:flex-row justify-between gap-10 mt-1'>
+        <div className='border border-gray-300 rounded-xl p-4 flex-1'>
           <div className='flex flex-col gap-14'>
-            {cartItems?.map(item => (
+            {selectedProduct?.map((item, index) => (
               <div
-                key={item.id}
+                key={index}
                 className='flex gap-2
                   '>
-                {item.variants &&
-                  item.variants?.images.slice(1, 2).map((img, index) => (
-                    <div
-                      key={index}
-                      className='relative w-25 aspect-square'>
-                      <Image
-                        src={img}
-                        className='object-cover rounded-sm'
-                        fill
-                        alt='product image'
-                      />
-                    </div>
-                  ))}
-
-                <div className='flex flex-col justify-between ml-2'>
-                  <p className='text-lg font-medium'>{item.products?.name}</p>
+                {item?.images?.slice(0, 1).map(img => (
+                  <div
+                    key={img}
+                    className='relative w-25 aspect-square'>
+                    <Image
+                      src={img}
+                      className='object-cover rounded-sm'
+                      fill
+                      alt='product image'
+                    />
+                  </div>
+                ))}
+                <div className='flex flex-col justify-between ml-2 flex-1'>
+                  <p className='text-lg font-medium'>{item.name}</p>
 
                   <p className='text-base font-semibold'>{formatCurrency(item.price * item.quantity)}</p>
+
+                  <p>
+                    {item?.color}
+                    <span className='text-gray-400'> x {item.quantity}</span>
+                  </p>
                 </div>
+
                 <div className='flex flex-col justify-between items-end'>
                   <Button className='text-red-400 bg-transparent size-7 rounded-sm cursor-pointer'>
                     <Trash2Icon />
                   </Button>
 
-                  <div className='bg-gray-300 rounded-full flex items-center gap-5 px-2 py-1 ml-6'>
+                  <div className='bg-gray-300 rounded-full flex items-center gap-5 px-2 py-1 ml-6 dark:bg-white/90'>
                     <button
                       className='text-sm rounded-sm cursor-pointer'
                       disabled={isPending}
@@ -75,7 +77,14 @@ const CartDetails = ({ cart, cartItems }: CartDetailsProps) => {
                           router.refresh();
                         });
                       }}>
-                      {isPending ? <LoaderIcon className='animate-spin' /> : <PlusIcon size={18} />}
+                      {isPending ? (
+                        <LoaderIcon className='animate-spin' />
+                      ) : (
+                        <PlusIcon
+                          size={18}
+                          className='dark:text-black'
+                        />
+                      )}
                     </button>
                     <p className='text-base text-gray-800'>{item.quantity}</p>
                     <button
@@ -91,7 +100,10 @@ const CartDetails = ({ cart, cartItems }: CartDetailsProps) => {
                           router.refresh();
                         });
                       }}>
-                      <MinusIcon size={18} />
+                      <MinusIcon
+                        size={18}
+                        className='dark:text-black'
+                      />
                     </button>
                   </div>
                 </div>
@@ -100,7 +112,7 @@ const CartDetails = ({ cart, cartItems }: CartDetailsProps) => {
           </div>
         </div>
 
-        <div className='w-1/3 border border-gray-300 rounded-xl p-4'>
+        <div className='lg:w-[36%] flex flex-col border border-gray-300 rounded-xl p-4'>
           <h3 className='text-xl font-medium mb-4'>Order Summary</h3>
 
           <div className='flex flex-col gap-4 border-b border-gray-400 pb-2'>
@@ -112,7 +124,7 @@ const CartDetails = ({ cart, cartItems }: CartDetailsProps) => {
             <div className='flex justify-between pb-2'>
               <p className='text-base text-gray-500'>Delivery fee</p>
 
-              <p>{cart?.shippingPrice > 0 ? formatCurrency(cart?.shippingPrice) : 'Free'}</p>
+              <p>{cart && cart.shippingPrice > 0 ? formatCurrency(cart?.shippingPrice) : 'Free'}</p>
             </div>
           </div>
 
@@ -125,7 +137,7 @@ const CartDetails = ({ cart, cartItems }: CartDetailsProps) => {
           </div>
 
           <Button
-            className='text-xl font-base text-white bg-black rounded-4xl py-7 w-full'
+            className='text-xl font-base text-white bg-black rounded-4xl py-7 w-full mt-auto'
             asChild>
             <Link
               href='/checkout'

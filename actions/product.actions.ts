@@ -6,7 +6,8 @@ import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import * as z from 'zod';
 import { CreateProductSchema } from '@/schemas';
-import { slugify } from '@/helper/utils';
+import { compareData, slugify } from '@/helper/utils';
+import { logActivity } from './activity.action';
 
 export const getProductsByNewArrivals = async () => {
   const data = await prisma.product.findMany({
@@ -97,6 +98,14 @@ export const createProduct = async (productData: z.infer<typeof CreateProductSch
       },
     });
 
+    await logActivity({
+      action: 'CREATE',
+      entity: 'PRODUCT',
+      entityId: product.id,
+      entityName: product.name,
+      details: null,
+    });
+
     return { data: product, success: true, message: 'Product created successfully' };
   } catch (err) {
     console.log('error creating product', err);
@@ -106,6 +115,14 @@ export const createProduct = async (productData: z.infer<typeof CreateProductSch
 
 export const editProduct = async (id: string, productData: z.infer<typeof CreateProductSchema>) => {
   const validatedProduct = CreateProductSchema.safeParse(productData);
+
+  const oldProduct = await prisma.product.findUnique({
+    where: { id },
+  });
+
+  if (!oldProduct) throw new Error('Product not found');
+
+  const changes = compareData(oldProduct, productData);
 
   console.log('server data', productData);
   console.log('img', productData.categories);
@@ -155,6 +172,17 @@ export const editProduct = async (id: string, productData: z.infer<typeof Create
         variants: variants,
       },
     });
+
+    if (changes) {
+      await logActivity({
+        action: 'UPDATE',
+        entity: 'PRODUCT',
+        entityId: id,
+        entityName: oldProduct.name,
+        details: changes,
+      });
+    }
+
     return { success: true, data: res, message: 'Product updated successfully' };
   } catch (error) {
     console.error('error updating product', error);
@@ -164,8 +192,20 @@ export const editProduct = async (id: string, productData: z.infer<typeof Create
 
 export const deleteProduct = async (id: string) => {
   try {
+    const product = await prisma.product.findUnique({ where: { id }, select: { name: true } });
+
+    if (!product) throw new Error('Product not found');
     await prisma.product.delete({ where: { id } });
     revalidatePath('/admin/products');
+
+    await logActivity({
+      action: 'ARCHIVE',
+      entity: 'PRODUCT',
+      entityId: id,
+      entityName: product.name,
+      details: null,
+    });
+
     return { success: true, message: 'Product deleted successfully' };
   } catch (error) {
     console.error('error deleting product', error);

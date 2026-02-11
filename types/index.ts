@@ -10,7 +10,11 @@ export type ProductType = Awaited<ReturnType<typeof prisma.product.findFirst>> &
 
 export type ProductListType = Awaited<ReturnType<typeof prisma.product.findMany>>;
 
-export type VariantType = Awaited<ReturnType<typeof prisma.productVariant.findMany>>;
+export type VariantType = Awaited<ReturnType<typeof prisma.productVariant.findMany>> & {
+  colorImages: Awaited<ReturnType<typeof prisma.productColorImage.findMany>>;
+};
+
+export type ColorImagesType = Awaited<ReturnType<typeof prisma.productColorImage.findFirst>>;
 
 export type CartType = Awaited<ReturnType<typeof prisma.cart.findFirst>> & {
   cartItems: Awaited<ReturnType<typeof prisma.cartItem.findMany>>;
@@ -20,6 +24,7 @@ export type CartType = Awaited<ReturnType<typeof prisma.cart.findFirst>> & {
 export type CartItemType = Awaited<ReturnType<typeof prisma.cartItem.findFirst>> & {
   products: ProductType | null;
   variants: VariantType | null;
+  colorImages: ColorImagesType | null;
 };
 
 export type UserType = Awaited<ReturnType<typeof prisma.user.findUnique>>;

@@ -5,6 +5,8 @@ import * as z from 'zod';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { AdminUserSchema, AdminUserSettingsSchema } from '@/schemas';
+import { logActivity } from './activity.action';
+import { compareData } from '@/helper/utils';
 
 export const getAllCustomers = async () => {
   try {
@@ -33,16 +35,22 @@ export const getAllCustomers = async () => {
 };
 
 export const editUser = async (id: string, userData: z.infer<typeof AdminUserSettingsSchema>) => {
-  const user = await auth();
-  const loggedInUserRole = user?.user.role;
-  if (loggedInUserRole !== 'ADMIN') throw new Error('only admins can update users');
-
-  const validatedData = AdminUserSettingsSchema.safeParse(userData);
-  if (!validatedData.success) throw new Error('error validating fields');
-
-  const { data } = validatedData;
-
   try {
+    const user = await auth();
+    const loggedInUserRole = user?.user.role;
+    if (loggedInUserRole !== 'ADMIN') throw new Error('only admins can update users');
+
+    const validatedData = AdminUserSettingsSchema.safeParse(userData);
+    if (!validatedData.success) throw new Error('error validating fields');
+
+    const { data } = validatedData;
+
+    const oldUserData = await prisma.user.findUnique({ where: { id } });
+
+    if (!oldUserData) throw new Error('user not found');
+    console.log('old user data', oldUserData.name);
+    const changes = compareData(oldUserData, { ...data, status: data.userStatus });
+
     await prisma.user.update({
       where: { id },
       data: {
@@ -58,6 +66,16 @@ export const editUser = async (id: string, userData: z.infer<typeof AdminUserSet
       },
     });
 
+    if (changes) {
+      await logActivity({
+        action: 'UPDATE',
+        entity: 'USER',
+        entityId: id,
+        entityName: oldUserData.name,
+        details: changes,
+      });
+    }
+
     return { success: true, message: 'User updated successfully' };
   } catch (err: unknown) {
     if (err instanceof Error) {
@@ -72,17 +90,28 @@ export const deleteUser = async (userId: string) => {
     const session = await auth();
     const loggedInUser = session?.user;
 
-    const isUserAdmin = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
+    if (!user) throw new Error('User not found');
+
+    const isLoggedInUserAdmin = await prisma.user.findUnique({
       where: { id: userId },
       select: { role: true },
     });
 
     if (loggedInUser?.role === 'USER') throw new Error('Unauthorized! users cannot delete admins!');
 
-    if (isUserAdmin?.role === 'ADMIN') throw new Error('Admin users cannot be deleted!');
+    if (isLoggedInUserAdmin?.role === 'ADMIN') throw new Error('Admin users cannot be deleted!');
 
     await prisma.user.delete({
       where: { id: userId },
+    });
+
+    await logActivity({
+      action: 'DELETE',
+      entity: 'USER',
+      entityId: userId,
+      entityName: user.name,
+      details: JSON.stringify(user),
     });
 
     return { success: true, message: 'User deleted successfully' };

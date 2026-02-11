@@ -13,11 +13,13 @@ import { Form, FormField, FormControl, FormItem, FormLabel, FormMessage } from '
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Loader2Icon, Trash2Icon } from 'lucide-react';
+import { Loader2Icon } from 'lucide-react';
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { createCategory, editCategory } from '@/actions/category.actions';
 import Image from 'next/image';
-import UploadProductImageWidget from '@/components/cloudinary/upload-image-widget';
+
+import ImageUploader from '@/components/misc/image-uploader';
+import { handleImageUpload } from '@/helper/utils';
 
 interface CategoryFormProps {
   initialData?: {
@@ -64,32 +66,26 @@ const CategoryForm = ({ initialData, products }: CategoryFormProps) => {
       });
     }
   }, [initialData, form]);
+
   const { handleSubmit, setValue, watch } = form;
-
-  const watchedCoverImage = watch('coverImage');
-  const watchName = watch('name');
-
   const watchedProducts = watch('products') || [];
-  console.log('initialData::', initialData);
-
-  console.log('watched prod:', watchedProducts);
-
-  const removeProduct = (id: string) => {
-    const updated = watchedProducts.filter(p => p.id !== id);
-    setValue('products', updated, { shouldDirty: true, shouldValidate: true });
-  };
 
   const onSubmit = async (data: z.infer<typeof CreateCategorySchema>) => {
     startTransition(async () => {
       try {
+        // const isImagesArray = Array.isArray(images);
+        // const imgs = isImagesArray ? images : images ? [images] : [];
+        const finalImageUrls = await handleImageUpload(data.coverImage ? [data.coverImage] : [], 'category-images', 'ecommerce-category-images');
+
+        const finalData = { ...data, coverImage: finalImageUrls[0] };
         if (initialData) {
-          const res = await editCategory(initialData.id, data);
+          const res = await editCategory(initialData.id, finalData);
           if (res?.success) {
             toast.success(res?.message);
             router.push('/admin/categories');
           }
         } else {
-          const res = await createCategory(data);
+          const res = await createCategory(finalData);
           if (res?.success) {
             router.push('/admin/categories');
             toast.success(res?.message);
@@ -97,6 +93,7 @@ const CategoryForm = ({ initialData, products }: CategoryFormProps) => {
           console.log(data);
         }
       } catch (error) {
+        console.error('error', error);
         toast.error('Error creating category');
       }
     });
@@ -155,16 +152,13 @@ const CategoryForm = ({ initialData, products }: CategoryFormProps) => {
                 render={({ field }) => {
                   return (
                     <FormItem>
+                      <FormLabel className='mb-1'>Cover Image</FormLabel>
                       <FormControl>
                         <div className='w-1/3'>
-                          <UploadProductImageWidget
-                            onUpload={uploadedUrls => {
-                              const newImage = uploadedUrls[0];
-                              setValue('coverImage', newImage, { shouldValidate: true });
-                            }}
-                            title='Category Image'
-                            isPending={isPending}
-                            isVariant={false}
+                          <ImageUploader
+                            value={field.value}
+                            onChange={field.onChange}
+                            uploadMultiple={false}
                           />
                         </div>
                       </FormControl>

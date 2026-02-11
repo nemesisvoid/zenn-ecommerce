@@ -57,11 +57,11 @@ const ProductDetails = ({ product, cart }: ProductVariantType) => {
 
   const canAddToCart = !hasVariants || !!selectedVariant;
 
-  const priceToShow = selectedVariant
-    ? product.discountPercent
-      ? getPercentagePrice(selectedVariant.price ?? product.price, product.discountPercent)
-      : (selectedVariant.price ?? product.price)
-    : product.price;
+  const priceToShow = hasVariants
+    ? getPercentagePrice(selectedVariant?.price, product.discountPercent)
+    : getPercentagePrice(product.price, product.discountPercent);
+
+  console.log('price to show', priceToShow, product.price);
 
   const imagesToShow = product?.colorImages?.find(v => v.color === selectedColor)?.images || product.images;
 
@@ -134,7 +134,9 @@ const ProductDetails = ({ product, cart }: ProductVariantType) => {
                   key={size}
                   disabled={!availableSizesForColor.includes(size)}
                   className={`w-14 h-10 text-black rounded-md border cursor-pointer transition ${
-                    selectedSize === size ? 'bg-black text-white border-black' : 'border-gray-500 hover:bg-black hover:text-white'
+                    selectedSize === size
+                      ? 'bg-black text-white border-black dark:border-white'
+                      : 'border-gray-500 hover:bg-black hover:text-white dark:text-gray-400'
                   } ${!availableSizesForColor.includes(size) ? 'opacity-50 cursor-not-allowed' : ''}`}
                   onClick={() => setSelectedSize(size)}>
                   <p>{size}</p>

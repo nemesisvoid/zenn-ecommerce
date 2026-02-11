@@ -6,6 +6,7 @@ import { auth } from '@/auth';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { redirect } from 'next/navigation';
 import { PaymentForm } from '@/components/misc/payment-form';
+import { renderProduct } from '@/helper/utils';
 
 const CheckoutPage = async () => {
   const session = await auth();
@@ -14,9 +15,7 @@ const CheckoutPage = async () => {
 
   if (!cart || cart.cartItems.length === 0) return redirect('/cart');
 
-  cart.cartItems.map(item => console.log(item));
-
-  console.log('cart', cart);
+  const selectedProducts = renderProduct(cart.cartItems);
   return (
     <div className='container'>
       <Breadcrumb className='mb-8'>
@@ -48,6 +47,7 @@ const CheckoutPage = async () => {
               name: user?.name,
               email: user?.email,
             }}
+            selectedProducts={selectedProducts}
             cart={cart}
           />
         </div>

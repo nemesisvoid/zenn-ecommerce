@@ -50,6 +50,7 @@ export const createOrder = async (data: CreateOrderProps) => {
             variantId: item.variantId ?? null,
             quantity: item.quantity,
             price: item.price,
+            // image: item.image,
           })),
         },
       },
@@ -92,7 +93,7 @@ export const createOrder = async (data: CreateOrderProps) => {
 
     await prisma.order.update({
       where: { id: order?.id },
-      data: { status: 'CONFIRMED', paymentStatus: 'PAID', paystackPayload: { initialize: data.data } },
+      data: { status: 'CONFIRMED', paymentStatus: 'PENDING', paystackPayload: { initialize: data.data } },
     });
 
     return { auth_url: data.data.authorization_url, reference, orderId: order?.id, message: 'order success' };
@@ -109,7 +110,7 @@ export const getOrderById = async (orderId: string, userId: string) => {
       where: { id: orderId },
       include: {
         orderItems: {
-          include: { product: true, variant: true },
+          include: { product: { include: { colorImages: true } }, variant: true },
         },
       },
     });

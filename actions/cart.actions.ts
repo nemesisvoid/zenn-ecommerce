@@ -26,6 +26,7 @@ export const createCart = async (data: CartActionProps) => {
     const variantId = cartItems.variantId ?? null;
     const product = await prisma.product.findUnique({
       where: { id: productId },
+      include: { colorImages: true },
     });
 
     if (!product) throw new Error('Product not found');
@@ -40,6 +41,9 @@ export const createCart = async (data: CartActionProps) => {
 
       if (!variant) throw new Error('no variant found');
     }
+
+    const colorImages = product.colorImages.find(ci => ci.color === variant?.color);
+    console.log('colorimages:', colorImages);
 
     const itemPrice = cartItems.price ?? product.price;
     const availabeStock = product.stock;
@@ -58,6 +62,7 @@ export const createCart = async (data: CartActionProps) => {
             productId,
             price: itemPrice,
             variantId,
+            image: variantId ? colorImages?.images[0] : product.images[0],
           },
         },
       };
@@ -67,7 +72,7 @@ export const createCart = async (data: CartActionProps) => {
       return { success: 'cart created', message: 'item added to cart' };
     } else {
       const existingCartItem = cart.cartItems.find(
-        item => item.productId === productId && (variantId ? item.variantId === variantId : !item.variantId)
+        item => item.productId === productId && (variantId ? item.variantId === variantId : !item.variantId),
       );
 
       if (existingCartItem) {
@@ -133,7 +138,12 @@ export const getCart = async () => {
       where: userId ? { userId } : { sessionCartId },
       include: {
         cartItems: {
-          include: { products: true, variants: true },
+          include: {
+            products: {
+              include: { colorImages: true },
+            },
+            variants: true,
+          },
         },
       },
     });
@@ -148,7 +158,7 @@ export const getCart = async () => {
 
 export const getCartItems = async () => {
   return await prisma.cartItem.findMany({
-    include: { products: true, variants: true },
+    include: { products: { include: { colorImages: true } }, variants: true },
     orderBy: { createdAt: 'asc' },
   });
 };
