@@ -151,10 +151,10 @@ export default function ProductFilters({ categories, currentFilters }: { categor
       {/* Active Filters Summary */}
 
       <div className='flex flex-wrap gap-2 mb-4'>
-        {selectedCategory.map(cat => (
-          <>
+        {selectedCategory.map((cat, i) => (
+          <div key={i}>
             <Badge variant='secondary'>{cat}</Badge>
-          </>
+          </div>
         ))}
       </div>
 
