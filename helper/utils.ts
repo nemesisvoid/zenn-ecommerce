@@ -197,7 +197,7 @@ export const receiptEmailHtml = (order: any) => {
       <!-- Order Info -->
       <div style="padding:20px; font-size:14px; color:#333;">
         <p><strong>Order ID:</strong> ${order.id}</p>
-        <p><strong>Payment Date:</strong> ${new Date(order.paidAt).toLocaleString()}</p>
+        <p><strong>Payment Date:</strong> ${new Date(order.paidAt).toDateString()}</p>
         <p><strong>Payment Method:</strong> ${order.paymentMethod}</p>
       </div>
 
@@ -247,7 +247,7 @@ export const receiptEmailHtml = (order: any) => {
       <!-- Footer -->
       <div style="padding:20px; text-align:center; font-size:12px; color:#777;">
         <p>If you have any questions, just reply to this email — we’re happy to help!</p>
-        <p style="margin-top:10px;">© ${new Date().getFullYear()} Your Store Name</p>
+        <p style="margin-top:10px;">© ${new Date().getFullYear()} Zenn Ecommerce</p>
       </div>
     </div>
   </div>

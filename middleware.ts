@@ -1,6 +1,6 @@
 import authConfig from './auth.config';
 import NextAuth from 'next-auth';
-import { apiAuthPrefix, authRoutes, DEFAULT_LOGIN_REDIRECT, adminRoutes, privateRoutes, publicRoutes } from './routes';
+import { apiAuthPrefix, authRoutes, DEFAULT_LOGIN_REDIRECT, adminRoutes, privateRoutes, publicRoutes, userRoutes } from './routes';
 import { NextResponse } from 'next/server';
 
 const { auth } = NextAuth(authConfig);
@@ -24,8 +24,7 @@ export default auth(req => {
   }
 
   const isLoggedIn = !!req.auth;
-  // console.log('middleware:', nextUrl.pathname);
-  // console.log('req auth:', !!req.auth);
+
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
 
@@ -40,6 +39,7 @@ export default auth(req => {
 
   const isAdminRoute = adminRoutes.some(route => nextUrl.pathname.startsWith(route));
   console.log('');
+  const isUserRoute = userRoutes.some(route => nextUrl.pathname.startsWith(route));
 
   if (isAdminRoute) {
     if (!isLoggedIn) return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
@@ -48,6 +48,10 @@ export default auth(req => {
     return res;
   }
 
+  if (isUserRoute) {
+    if (!isLoggedIn) return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+    return res;
+  }
   const isPrivateRoute = privateRoutes.some(route => nextUrl.pathname.startsWith(route));
 
   console.log('private route:', isPrivateRoute);

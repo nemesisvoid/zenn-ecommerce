@@ -40,10 +40,10 @@ const RegisterForm = () => {
       console.log(values);
       register(values).then(data => {
         setError(data.error);
-        setSuccess(data.success);
+        setSuccess(data.message);
         console.log(data);
+        if (data.success) router.push('/auth/login');
       });
-      if (success) router.push('/auth/login');
     });
   };
   console.log(form);

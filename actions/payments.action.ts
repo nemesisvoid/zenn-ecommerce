@@ -46,6 +46,7 @@ export const verifyPayment = async (reference: string) => {
 
     const order = await prisma.order.findUnique({
       where: { paystackReference: reference },
+      include: { orderItems: { include: { product: true, variant: true } } },
     });
 
     console.log('order found during verification', order);
@@ -57,11 +58,22 @@ export const verifyPayment = async (reference: string) => {
     }
 
     if (paymentStatus === 'success') {
-      const updatedOrder = await prisma.order.update({
+      await prisma.order.update({
         where: { paystackReference: reference },
         data: { status: 'CONFIRMED', paymentStatus: 'PAID', isPaid: true, paidAt: new Date() },
       });
 
+      const updatedOrder = await prisma.order.findUnique({
+        where: { id: order.id },
+        include: {
+          orderItems: {
+            include: {
+              product: true,
+              variant: true,
+            },
+          },
+        },
+      });
       const items = await prisma.orderItem.findMany({
         where: { orderId: order.id },
       });
@@ -80,8 +92,8 @@ export const verifyPayment = async (reference: string) => {
       await sendMail({
         email: process.env.EMAIL_FROM || '',
         sendTo: `${order.email}, ${'samsonajibade40@gmail.com'}`,
-        subject: 'Order Payment Successful',
-        html: receiptEmailHtml(order),
+        subject: `Payment Successful — Receipt for Order #${order.id}`,
+        html: receiptEmailHtml(updatedOrder),
       });
 
       revalidatePath(`order/${order.id}`);

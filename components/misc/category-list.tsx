@@ -1,7 +1,5 @@
-import React from 'react';
-
-import { CategoryListType } from '@/types';
 import Link from 'next/link';
+import { CategoryListType } from '@/types';
 const CategoryList = ({ data }: { data: CategoryListType }) => {
   return (
     <div className='grid grid-cols-3 gap-8'>

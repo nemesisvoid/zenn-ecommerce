@@ -162,3 +162,36 @@ export const AdminUserSettingsSchema = AdminUserSchema.partial()
       message: 'Admin notes are required when suspending or banning a user',
     },
   );
+
+export const UserProfileSettingsSchema = z.object({
+  avatar: z.string().optional().or(z.literal('')).nullish(),
+  firstName: z.string().min(3, { message: 'First name must be at least 3 characters' }).optional(),
+  lastName: z.string().min(3, { message: 'Last name must be at least 3 characters' }).optional(),
+  email: z.string().email({ message: 'Enter a valid email' }).optional(),
+  address: z.string().min(5, { message: 'Address must be at least 5 characters' }).optional(),
+  country: z.string().min(3, { message: 'Country must be at least 3 characters' }).optional().nullish(),
+  city: z.string().min(3, { message: 'City must be at least 3 characters' }).optional().nullish(),
+});
+
+export const UserAccountSettingsSchema = z.object({
+  oldPassword: z.string().optional().nullish(),
+  newPassword: z.string().min(5, { message: 'Password must be at least 5 characters' }).optional().nullish(),
+});
+
+export const UserSettingsSchema = UserProfileSettingsSchema.partial().merge(UserAccountSettingsSchema.partial());
+
+/**
+ * try {
+       const res = await updateUser(initialData.id, data);
+       if (res?.success) {
+         toast.success(res?.message);
+       } else {
+         toast.error(res?.message || 'Failed to update profile');
+       }
+     } catch (error) {
+       toast.error('something went wrong');
+       console.log(error);
+     }
+   };
+ 
+ */

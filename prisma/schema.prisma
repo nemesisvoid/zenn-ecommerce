@@ -19,10 +19,12 @@ model User {
   lastName        String?        @db.VarChar(50)
   phone           String?
   status          AccountStatus  @default(ACTIVE)
-  avatarUrl       String?
+  avatar          String?
   isEmailVerified Boolean        @default(false)
   role            UserRole       @default(USER)
   address         String?
+  country         String?
+  city            String?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   emailVerified   DateTime?

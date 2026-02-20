@@ -40,7 +40,7 @@ const HeroSlider = () => {
   // }, []);
 
   return (
-    <div className='h-[calc(100vh-80px)] overflow-hidden'>
+    <div className='h-[calc(100vh-80px)] max-md:h-screen overflow-hidden'>
       <div
         className='w-max h-full flex translate-all ease-in-out duration-700'
         style={{ transform: `translateX(-${sliderIndex * 100}vw)` }}>
@@ -49,8 +49,12 @@ const HeroSlider = () => {
             key={slide.id}
             className={`w-screen h-full flex flex-col items-center xl:flex-row gap-16 ${slide.bg}`}>
             <div className='w-full h-1/2 lg:h-full flex flex-col items-center justify-center gap-8 text-center md:text-left md:w-1/2 my-auto'>
-              <h1 className='text-5xl font-bold'>{slide.title}</h1>
-              <h2>{slide.desc}</h2>
+              <h1 className='text-5xl font-bold max-md:py-3 dark:text-black'>{slide.title}</h1>
+              <h2
+                className='dark:text-black
+              '>
+                {slide.desc}
+              </h2>
 
               <Link
                 href={slide.url}
@@ -75,7 +79,7 @@ const HeroSlider = () => {
         ))}
       </div>
 
-      <div className='absolute flex gap-8 m-auto left-1/2 bottom-8'>
+      <div className='absolute flex gap-8 m-auto left-1/2 bottom-0 -translate-x-1/2  md:bottom-2'>
         {slides.map((slide, i) => (
           <div
             className={`size-4 rounded-full border border-black flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-white ${

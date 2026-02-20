@@ -34,5 +34,5 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
 
   //todo verification token
   console.log('validated', validatedFields.success);
-  return { success: 'user created' };
+  return { success: true, message: 'Account created, please verify your email address' };
 };

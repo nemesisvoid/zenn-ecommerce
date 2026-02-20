@@ -4,9 +4,10 @@ import * as z from 'zod';
 
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
-import { AdminUserSchema, AdminUserSettingsSchema } from '@/schemas';
+import { AdminUserSchema, AdminUserSettingsSchema, UserSettingsSchema } from '@/schemas';
 import { logActivity } from './activity.action';
 import { compareData } from '@/helper/utils';
+import bcrypt from 'bcryptjs';
 
 export const getAllCustomers = async () => {
   try {
@@ -131,3 +132,47 @@ export const getUserById = async (id: string) =>
       },
     },
   });
+export const updateUser = async (id: string, userData: z.infer<typeof UserSettingsSchema>) => {
+  const user = await getUserById(id);
+  if (!user) throw new Error('user not found');
+
+  const validatedData = UserSettingsSchema.safeParse(userData);
+  if (!validatedData.success) throw new Error('error validating fields');
+
+  const { firstName, lastName, email, address, city, country, oldPassword, newPassword, avatar } = validatedData.data;
+
+  let hashedPassword: string | null;
+
+  if (oldPassword && newPassword) {
+    const passwordMatch = await bcrypt.compare(oldPassword, user.password!);
+    if (!passwordMatch) {
+      return { success: false, message: 'Current password is incorrect' };
+    }
+
+    hashedPassword = await bcrypt.hash(newPassword, 10);
+  }
+  console.log('server action', newPassword);
+
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: {
+        name: `${firstName} ${lastName}`,
+        firstName,
+        lastName,
+        avatar,
+        email,
+        ...(hashedPassword && { password: hashedPassword }),
+        address,
+        country,
+        city,
+        // phone: userData.phone,
+      },
+    });
+    console.log('user updated', updatedUser);
+    return { success: true, message: 'Profile updated successfully' };
+  } catch (error) {
+    console.log('error', error);
+    if (error instanceof Error) console.log(error.message);
+  }
+};

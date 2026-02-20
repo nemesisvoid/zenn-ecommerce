@@ -8,6 +8,7 @@ import * as z from 'zod';
 import { CreateProductSchema } from '@/schemas';
 import { compareData, slugify } from '@/helper/utils';
 import { logActivity } from './activity.action';
+import { Prisma } from '@prisma/client';
 
 export const getProductsByNewArrivals = async () => {
   const data = await prisma.product.findMany({
@@ -61,6 +62,55 @@ export const getAllProducts = async () => {
     return data;
   } catch (error) {
     console.log('error fetching products', error);
+  }
+};
+
+export const getProductBySearch = async (params: { [key: string]: string }) => {
+  try {
+    const whereClause: Prisma.ProductWhereInput = {};
+
+    if (params.query) {
+      whereClause.name = {
+        contains: params.query,
+        mode: 'insensitive',
+      };
+      whereClause.description = {
+        contains: params.query,
+        mode: 'insensitive',
+      };
+      whereClause.OR = [{ name: { contains: params.query, mode: 'insensitive' } }, { description: { contains: params.query, mode: 'insensitive' } }];
+    }
+
+    if (params.category) {
+      const categoryArray = params.category.split(',');
+      whereClause.categories = {
+        some: {
+          name: {
+            in: categoryArray,
+          },
+        },
+      };
+    }
+
+    if (params.priceRange) {
+      const [min, max] = params.priceRange.split(',').map(Number);
+      whereClause.price = {
+        gte: min,
+        lte: max,
+      };
+    }
+
+    const products = await prisma.product.findMany({
+      where: whereClause,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return products;
+  } catch (error) {
+    console.log('error fetching product', error);
+    return [];
   }
 };
 

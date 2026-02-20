@@ -22,6 +22,7 @@ export const apiAuthPrefix = '/api/auth';
 export const privateRoutes = ['/checkout'];
 
 export const adminRoutes = ['/admin'];
+export const userRoutes = ['/user'];
 
 /**
  * the prefix for api auth routes

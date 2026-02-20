@@ -36,7 +36,7 @@ const ProductCard = ({ product }: { product: ProductCardProps }) => {
           className='object-cover absolute w-full rounded-md'
         />
       </div>
-      <div className='p-4'>
+      <div className='p-2'>
         <p className='text-xl mb-1 truncate'>{product?.name}</p>
         <p className='text-lg font-medium'>{formatCurrency(product?.price)}</p>
       </div>
