@@ -24,6 +24,8 @@ const CartPage = async () => {
     );
   }
   const cartItems = await getCartItems();
+  console.log('cart items', cartItems);
+  console.log('cart', cart);
 
   return (
     <div className='container'>

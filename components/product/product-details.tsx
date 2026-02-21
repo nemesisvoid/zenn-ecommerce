@@ -62,6 +62,7 @@ const ProductDetails = ({ product, cart }: ProductVariantType) => {
     : getPercentagePrice(product.price, product.discountPercent);
 
   console.log('price to show', priceToShow, product.price);
+  console.log('selected', selectedVariant);
 
   const imagesToShow = product?.colorImages?.find(v => v.color === selectedColor)?.images || product.images;
 

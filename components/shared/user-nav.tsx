@@ -67,6 +67,7 @@ const UserNav = ({ isLoggedIn, userRole, cartItemsCount }: UserNavProps) => {
                 <DropdownMenuItem>
                   <Link href='/user/settings/profile'>Profile</Link>
                 </DropdownMenuItem>
+
                 <DropdownMenuItem>
                   <Button
                     onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
@@ -74,6 +75,7 @@ const UserNav = ({ isLoggedIn, userRole, cartItemsCount }: UserNavProps) => {
                     {theme === 'light' ? <MoonIcon className='size-5' /> : <SunIcon className='size-5' />}
                   </Button>
                 </DropdownMenuItem>
+
                 <DropdownMenuItem>
                   <Button
                     onClick={logout}
@@ -89,6 +91,14 @@ const UserNav = ({ isLoggedIn, userRole, cartItemsCount }: UserNavProps) => {
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Link href='/auth/register'>Register</Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem>
+                  <Button
+                    onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                    className='w-full flex justify-start cursor-pointer bg-transparent hover:bg-transparent'>
+                    {theme === 'light' ? <MoonIcon className='size-5' /> : <SunIcon className='size-5' />}
+                  </Button>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             )}

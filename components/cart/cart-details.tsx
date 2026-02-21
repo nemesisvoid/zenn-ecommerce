@@ -21,7 +21,8 @@ type CartDetailsProps = {
 const CartDetails = ({ cart, cartItems }: CartDetailsProps) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const selectedProduct = renderProduct(cartItems);
+  const selectedProduct = renderProduct(cart?.cartItems ?? []);
+  console.log('selected', selectedProduct);
 
   return (
     <div>
@@ -47,7 +48,7 @@ const CartDetails = ({ cart, cartItems }: CartDetailsProps) => {
                   </div>
                 ))}
                 <div className='flex flex-col justify-between ml-2 flex-1'>
-                  <p className='text-lg font-medium'>{item.name}</p>
+                  <p className='text-lg font-medium'>{item?.name}</p>
 
                   <p className='text-base font-semibold'>{formatCurrency(item.price * item.quantity)}</p>
 

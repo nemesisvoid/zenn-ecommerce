@@ -3,28 +3,41 @@ import { Button } from '../ui/button';
 
 const CtaSection = () => {
   return (
-    <section className='container translate-y-20'>
-      <div className='bg-black text-white flex flex-col md:flex-row items-center justify-between p-10 rounded-2xl'>
-        <p className='text-4xl md:text-5xl font-semibold uppercase w-1/2 md:leading-[1.1]'>
-          stay up to date about <br className='hidden md:block' /> our latest offers
-        </p>
-
-        <div className='flex flex-col gap-4 w-1/3'>
-          <div className='flex items-center gap-2 rounded-2xl   border border-white'>
-            <MailIcon className='w-6 h-6 ml-3' />
-            <input
-              autoComplete=''
-              className='w-full bg-black border-none outline-none focus-within:border-none rounded-xl py-3 active:bg-transparent focus:bg-transparent'
-              placeholder='enter your email address'
-            />
+    <div className='relative container'>
+      {/* Floating CTA */}
+      <div
+        className='
+          relative z-10
+          -mb-20 md:-mb-24   /* pulls footer up under it */
+          
+          rounded-3xl
+          px-6 py-8 md:px-10 md:py-10
+          
+          bg-gradient-to-br from-black via-gray-900 to-black
+          text-white shadow-2xl
+        '>
+        <div className='flex flex-col gap-6 md:flex-row md:items-center md:justify-between'>
+          {/* Text */}
+          <div className='max-w-lg'>
+            <p className='text-2xl md:text-3xl lg:text-4xl font-semibold leading-tight'>Stay up to date about our latest offers</p>
+            <p className='text-sm text-gray-300 mt-2'>Get exclusive drops and deals straight to your inbox.</p>
           </div>
 
-          <Button className='bg-white text-black text-lg cursor-pointer py-6 px-3 rounded-2xl hover:text-white hover:bg-transparent'>
-            Subscribe to Newsletter
-          </Button>
+          {/* Input */}
+          <div className='w-full md:w-auto md:min-w-[360px] space-y-3'>
+            <div className='flex items-center gap-3 rounded-xl px-4 py-3 bg-white/10 backdrop-blur border border-white/20'>
+              <MailIcon className='w-5 h-5 text-white/70' />
+              <input
+                className='w-full bg-transparent outline-none placeholder:text-white/50'
+                placeholder='Enter your email address'
+              />
+            </div>
+
+            <Button className='w-full rounded-xl py-5 bg-white text-black hover:bg-gray-200'>Subscribe</Button>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 

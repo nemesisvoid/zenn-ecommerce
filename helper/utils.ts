@@ -160,7 +160,7 @@ export const renderProduct = (product: CartItemType[]) => {
         productId: item.products?.id,
         name: item.products?.name,
         images: item.products?.images,
-        price: item.products?.price,
+        price: item.price,
         quantity: item.quantity,
       };
     }

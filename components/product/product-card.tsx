@@ -19,8 +19,8 @@ const ProductCard = ({ product }: { product: ProductCardProps }) => {
   return (
     <Link
       href={`product/${product?.slug}`}
-      className='shadow-md rounded-md'>
-      <div className='relative w-full h-72 aspect-square mb-4'>
+      className='shadow-md rounded-md dark:bg-black/40'>
+      <div className='relative w-full h-72 aspect-square mb-4  dark:text-white'>
         <Image
           src={product?.images ? product.images[0] : product.images[1]}
           fill
@@ -36,7 +36,7 @@ const ProductCard = ({ product }: { product: ProductCardProps }) => {
           className='object-cover absolute w-full rounded-md'
         />
       </div>
-      <div className='p-2'>
+      <div className='p-4'>
         <p className='text-xl mb-1 truncate'>{product?.name}</p>
         <p className='text-lg font-medium'>{formatCurrency(product?.price)}</p>
       </div>

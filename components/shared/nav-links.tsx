@@ -121,30 +121,65 @@ const NavLinks = () => {
             initial='initial'
             animate='animate'
             exit='exit'
-            className='fixed left-0 top-0 w-full h-screen bg-white origin-top p-10 z-40  bg-gradient-to-b from-white via-gray-200 to-red-300
-                      dark:from-gray-900 dark:via-gray-800 dark:to-gray-950'>
+            className='fixed left-0 top-0 w-full h-screen origin-top z-40
+                 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl
+                 border-r border-zinc-100 dark:border-zinc-800/60'>
+            {/* Subtle background texture */}
+            <div
+              className='absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))]
+                      from-indigo-50/60 via-transparent to-transparent
+                      dark:from-indigo-950/30 dark:via-transparent dark:to-transparent pointer-events-none'
+            />
+
+            {/* Accent glow blob */}
+            <div
+              className='absolute top-1/3 -right-20 w-64 h-64 rounded-full
+                      bg-indigo-400/10 dark:bg-indigo-500/10 blur-3xl pointer-events-none'
+            />
+
             <motion.div
               variants={containerVars}
               initial='initial'
               animate='animate'
               exit='initial'
-              className='flex flex-col h-full justify-center items-start gap-8'>
-              <>
-                {navLinks.map((link, index) => (
-                  <div
-                    key={index}
-                    className='overflow-hidden'>
-                    <motion.div variants={navItemVars}>
-                      <Link
-                        href={link.link}
-                        className='text-3xl font-medium text-gray-800 hover:text-gray-950'
-                        onClick={() => setIsNavOpen(false)}>
+              className='relative flex flex-col h-full justify-center items-start gap-2 px-10'>
+              {navLinks.map((link, index) => (
+                <div
+                  key={index}
+                  className='overflow-hidden w-full'>
+                  <motion.div variants={navItemVars}>
+                    <Link
+                      href={link.link}
+                      onClick={() => setIsNavOpen(false)}
+                      className='group flex items-center gap-4 py-3 w-full'>
+                      {/* Animated accent line */}
+                      <span
+                        className='h-px w-0 group-hover:w-8 transition-all duration-300 ease-out
+                                 bg-indigo-500 dark:bg-indigo-400'
+                      />
+
+                      <span
+                        className='text-[2.5rem] font-semibold tracking-tight leading-none
+                                 text-zinc-300 dark:text-zinc-600
+                                 group-hover:text-zinc-900 dark:group-hover:text-zinc-50
+                                 transition-colors duration-300'>
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+
+                      <span
+                        className='text-2xl font-semibold tracking-tight
+                                 text-zinc-800 dark:text-zinc-100
+                                 group-hover:text-indigo-600 dark:group-hover:text-indigo-400
+                                 transition-colors duration-300'>
                         {link.name}
-                      </Link>
-                    </motion.div>
-                  </div>
-                ))}
-              </>
+                      </span>
+                    </Link>
+
+                    {/* Divider */}
+                    {index < navLinks.length - 1 && <div className='h-px w-full bg-zinc-100 dark:bg-zinc-800/80 ml-0' />}
+                  </motion.div>
+                </div>
+              ))}
             </motion.div>
           </motion.div>
         )}
