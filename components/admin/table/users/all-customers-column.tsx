@@ -92,7 +92,7 @@ export const allCustomersColumn: ColumnDef<AllCustomersColumnType>[] = [
       const badgeClass = (() => {
         switch (role.toLowerCase()) {
           case 'admin':
-            return 'bg-blue-200 text-blue-900';
+            return 'bg-blue-300 text-blue-900 font-semibold';
           case 'manager':
             return 'bg-amber-200 text-amber-900';
           case 'vendor':

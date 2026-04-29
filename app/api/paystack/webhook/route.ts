@@ -41,6 +41,7 @@ export async function POST(req: Request) {
           data: {
             status: 'CONFIRMED',
             paymentStatus: 'PAID',
+            deliveryStatus: 'PROCESSING',
             isPaid: true,
             paidAt: new Date(),
           },
@@ -52,9 +53,8 @@ export async function POST(req: Request) {
       //   data: { stock: { decrement: item.quantity } },
       // });
 
-      console.log('deleting...');
-      const deleted = await prisma?.cartItem.deleteMany({
-        where: { cartId: order.cartId },
+      const deleted = await prisma?.order.delete({
+        where: { id: order.id },
       });
       if (!deleted) {
         console.warn('Error deleting cart items');

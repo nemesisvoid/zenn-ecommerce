@@ -28,6 +28,7 @@ model User {
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   emailVerified   DateTime?
+  lastLogin       DateTime?
   image           String?
   adminNotes      String?
   paymentMethods  PaymentMethod?
@@ -330,6 +331,6 @@ enum DeliveryStatus {
 }
 
 enum PaymentMethod {
-  PAYONDELIVERY
+  PAY_ON_DELIVERY
   PAYSTACK
 }

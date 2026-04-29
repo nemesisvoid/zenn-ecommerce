@@ -17,7 +17,7 @@ type AddToCartType = {
 
 const AddToCart = ({ product, selectedVariant, price, canAddToCart }: AddToCartType) => {
   // const isItemInCart = cart && product && cart.cartItems.find(item => item.productId === product.productId);
-  console.log('product in addToCart', product, selectedVariant);
+
   const variantId = selectedVariant?.id ?? null;
   const productId = product.id;
 
@@ -38,7 +38,6 @@ const AddToCart = ({ product, selectedVariant, price, canAddToCart }: AddToCartT
         return;
       }
       toast.success(res?.message);
-      console.log({ res });
     });
   };
 

@@ -25,91 +25,96 @@ const CartDetails = ({ cart, cartItems }: CartDetailsProps) => {
   console.log('selected', selectedProduct);
 
   return (
-    <div>
+    <div className='h-[50vh]'>
       <h2 className='text-xl md:text-3xl font-medium mb-10'>Cart</h2>
       <div className='flex flex-col md:flex-row justify-between gap-10 mt-1'>
         <div className='border border-gray-300 rounded-xl p-4 flex-1'>
           <div className='flex flex-col gap-14'>
-            {selectedProduct?.map((item, index) => (
-              <div
-                key={index}
-                className='flex gap-2
+            {selectedProduct?.map((item, index) => {
+              const calculateDiscount = item.discountPrice ? getPercentagePrice(item.price, item.discountPrice) : null;
+              const calculatePrice = calculateDiscount ? item.price * item?.quantity : item.price * item?.quantity;
+              console.log(calculateDiscount, 'dis');
+              return (
+                <div
+                  key={index}
+                  className='flex gap-2
                   '>
-                {item?.images?.slice(0, 1).map(img => (
-                  <div
-                    key={img}
-                    className='relative w-25 aspect-square'>
-                    <Image
-                      src={img}
-                      className='object-cover rounded-sm'
-                      fill
-                      alt='product image'
-                    />
+                  {item?.images?.slice(0, 1).map(img => (
+                    <div
+                      key={img}
+                      className='relative w-25 aspect-square'>
+                      <Image
+                        src={img}
+                        className='object-cover rounded-sm'
+                        fill
+                        alt='product image'
+                      />
+                    </div>
+                  ))}
+                  <div className='flex flex-col justify-between ml-2 flex-1'>
+                    <p className='text-lg font-medium'>{item?.name}</p>
+
+                    <p className='text-base font-semibold'>{formatCurrency(item.price * item.quantity)}</p>
+
+                    <p>
+                      {item?.color}
+                      <span className='text-gray-400'> x {item.quantity}</span>
+                    </p>
                   </div>
-                ))}
-                <div className='flex flex-col justify-between ml-2 flex-1'>
-                  <p className='text-lg font-medium'>{item?.name}</p>
 
-                  <p className='text-base font-semibold'>{formatCurrency(item.price * item.quantity)}</p>
+                  <div className='flex flex-col justify-between items-end'>
+                    <Button className='text-red-400 bg-transparent size-7 rounded-sm cursor-pointer'>
+                      <Trash2Icon />
+                    </Button>
 
-                  <p>
-                    {item?.color}
-                    <span className='text-gray-400'> x {item.quantity}</span>
-                  </p>
-                </div>
+                    <div className='bg-gray-300 rounded-full flex items-center gap-5 px-2 py-1 ml-6 dark:bg-white/90'>
+                      <button
+                        className='text-sm rounded-sm cursor-pointer'
+                        disabled={isPending}
+                        onClick={() => {
+                          startTransition(async () => {
+                            const res = await createCart(item);
+                            console.log('id matched');
+                            if (!res?.success) {
+                              toast.error(res?.message);
+                            }
 
-                <div className='flex flex-col justify-between items-end'>
-                  <Button className='text-red-400 bg-transparent size-7 rounded-sm cursor-pointer'>
-                    <Trash2Icon />
-                  </Button>
-
-                  <div className='bg-gray-300 rounded-full flex items-center gap-5 px-2 py-1 ml-6 dark:bg-white/90'>
-                    <button
-                      className='text-sm rounded-sm cursor-pointer'
-                      disabled={isPending}
-                      onClick={() => {
-                        startTransition(async () => {
-                          const res = await createCart(item);
-                          console.log('id matched');
-                          if (!res?.success) {
-                            toast.error(res?.message);
-                          }
-
-                          router.refresh();
-                        });
-                      }}>
-                      {isPending ? (
-                        <LoaderIcon className='animate-spin' />
-                      ) : (
-                        <PlusIcon
+                            router.refresh();
+                          });
+                        }}>
+                        {isPending ? (
+                          <LoaderIcon className='animate-spin' />
+                        ) : (
+                          <PlusIcon
+                            size={18}
+                            className='dark:text-black'
+                          />
+                        )}
+                      </button>
+                      <p className='text-base text-gray-800'>{item.quantity}</p>
+                      <button
+                        className='text-sm rounded-sm cursor-pointer'
+                        disabled={isPending}
+                        onClick={() => {
+                          startTransition(async () => {
+                            const res = await removeCartItem(item.productId, item?.variantId);
+                            if (!res?.success) {
+                              toast.error(res?.message || 'Something went wrong');
+                            }
+                            toast.success(res?.message);
+                            router.refresh();
+                          });
+                        }}>
+                        <MinusIcon
                           size={18}
                           className='dark:text-black'
                         />
-                      )}
-                    </button>
-                    <p className='text-base text-gray-800'>{item.quantity}</p>
-                    <button
-                      className='text-sm rounded-sm cursor-pointer'
-                      disabled={isPending}
-                      onClick={() => {
-                        startTransition(async () => {
-                          const res = await removeCartItem(item.productId, item?.variantId);
-                          if (!res?.success) {
-                            toast.error(res?.message || 'Something went wrong');
-                          }
-                          toast.success(res?.message);
-                          router.refresh();
-                        });
-                      }}>
-                      <MinusIcon
-                        size={18}
-                        className='dark:text-black'
-                      />
-                    </button>
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -120,7 +125,7 @@ const CartDetails = ({ cart, cartItems }: CartDetailsProps) => {
             <div className='flex justify-between'>
               <p className='text-base text-gray-500'>Subtotal</p>
 
-              <p>{cart?.itemsPrice}</p>
+              <p>{formatCurrency(cart?.itemsPrice)}</p>
             </div>
             <div className='flex justify-between pb-2'>
               <p className='text-base text-gray-500'>Delivery fee</p>
@@ -138,7 +143,7 @@ const CartDetails = ({ cart, cartItems }: CartDetailsProps) => {
           </div>
 
           <Button
-            className='text-xl font-base text-white bg-black rounded-4xl py-7 w-full mt-auto'
+            className='text-xl font-base text-white bg-black rounded-4xl py-7 w-full mt-auto hover:bg-white hover:text-black'
             asChild>
             <Link
               href='/checkout'

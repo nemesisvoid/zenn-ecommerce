@@ -9,7 +9,7 @@ const AllOrdersPage = async () => {
 
   const order = orders?.map(order => ({
     id: order.id,
-    customerName: order.user.name,
+    customerName: order.user.firstName ? `${order.user.firstName} ${order.user.lastName}` : order.user.name,
     totalItems: order.orderItems.length,
     orderNumber: order.id.slice(0, 8).toUpperCase(),
     totalAmount: order.totalPrice,
@@ -19,6 +19,9 @@ const AllOrdersPage = async () => {
     orderStatus: order.status,
     deliveryStatus: order.deliveryStatus,
   }));
+
+  console.log(order);
+  console.log('orders', orders);
 
   return (
     <div className='admin-card px-0'>

@@ -76,8 +76,7 @@ const AdminUserDetails = ({ user, userStats, userTransaction }: AdminUserDetails
 
             <div className='flex justify-between items-center text-sm'>
               <span className='text-gray-500'>Last Login</span>
-              <span className='font-medium'>2 hours ago</span>
-              {/* You can format user.updatedAt or user.lastLogin here */}
+              <span className='font-medium'>{user?.lastLogin?.toDateString() || 'N/A'}</span>
             </div>
 
             <div className='flex justify-between items-center text-sm'>

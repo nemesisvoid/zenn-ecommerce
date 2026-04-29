@@ -15,7 +15,7 @@ import { Button } from '../ui/button';
 import Image from 'next/image';
 import { formatCurrency } from '@/helper/utils';
 import { useTransition } from 'react';
-import { createOrder } from '@/actions/order.action';
+import { createOrder, createOrderPayOnDelivery, createOrderPaystack } from '@/actions/order.action';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 
@@ -33,6 +33,7 @@ export const PaymentForm = ({ user, cart, selectedProducts }: PaymentFormProps) 
     defaultValues: {
       userId: user.id,
       name: user.name || '',
+
       email: user.email || '',
       phone: '',
       country: '',
@@ -42,16 +43,30 @@ export const PaymentForm = ({ user, cart, selectedProducts }: PaymentFormProps) 
       paymentMethod: 'PAYSTACK',
     },
   });
+
+  const pay = form.watch('paymentMethod');
+  console.log(pay);
   const handleCreateOrder = async (data: z.infer<typeof OrderSchema>) => {
     console.log('submitting');
     const newData = { cart, phoneNo: data.phone, ...data };
     console.log('newData', newData);
     startTransition(async () => {
-      const res = await createOrder(newData);
-      if (!res?.orderId) throw new Error(res?.message);
-      toast.success(res.message);
-
-      router.replace(res.auth_url);
+      if (data.paymentMethod === 'PAYSTACK') {
+        const res = await createOrderPaystack(newData);
+        if (!res?.orderId) throw new Error(res?.message);
+        toast.success(res.message);
+        router.replace(res.auth_url);
+      } else if (data.paymentMethod === 'PAY_ON_DELIVERY') {
+        try {
+          const res = await createOrderPayOnDelivery(newData);
+          if (!res?.orderId) throw new Error(res?.message);
+          toast.success(res.message);
+          router.replace(`/order/${res.orderId}`);
+        } catch (err) {
+          toast.error('Error placing order on delivery');
+          console.log('error placing order on delivery', err);
+        }
+      }
     });
   };
   return (
@@ -70,6 +85,7 @@ export const PaymentForm = ({ user, cart, selectedProducts }: PaymentFormProps) 
                     <FormLabel>Full Name</FormLabel>
                     <FormControl>
                       <Input
+                        // value={field.value}
                         {...field}
                         required
                       />
@@ -210,7 +226,7 @@ export const PaymentForm = ({ user, cart, selectedProducts }: PaymentFormProps) 
                               value={method}
                               id={method}
                             />
-                            <FormLabel htmlFor={method}>{method}</FormLabel>
+                            <FormLabel htmlFor={method}>{method === 'PAY_ON_DELIVERY' ? method.split('_').join(' ') : method}</FormLabel>
                           </div>
                         ))}
                       </RadioGroup>

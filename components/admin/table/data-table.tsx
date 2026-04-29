@@ -35,7 +35,7 @@ const DataTable = <TData, TValue>({ columns, data, pageSize = 10 }: DataTable<TD
   // --- pagination helpers ---
   const pageCount = table.getPageCount();
   const currentPage = table.getState().pagination.pageIndex;
-  const maxPagesToShow = 5; // adjust window size
+  const maxPagesToShow = 5;
 
   const pageNumbers = useMemo(() => {
     const pages: (number | '...')[] = [];
@@ -141,7 +141,7 @@ const DataTable = <TData, TValue>({ columns, data, pageSize = 10 }: DataTable<TD
                 aria-current={p === currentPage ? 'page' : undefined}>
                 {(p as number) + 1}
               </button>
-            )
+            ),
           )}
         </div>
 

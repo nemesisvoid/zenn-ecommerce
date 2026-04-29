@@ -60,7 +60,7 @@ export const {
 
       if (!existingUser) return token;
 
-      token.name = token.name || `${existingUser.firstName} ${existingUser.lastName}`;
+      token.name = (token.name ?? existingUser.name ?? [existingUser.firstName, existingUser.lastName].filter(Boolean).join(' ').trim()) || '';
       token.role = existingUser.role;
       if (trigger === 'signIn' || trigger === 'signUp') {
         const cookie = await cookies();
@@ -94,14 +94,23 @@ export const {
   events: {
     async signIn({ user, account }) {
       if (account?.provider !== 'credentials') {
+        const updateData: any = {
+          isEmailVerified: true,
+          emailVerified: new Date(),
+          lastLogin: new Date(),
+        };
+
+        if (!user.firstName && user.name) {
+          const parts = user.name.split(' ').filter(Boolean);
+          if (parts.length) {
+            updateData.firstName = parts[0];
+            if (parts.length > 1) updateData.lastName = parts.slice(1).join(' ');
+          }
+        }
+
         await prisma.user.update({
-          where: {
-            id: user.id,
-          },
-          data: {
-            isEmailVerified: true,
-            emailVerified: new Date(),
-          },
+          where: { id: user.id },
+          data: updateData,
         });
       }
     },

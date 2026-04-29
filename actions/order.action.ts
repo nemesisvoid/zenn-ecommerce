@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { CartType } from '@/types';
+import { redirect } from 'next/navigation';
 
 interface CreateOrderProps {
   cart: CartType | undefined;
@@ -18,12 +19,58 @@ interface CreateOrderProps {
 
 type Row = { month: Date; revenue: any };
 
-export const createOrder = async (data: CreateOrderProps) => {
-  const { cart, userId, name, email, phoneNo, paymentMethod, address, country, city } = data;
+const reference = `order_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+
+export const createOrderPayOnDelivery = async (data: CreateOrderProps) => {
+  const { cart, userId, email, phoneNo, paymentMethod, address, country, city } = data;
   if (!userId) throw new Error('User not found');
   if (!cart?.id) throw new Error('Cart not found');
 
-  const reference = `order_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+  try {
+    const order = await prisma.order.create({
+      data: {
+        userId,
+        status: 'PENDING',
+        phoneNo,
+        deliveryStatus: 'PENDING',
+        email,
+        country,
+        paymentStatus: 'PENDING',
+        city,
+        shippingAddress: address,
+        itemsPrice: cart.itemsPrice,
+        totalPrice: cart.totalPrice,
+        productId: cart.cartItems[0].productId,
+        shippingPrice: cart.shippingPrice,
+        paystackReference: reference,
+        cartId: cart.id,
+        paymentMethod: paymentMethod as 'PAYSTACK' | 'PAY_ON_DELIVERY',
+        orderItems: {
+          create: cart.cartItems.map(item => ({
+            productId: item.productId,
+            variantId: item.variantId ?? null,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+        },
+      },
+    });
+    if (!order?.id) throw new Error('Failed to create order');
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { status: 'CONFIRMED', deliveryStatus: 'PROCESSING' },
+    });
+    await prisma.cart.delete({ where: { id: cart.id } });
+    return { orderId: order.id, message: 'order success' };
+  } catch (error) {
+    console.log(`error placing order on delivery: ${error}`);
+  }
+};
+
+export const createOrderPaystack = async (data: CreateOrderProps) => {
+  const { cart, userId, name, email, phoneNo, paymentMethod, address, country, city } = data;
+  if (!userId) throw new Error('User not found');
+  if (!cart?.id) throw new Error('Cart not found');
 
   try {
     const order = await prisma.order.create({
@@ -34,23 +81,22 @@ export const createOrder = async (data: CreateOrderProps) => {
         email,
         country,
         city,
+        deliveryStatus: 'PENDING',
 
         shippingAddress: address,
         itemsPrice: cart.itemsPrice,
         totalPrice: cart.totalPrice,
         productId: cart.cartItems[0].productId,
-        // taxPrice:cart.t,
         shippingPrice: cart.shippingPrice,
         paystackReference: reference,
         cartId: cart.id,
-        paymentMethod: paymentMethod as 'PAYSTACK' | 'PAYONDELIVERY',
+        paymentMethod: paymentMethod as 'PAYSTACK' | 'PAY_ON_DELIVERY',
         orderItems: {
           create: cart.cartItems.map(item => ({
             productId: item.productId,
             variantId: item.variantId ?? null,
             quantity: item.quantity,
             price: item.price,
-            // image: item.image,
           })),
         },
       },
@@ -217,7 +263,7 @@ export const getAllOrders = async () => {
     const orders = await prisma.order.findMany({
       include: {
         orderItems: true,
-        user: { select: { id: true, name: true, email: true } },
+        user: { select: { id: true, name: true, firstName: true, lastName: true, email: true } },
       },
     });
     return orders;
@@ -225,3 +271,13 @@ export const getAllOrders = async () => {
     console.error('an error occurred while fetching orders:', error);
   }
 };
+
+// export const orderStats = async () => {
+//   const usersWithOrders = await prisma.user.findMany({
+//     where:{
+//       orders:{
+//         some:
+//       }
+//     }
+//   })
+// };

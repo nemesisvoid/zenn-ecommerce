@@ -4,7 +4,7 @@ import * as z from 'zod';
 
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
-import { AdminUserSchema, AdminUserSettingsSchema, UserSettingsSchema } from '@/schemas';
+import { AdminUserSettingsSchema, UserSettingsSchema } from '@/schemas';
 import { logActivity } from './activity.action';
 import { compareData } from '@/helper/utils';
 import bcrypt from 'bcryptjs';
@@ -132,6 +132,7 @@ export const getUserById = async (id: string) =>
       },
     },
   });
+
 export const updateUser = async (id: string, userData: z.infer<typeof UserSettingsSchema>) => {
   const user = await getUserById(id);
   if (!user) throw new Error('user not found');
@@ -141,7 +142,7 @@ export const updateUser = async (id: string, userData: z.infer<typeof UserSettin
 
   const { firstName, lastName, email, address, city, country, oldPassword, newPassword, avatar } = validatedData.data;
 
-  let hashedPassword: string | null;
+  let hashedPassword: string | null = null;
 
   if (oldPassword && newPassword) {
     const passwordMatch = await bcrypt.compare(oldPassword, user.password!);

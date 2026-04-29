@@ -174,7 +174,7 @@ export const receiptEmailHtml = (order: any) => {
     <tr>
       <td style="padding:8px 0;">
         <strong>${item.product.name}</strong>
-        ${item.variant ? `<br/><small>Variant: ${item.variant.name}</small>` : ''}
+        ${item.variant ? `<br/><small>Variant Color: ${item.variant.color}</small> <br/> <small>Variant Size: ${item.variant.size}</small>` : 'N/A'}
       </td>
       <td align="center">${item.quantity}</td>
       <td align="right">₦${item.price.toLocaleString()}</td>

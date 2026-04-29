@@ -92,7 +92,6 @@ const UserProfileForm = ({ initialData }: UserProfileFormProps) => {
           if (!res.ok) {
             throw new Error(result.error?.message || 'Upload failed');
           }
-          console.log('result here', result);
 
           if (!result) throw new Error('Error uploading images to cloudinary');
           data.avatar = result.secure_url as string;

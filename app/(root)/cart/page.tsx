@@ -5,15 +5,8 @@ import CartDetails from '@/components/cart/cart-details';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import Link from 'next/link';
 
-import { prisma } from '@/lib/prisma';
-
 const CartPage = async () => {
-  const session = await auth();
-  console.log(session);
-
   const cart = await getCart();
-  const user = await auth();
-  console.log('cart page user:', user);
 
   if (!cart || cart.cartItems.length === 0) {
     return (
@@ -24,8 +17,6 @@ const CartPage = async () => {
     );
   }
   const cartItems = await getCartItems();
-  console.log('cart items', cartItems);
-  console.log('cart', cart);
 
   return (
     <div className='container'>

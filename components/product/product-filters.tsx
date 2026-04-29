@@ -17,6 +17,7 @@ const MIN_PRICE = 0;
 const MAX_PRICE = 1000000;
 
 const DEFAULT_PRICE_RANGE = [MIN_PRICE, MAX_PRICE];
+
 export default function ProductFilters({ categories, currentFilters }: { categories: any; currentFilters: any }) {
   const [transitionPending, startTransition] = useTransition();
   const [isMounted, setIsMounted] = useState(false);

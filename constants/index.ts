@@ -84,4 +84,4 @@ export const sidebarLinks = [
   },
 ];
 
-export const PaymentMethods = ['PAYONDELIVERY', 'PAYSTACK'];
+export const PaymentMethods = ['PAY_ON_DELIVERY', 'PAYSTACK'];

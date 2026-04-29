@@ -1,6 +1,5 @@
 'use server';
 
-import { getCart } from '@/actions/cart.actions';
 import { getOrderById } from '@/actions/order.action';
 import { auth } from '@/auth';
 import { formatCurrency, renderProduct } from '@/helper/utils';
@@ -14,7 +13,6 @@ const OrderPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   if (!session?.user.id) return <div>Please login to view your order.</div>;
 
   const order = await getOrderById(id, session.user.id);
-  console.log('testing cart', order);
 
   const selectedProduct = order?.orderItems.map(item => {
     if (item.variantId) {
@@ -56,7 +54,6 @@ const OrderPage = async ({ params }: { params: Promise<{ id: string }> }) => {
       </div>
     );
 
-  // const imagesToRender =
   console.log('order', order);
   return (
     <div className='container text-center mt-10 h-screen'>
@@ -79,7 +76,7 @@ const OrderPage = async ({ params }: { params: Promise<{ id: string }> }) => {
           </div>
           <div>
             <h4 className='text-gray-500 font-medium mb-2'>Payment Method</h4>
-            <p>{order.paymentMethod}</p>
+            <p>{order.paymentMethod === 'PAY_ON_DELIVERY' ? order.paymentMethod.split('_').join(' ') : order.paymentMethod}</p>
           </div>
         </div>
 
