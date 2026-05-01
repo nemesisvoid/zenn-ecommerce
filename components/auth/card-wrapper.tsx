@@ -15,7 +15,12 @@ interface CardWrapperProps {
 
 const CardWrapper = ({ children, headerLabel, backButtonLink, backButtonLabel, showSocial }: CardWrapperProps) => {
   return (
-    <Card className='w-[90%] md:w-1/2 lg:w-1/3 bg-white/30 backdrop-blur-md shadow-3xl border border-white/40 my-2'>
+    <Card
+      className='w-[90%] md:w-1/2 lg:w-1/3 my-2
+  bg-[#0e0c0a]/80 backdrop-blur-md
+  border border-[#c5a05a]/40
+  shadow-[0_0_60px_-10px_rgba(197,160,90,0.15),0_0_0_0.5px_rgba(197,160,90,0.2)]
+  rounded-2xl'>
       <CardHeader>
         <Header label={headerLabel} />
       </CardHeader>

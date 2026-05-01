@@ -413,8 +413,8 @@ const ProductForm = ({ categories, initialData }: ProductFormProps) => {
             </div>
           </div>
 
-          <div className='bg-white text-gray-600 rounded-md px-3 py-1 flex mb-20'>
-            <div className='my-4 ml-auto'>
+          <div className='text-gray-600 rounded-md px-3 py-1 flex mb-20'>
+            <div className='my-4'>
               <Button
                 className='text-lg p-6 cursor-pointer'
                 type='submit'

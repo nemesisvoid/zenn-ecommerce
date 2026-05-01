@@ -1,17 +1,16 @@
 'use client';
 
-import { useSearchStore } from '../store/use-search-store';
-import { Skeleton } from '../ui/skeleton';
-import ProductCard from './product-card';
+import { useSearchStore } from '@/components/store/use-search-store';
 
+import { Skeleton } from '@/components/ui/skeleton';
+import ProductCard from './product-card';
 import { ProductListType } from '@/types';
 
 const ProductList = ({ data, limit }: { data: ProductListType; limit?: number }) => {
   const { isPending } = useSearchStore();
   const numProducts = data.slice(0, limit);
-  console.log('num', numProducts);
   return (
-    <div className=''>
+    <div className='mb-20'>
       {isPending ? (
         <div className=''>
           <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 w-full'>

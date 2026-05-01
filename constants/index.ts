@@ -14,7 +14,7 @@ import {
 export const navLinks = [
   {
     name: 'Shop',
-    link: '/shop',
+    link: '/list',
   },
   {
     name: 'New Arrivals',

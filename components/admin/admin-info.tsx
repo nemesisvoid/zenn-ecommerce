@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Session } from 'next-auth';
 import { useSidebar } from '../ui/sidebar';
 import { useTheme } from 'next-themes';
+import { greetAdmin } from '@/helper/utils';
 
 const AdminInfo = ({ session }: { session: Session | null }) => {
   const { toggleSidebar } = useSidebar();
@@ -19,7 +20,9 @@ const AdminInfo = ({ session }: { session: Session | null }) => {
           <MenuIcon />
         </button>
 
-        <h1>Welcome, Mike</h1>
+        <h1>
+          {greetAdmin()}, {session?.user.name}
+        </h1>
       </div>
 
       <div className='flex items-center gap-6'>

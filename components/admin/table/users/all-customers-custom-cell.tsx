@@ -32,7 +32,7 @@ const AllCustomersCustomCell = ({ row }) => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>This action cannot be undone. This will permanently delete the product.</AlertDialogDescription>
+            <AlertDialogDescription>This action cannot be undone. This will permanently delete the user.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>

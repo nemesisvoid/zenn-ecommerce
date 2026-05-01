@@ -15,7 +15,6 @@ type ProductCardProps = {
 const ProductCard = ({ product }: { product: ProductCardProps }) => {
   // const [isImageLoaded, setIsImageLoaded] = useState(true);
   // const handleImageLoad = () => setIsImageLoaded(false);
-  console.log('prod', product.images);
   return (
     <Link
       href={`product/${product?.slug}`}

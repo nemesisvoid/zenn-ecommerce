@@ -185,7 +185,7 @@ select:-webkit-autofill:focus {
   }
 
   .bg-img {
-    @apply bg-cover bg-center bg-no-repeat bg-[url('/bg-img-2.png')];
+    @apply bg-cover bg-center bg-no-repeat bg-[url('/bg-login.png')];
   }
 }
 

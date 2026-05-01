@@ -15,8 +15,8 @@ import FormError from '../misc/form-error';
 import FormSuccess from '../misc/form-success';
 import { login } from '@/actions/login.action';
 import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import BackButton from './back-button';
+import { ArrowRightIcon, LoaderIcon } from 'lucide-react';
 
 const LoginForm = () => {
   const [error, setError] = useState<string | undefined>('');
@@ -63,7 +63,7 @@ const LoginForm = () => {
               name='email'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-xl text-black/80 mb-2'>Email</FormLabel>
+                  <FormLabel className='text-xl text-white/70 mb-2'>Email</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -83,7 +83,7 @@ const LoginForm = () => {
               name='password'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-xl text-black/85 mb-2'>Password</FormLabel>
+                  <FormLabel className='text-xl text-white/70 mb-2'>Password</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -112,6 +112,7 @@ const LoginForm = () => {
             <BackButton
               label='Verify your email'
               link='/auth/error'
+              icon={<ArrowRightIcon />}
             />
           )}
           <FormSuccess message={isVerified ? 'Email verified successfully. Please login.' : ''} />
@@ -121,6 +122,7 @@ const LoginForm = () => {
             type='submit'
             disabled={isPending}>
             Login
+            {isPending && <LoaderIcon className='animate-spin' />}
           </Button>
         </form>
       </Form>

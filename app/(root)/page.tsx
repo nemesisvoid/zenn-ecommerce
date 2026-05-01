@@ -16,7 +16,7 @@ export default async function Home() {
       <HeroSection />
       <NewArrivalsSection />
       <CategorySection />
-      <FeaturedSection />
+      {/* <FeaturedSection /> */}
     </>
   );
 }

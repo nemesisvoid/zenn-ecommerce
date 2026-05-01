@@ -72,7 +72,7 @@ const ProductDetails = ({ product, cart }: ProductVariantType) => {
 
       <div className='lg:ml-10'>
         <div className='border-b border-gray-300 pb-6'>
-          <h2 className='text-4xl font-semibold mb-4'>{product?.name}</h2>
+          <h2 className='text-2xl md:text-4xl font-semibold mb-4'>{product?.name}</h2>
           {product?.price ? (
             <div className='text-2xl font-medium mb-6'>
               {product.discountPercent ? (

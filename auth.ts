@@ -1,6 +1,5 @@
 import NextAuth from 'next-auth';
 import authConfig from './auth.config';
-// import { PrismaNeon } from '@prisma/adapter-neon';
 
 import { PrismaAdapter } from '@auth/prisma-adapter';
 
@@ -10,6 +9,7 @@ import { cookies } from 'next/headers';
 import Credentials from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { LoginSchema } from './schemas';
+import { sendAdminNotificationMail, sendUserWelcomeMail } from './helper/send-mail';
 
 export const {
   handlers: { GET, POST },
@@ -114,5 +114,14 @@ export const {
         });
       }
     },
+  },
+
+  async createUser({ user }) {
+    if (!user.email) return;
+    const admins = await prisma.user.findMany({ where: { role: 'ADMIN' }, select: { email: true } });
+    await Promise.all([
+      ...admins.map(admin => sendAdminNotificationMail(admin.email, user)),
+      sendUserWelcomeMail(user.email, user.name ?? user.firstName ?? ''),
+    ]);
   },
 });

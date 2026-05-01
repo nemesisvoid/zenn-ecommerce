@@ -137,7 +137,7 @@ const ProductVariantForm = ({ form, isPending }: ProductVariantFormProps) => {
                 className='bg-gray-100 px-3 py-1 rounded text-sm my-5'>
                 <span className='font-semibold'>{opt.name}:</span> {opt.values.join(', ')}
               </div>
-            )
+            ),
         )}
       </div>
 
@@ -156,7 +156,7 @@ const ProductVariantForm = ({ form, isPending }: ProductVariantFormProps) => {
                 <AccordionItem
                   key={field.id}
                   value={field.id}>
-                  <AccordionTrigger className='px-4 hover:no-underline hover:bg-gray-50'>
+                  <AccordionTrigger className='px-4 hover:no-underline hover:bg-black/10'>
                     <div className='flex items-center gap-2'>
                       <div
                         className='w-4 h-4 rounded-full bg-gray-200'
@@ -168,7 +168,7 @@ const ProductVariantForm = ({ form, isPending }: ProductVariantFormProps) => {
                       <span className='text-xs text-gray-400 ml-2'>({images.length || 0} images)</span>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className='p-4 bg-gray-50'>
+                  <AccordionContent className='p-4 bg-black/10'>
                     <FormField
                       control={control}
                       name={`colorImages.${index}.images`}
@@ -246,7 +246,7 @@ const ProductVariantForm = ({ form, isPending }: ProductVariantFormProps) => {
               {fields.map((field, index) => (
                 <tr
                   key={field.id}
-                  className='hover:bg-gray-50'>
+                  className='hover:bg-black/10'>
                   <td className='p-3 font-medium'>{form.watch(`variants.${index}.color`)}</td>
                   <td className='p-3'>{form.watch(`variants.${index}.size`)}</td>
                   <td className='p-3'>

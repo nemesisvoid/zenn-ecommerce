@@ -10,7 +10,7 @@ const slides = [
     desc: 'Get the best deals on our exclusive collections',
     img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     bg: 'bg-gradient-to-r from-yellow-50 to-pink-100',
-    url: '/',
+    url: '/list',
   },
   {
     id: 2,
@@ -18,7 +18,7 @@ const slides = [
     desc: 'Get the best deals on our exclusive collections',
     img: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     bg: 'bg-gradient-to-r from-yellow-50 to-green-200',
-    url: '/',
+    url: '/list',
   },
   {
     id: 3,
@@ -26,7 +26,7 @@ const slides = [
     desc: 'Get the best deals on our exclusive collections',
     img: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     bg: 'bg-gradient-to-r from-yellow-50 to-orange-200',
-    url: '/',
+    url: '/list',
   },
 ];
 const HeroSlider = () => {

@@ -9,7 +9,7 @@ import { CartItemType, CartType } from '@/types';
 import { createCart, removeCartItem } from '@/actions/cart.actions';
 import { useTransition } from 'react';
 import { toast } from 'sonner';
-import { formatCurrency, renderProduct } from '@/helper/utils';
+import { formatCurrency, renderProduct, RenderedCartItem } from '@/helper/utils';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -18,22 +18,22 @@ type CartDetailsProps = {
   cartItems: CartItemType[] | undefined;
   cartItemsCount?: number;
 };
-const CartDetails = ({ cart, cartItems }: CartDetailsProps) => {
+const CartDetails = ({ cart }: CartDetailsProps) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const selectedProduct = renderProduct(cart?.cartItems ?? []);
+  const selectedProduct: RenderedCartItem[] = renderProduct(cart?.cartItems ?? []);
   console.log('selected', selectedProduct);
 
   return (
-    <div className='h-[50vh]'>
+    <div className='mb-10 md:mb-20'>
       <h2 className='text-xl md:text-3xl font-medium mb-10'>Cart</h2>
       <div className='flex flex-col md:flex-row justify-between gap-10 mt-1'>
         <div className='border border-gray-300 rounded-xl p-4 flex-1'>
           <div className='flex flex-col gap-14'>
             {selectedProduct?.map((item, index) => {
-              const calculateDiscount = item.discountPrice ? getPercentagePrice(item.price, item.discountPrice) : null;
-              const calculatePrice = calculateDiscount ? item.price * item?.quantity : item.price * item?.quantity;
-              console.log(calculateDiscount, 'dis');
+              const unitPrice = item.discountPrice ?? item.price;
+              const totalPrice = unitPrice * item.quantity;
+              console.log(selectedProduct, 'dis');
               return (
                 <div
                   key={index}
@@ -54,7 +54,16 @@ const CartDetails = ({ cart, cartItems }: CartDetailsProps) => {
                   <div className='flex flex-col justify-between ml-2 flex-1'>
                     <p className='text-lg font-medium'>{item?.name}</p>
 
-                    <p className='text-base font-semibold'>{formatCurrency(item.price * item.quantity)}</p>
+                    <p className='text-base font-semibold'>
+                      {item.discountPrice ? (
+                        <>
+                          <span className='text-sm line-through text-gray-500 mr-2'>{formatCurrency(item.price * item.quantity)}</span>
+                          <span>{formatCurrency(totalPrice)}</span>
+                        </>
+                      ) : (
+                        <span>{formatCurrency(totalPrice)}</span>
+                      )}
+                    </p>
 
                     <p>
                       {item?.color}
@@ -73,7 +82,13 @@ const CartDetails = ({ cart, cartItems }: CartDetailsProps) => {
                         disabled={isPending}
                         onClick={() => {
                           startTransition(async () => {
-                            const res = await createCart(item);
+                            const res = await createCart({
+                              productId: item.productId ?? '',
+                              variantId: item.variantId ?? null,
+                              price: item.price,
+                              quantity: 1,
+                              discountPrice: item.discountPrice ?? null,
+                            });
                             console.log('id matched');
                             if (!res?.success) {
                               toast.error(res?.message);

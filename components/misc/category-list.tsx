@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { CategoryListType } from '@/types';
 const CategoryList = ({ data }: { data: CategoryListType }) => {
   return (
-    <div className='grid grid-cols-3 gap-8'>
+    <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
       {data.map((item, i) => (
         <Link
           className={`h-64 inline-block hover:scale-105  transition-all duration-300 ${i === 0 && 'col-span-2'}`}

@@ -2,7 +2,7 @@ const Header = ({ label }: { label: string }) => {
   return (
     <div className='w-full flex flex-col gap-y-3 items-center'>
       <h1 className='text-5xl font-semibold'>Zenn</h1>
-      <p className='text-dark-100 text-lg'>{label}</p>
+      <p className='text-white/70 text-lg'>{label}</p>
     </div>
   );
 };

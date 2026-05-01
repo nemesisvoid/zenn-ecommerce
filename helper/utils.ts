@@ -27,6 +27,18 @@ export const getPercentagePrice = (amount: number, percentage: number | null) =>
   return amount - (percentage / 100) * amount;
 };
 
+export interface RenderedCartItem {
+  productId?: string | null;
+  color?: string | null;
+  size?: string | null;
+  images?: string[] | null;
+  price: number;
+  name?: string | null;
+  variantId?: string | null;
+  quantity: number;
+  discountPercent?: number | null;
+  discountPrice?: number | null;
+}
 export const calcPrice = (arr: CalcPriceProps[]) => {
   const newArr = arr.map(item => ({
     price: item.price,
@@ -134,7 +146,7 @@ export const getProductVariants = (product: any[]) => {
   }
 };
 
-export const renderProduct = (product: CartItemType[]) => {
+export const renderProduct = (product: CartItemType[]): RenderedCartItem[] => {
   return product?.map(item => {
     console.log(typeof item.variants);
     console.log(item);
@@ -150,10 +162,16 @@ export const renderProduct = (product: CartItemType[]) => {
           color: foundVariant.color,
           size: item.variants.size,
           images: foundVariant.images,
-          price: item.variants.price,
+          price: item.variants.price ?? item.products?.price ?? 0,
           name: item.products?.name,
           variantId: item.variants.id,
           quantity: item.quantity,
+          discountPercent: item.products?.discountPercent ?? null,
+          discountPrice:
+            item.discountPrice ??
+            (item.products?.discountPercent
+              ? getPercentagePrice(item.variants.price ?? item.products?.price ?? 0, item.products?.discountPercent ?? 0)
+              : null),
         };
     } else {
       return {
@@ -162,6 +180,9 @@ export const renderProduct = (product: CartItemType[]) => {
         images: item.products?.images,
         price: item.price,
         quantity: item.quantity,
+        discountPercent: item.products?.discountPercent ?? null,
+        discountPrice:
+          item.discountPrice ?? (item.products?.discountPercent ? getPercentagePrice(item.price, item.products?.discountPercent ?? 0) : null),
       };
     }
   });
@@ -252,4 +273,15 @@ export const receiptEmailHtml = (order: any) => {
     </div>
   </div>
   `;
+};
+
+export const greetAdmin = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) {
+    return 'Good morning';
+  } else if (hour < 18) {
+    return 'Good afternoon';
+  } else {
+    return 'Good evening';
+  }
 };

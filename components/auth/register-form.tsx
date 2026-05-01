@@ -14,12 +14,11 @@ import { Button } from '../ui/button';
 import FormError from '../misc/form-error';
 import FormSuccess from '../misc/form-success';
 import { register } from '@/actions/register.action';
-import { useRouter } from 'next/navigation';
+import { LoaderIcon } from 'lucide-react';
 
 const RegisterForm = () => {
   const [error, setError] = useState<string | undefined>('');
   const [success, setSuccess] = useState<string | undefined>('');
-  const router = useRouter();
   // const [showPassword, setShowPassword] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -41,8 +40,7 @@ const RegisterForm = () => {
       register(values).then(data => {
         setError(data.error);
         setSuccess(data.message);
-        console.log(data);
-        if (data.success) router.push('/auth/login');
+        form.reset();
       });
     });
   };
@@ -63,7 +61,7 @@ const RegisterForm = () => {
               name='firstName'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-xl text-black/80 mb-2'>First Name</FormLabel>
+                  <FormLabel className='text-xl text-white/70 mb-2'>First Name</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -82,7 +80,7 @@ const RegisterForm = () => {
               name='lastName'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-xl text-black/80 mb-2'>Last Name</FormLabel>
+                  <FormLabel className='text-xl text-white/70 mb-2'>Last Name</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -101,7 +99,7 @@ const RegisterForm = () => {
               name='email'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-xl text-black/80 mb-2'>Email</FormLabel>
+                  <FormLabel className='text-xl text-white/70 mb-2'>Email</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -121,7 +119,7 @@ const RegisterForm = () => {
               name='password'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-xl text-black/85 mb-2'>Password</FormLabel>
+                  <FormLabel className='text-xl text-white/70 mb-2'>Password</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -144,6 +142,7 @@ const RegisterForm = () => {
             type='submit'
             disabled={isPending}>
             {isPending ? 'Creating' : 'Create Account'}
+            {isPending && <LoaderIcon className='animate-spin' />}
           </Button>
         </form>
       </Form>

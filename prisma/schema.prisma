@@ -189,18 +189,19 @@ model Cart {
 }
 
 model CartItem {
-  id        String          @id @default(uuid())
-  cartId    String?
-  productId String
-  variantId String?
-  quantity  Int             @default(1)
-  price     Float
-  image     String?
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-  cart      Cart?           @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  products  Product         @relation(fields: [productId], references: [id])
-  variants  ProductVariant? @relation(fields: [variantId], references: [id])
+  id            String          @id @default(uuid())
+  cartId        String?
+  productId     String
+  variantId     String?
+  quantity      Int             @default(1)
+  price         Float
+  discountPrice Float?
+  image         String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  cart          Cart?           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  products      Product         @relation(fields: [productId], references: [id])
+  variants      ProductVariant? @relation(fields: [variantId], references: [id])
 }
 
 model Wishlist {

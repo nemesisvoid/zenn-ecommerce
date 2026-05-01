@@ -7,7 +7,7 @@ import { RegisterSchema } from '@/schemas';
 
 import { getUserByEmail } from '@/data/user';
 import { generateVerificationToken } from './verification-token.action';
-import { sendVerificationMail } from '@/helper/send-mail';
+import { sendVerificationMail, sendAdminNotificationMail } from '@/helper/send-mail';
 
 export const register = async (values: z.infer<typeof RegisterSchema>) => {
   const validatedFields = RegisterSchema.safeParse(values);
@@ -23,16 +23,15 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
 
   if (existingUser) return { error: 'email already exists' };
 
-  const user = await prisma.user.create({
+  const createdUser = await prisma.user.create({
     data: { ...data, name: `${firstName} ${lastName}` },
   });
 
   const token = await generateVerificationToken(email);
   await sendVerificationMail(email, token);
 
-  console.log(user);
+  const admins = await prisma.user.findMany({ where: { role: 'ADMIN' }, select: { email: true } });
+  await Promise.all([...admins.map(admin => sendAdminNotificationMail(admin.email, createdUser))]);
 
-  //todo verification token
-  console.log('validated', validatedFields.success);
-  return { success: true, message: 'Account created, please verify your email address' };
+  return { success: true, message: 'Account created, please verify your email address by clicking the link sent to your mail' };
 };

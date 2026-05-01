@@ -46,7 +46,7 @@ export const sendMail = async ({ email, sendTo, subject, text, html }: SendMailP
   }
 };
 export const sendVerificationMail = async (email: string, token: string) => {
-  const verifyUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/verify-email?token=${token}&email=${email}`;
+  const verifyUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/verify-email?token=${token}`;
 
   await transporter.sendMail({
     to: email,
@@ -54,5 +54,29 @@ export const sendVerificationMail = async (email: string, token: string) => {
     html: `<p>Please click the link below to verify your email address:</p>
            <a href="${verifyUrl}">${verifyUrl}</a>
           <p>This link will expire in 15 minutes.</p>`,
+  });
+};
+
+export const sendAdminNotificationMail = async (email: string, user) => {
+  await transporter.sendMail({
+    to: email,
+    subject: 'New User Registered',
+    html: `<div>A new user has registered to the website <br/> <p> User details: ${user.name}, ${user.email}
+    </p> 
+    </div>`,
+  });
+};
+
+export const sendUserWelcomeMail = async (email: string, name: string) => {
+  await transporter.sendMail({
+    to: email,
+    subject: 'Welcome to Zenn E-commerce Website',
+    html: `<div>Hi ${name},<br/>
+    <p>Thank you for registering with us. We are excited to have you on board!</p> <br/>
+    <p>Explore our wide range of products and start shopping today! </p>
+    <a href="${process.env.NEXT_PUBLIC_APP_URL}/list">Shop Now</a>
+    <p>Best regards,<br/>
+    The Zenn E-commerce Team</p>
+    </div>`,
   });
 };

@@ -11,6 +11,9 @@ import { prisma } from '@/lib/prisma';
 interface CartActionProps {
   productId: string;
   variantId: string | null;
+  price?: number;
+  quantity?: number;
+  discountPrice?: number | null;
 }
 
 export const createCart = async (data: CartActionProps) => {
@@ -61,6 +64,8 @@ export const createCart = async (data: CartActionProps) => {
           create: {
             productId,
             price: itemPrice,
+            discountPrice: data.discountPrice ?? 0,
+
             variantId,
             image: variantId ? colorImages?.images[0] : product.images[0],
           },
