@@ -13,6 +13,8 @@ type ProductVariantType = {
   cart: CartType | undefined;
 };
 
+// force dynamic
+
 const ProductDetails = ({ product, cart }: ProductVariantType) => {
   const hasVariants = product.variants.length > 0;
 

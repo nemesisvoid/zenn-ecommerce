@@ -74,6 +74,9 @@ export const createCart = async (data: CartActionProps) => {
 
       await prisma.cart.create({ data: newCart });
 
+      revalidatePath(`/product/${productId}`);
+      revalidatePath('/cart');
+
       return { success: 'cart created', message: 'item added to cart' };
     } else {
       const existingCartItem = cart.cartItems.find(
@@ -121,7 +124,7 @@ export const createCart = async (data: CartActionProps) => {
         });
       }
 
-      revalidatePath(`product/${productId}`);
+      revalidatePath(`/product/${productId}`);
       revalidatePath('/cart');
       return { success: true, message: 'item added to cart' };
     }

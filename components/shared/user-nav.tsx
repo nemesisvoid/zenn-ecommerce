@@ -24,7 +24,6 @@ type UserNavProps = {
   userRole: string;
 };
 const UserNav = ({ isLoggedIn, userRole, cartItemsCount }: UserNavProps) => {
-  console.log(isLoggedIn);
   const { theme, setTheme } = useTheme();
   return (
     <div>

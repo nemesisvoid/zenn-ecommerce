@@ -31,9 +31,8 @@ const CartDetails = ({ cart }: CartDetailsProps) => {
         <div className='border border-gray-300 rounded-xl p-4 flex-1'>
           <div className='flex flex-col gap-14'>
             {selectedProduct?.map((item, index) => {
-              const unitPrice = item.discountPrice ?? item.price;
+              const unitPrice = item.discountPrice || item.price;
               const totalPrice = unitPrice * item.quantity;
-              console.log(selectedProduct, 'dis');
               return (
                 <div
                   key={index}
@@ -76,7 +75,7 @@ const CartDetails = ({ cart }: CartDetailsProps) => {
                       <Trash2Icon />
                     </Button>
 
-                    <div className='bg-gray-300 rounded-full flex items-center gap-5 px-2 py-1 ml-6 dark:bg-white/90'>
+                    <div className='bg-gray-300 rounded-full flex items-center gap-5 px-2 py-1 ml-6 dark:bg-white'>
                       <button
                         className='text-sm rounded-sm cursor-pointer'
                         disabled={isPending}
@@ -97,7 +96,7 @@ const CartDetails = ({ cart }: CartDetailsProps) => {
                           });
                         }}>
                         {isPending ? (
-                          <LoaderIcon className='animate-spin text-black bg-white' />
+                          <LoaderIcon className='animate-spin text-black' />
                         ) : (
                           <PlusIcon
                             size={18}
@@ -157,7 +156,7 @@ const CartDetails = ({ cart }: CartDetailsProps) => {
           </div>
 
           <Button
-            className='text-xl font-base text-white bg-black rounded-4xl py-7 w-full mt-auto hover:bg-white hover:text-black'
+            className='text-xl font-base text-white bg-black rounded-4xl py-7 w-full mt-auto dark:text-black dark:bg-white dark:hover:bg-black dark:hover:text-white hover:bg-white hover:text-black transition-colors duration-500'
             asChild>
             <Link
               href='/checkout'
