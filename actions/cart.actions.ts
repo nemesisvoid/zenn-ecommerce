@@ -121,11 +121,12 @@ export const createCart = async (data: CartActionProps) => {
         });
       }
 
+      revalidatePath(`product/${productId}`);
       revalidatePath('/cart');
       return { success: true, message: 'item added to cart' };
     }
   } catch (error) {
-    console.error('an error occured', error);
+    console.error('an error occurred', error);
     return { success: false, message: 'an error occured' };
   }
 };

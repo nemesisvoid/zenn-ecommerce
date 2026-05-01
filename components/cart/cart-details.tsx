@@ -89,7 +89,6 @@ const CartDetails = ({ cart }: CartDetailsProps) => {
                               quantity: 1,
                               discountPrice: item.discountPrice ?? null,
                             });
-                            console.log('id matched');
                             if (!res?.success) {
                               toast.error(res?.message);
                             }
@@ -98,7 +97,7 @@ const CartDetails = ({ cart }: CartDetailsProps) => {
                           });
                         }}>
                         {isPending ? (
-                          <LoaderIcon className='animate-spin' />
+                          <LoaderIcon className='animate-spin text-black bg-white' />
                         ) : (
                           <PlusIcon
                             size={18}

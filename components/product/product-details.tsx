@@ -19,7 +19,6 @@ const ProductDetails = ({ product, cart }: ProductVariantType) => {
   const uniqueColors = useMemo(() => {
     return Array.from(new Set(product.colorImages.map(v => v.color).filter(Boolean)));
   }, [product.colorImages]);
-  console.log('unique', uniqueColors);
 
   const uniqueSizes = useMemo(() => {
     return Array.from(new Set(product.variants.map(v => v.size).filter(Boolean)));
@@ -60,9 +59,6 @@ const ProductDetails = ({ product, cart }: ProductVariantType) => {
   const priceToShow = hasVariants
     ? getPercentagePrice(selectedVariant?.price, product.discountPercent)
     : getPercentagePrice(product.price, product.discountPercent);
-
-  console.log('price to show', priceToShow, product.price);
-  console.log('selected', selectedVariant);
 
   const imagesToShow = product?.colorImages?.find(v => v.color === selectedColor)?.images || product.images;
 
