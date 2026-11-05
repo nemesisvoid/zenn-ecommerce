@@ -54,6 +54,6 @@ export const deleteAllActivityLogs = async () => {
     await prisma.activityLog.deleteMany();
     return { success: true, message: 'Logs deleted successfully' };
   } catch (error) {
-    console.log('error deleting logs', error);
+    console.error('error deleting logs', error);
   }
 };

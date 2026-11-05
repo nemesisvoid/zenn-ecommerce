@@ -1,7 +1,7 @@
 'use client';
 
 const Error = ({ error, reset }: { error: Error; reset: () => void }) => {
-  console.log('err', error);
+  console.error('err', error);
   return (
     <div className='ming-h-screen flex flex-col items-center justify-center mt-20'>
       <h1 className='text-3xl font-bold text-red-600 mb-2'>Something went wrong</h1>

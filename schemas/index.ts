@@ -190,7 +190,7 @@ export const UserSettingsSchema = UserProfileSettingsSchema.partial().merge(User
        }
      } catch (error) {
        toast.error('something went wrong');
-       console.log(error);
+       console.error(error);
      }
    };
  

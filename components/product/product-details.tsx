@@ -4,7 +4,8 @@ import { useMemo, useState } from 'react';
 
 import { CartType, ProductType } from '@/types';
 import { formatCurrency, getPercentagePrice } from '@/helper/utils';
-import { CheckIcon } from 'lucide-react';
+import { CheckIcon, ShieldCheckIcon, TruckIcon } from 'lucide-react';
+import Link from 'next/link';
 import ProductImages from './product-images';
 import AddToCart from '../cart/add-to-cart';
 
@@ -64,41 +65,56 @@ const ProductDetails = ({ product, cart }: ProductVariantType) => {
 
   const imagesToShow = product?.colorImages?.find(v => v.color === selectedColor)?.images || product.images;
 
+  const category = product?.categories?.[0];
+
   return (
-    <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
+    <div className='grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-16'>
       <ProductImages images={imagesToShow} />
 
-      <div className='lg:ml-10'>
-        <div className='border-b border-gray-300 pb-6'>
-          <h2 className='text-2xl md:text-4xl font-semibold mb-4'>{product?.name}</h2>
+      <div className='lg:sticky lg:top-28 lg:self-start'>
+        <div className='border-b border-border pb-8'>
+          {category && (
+            <Link
+              href={`/list?category=${category.slug}`}
+              className='text-sm text-muted-foreground transition-colors hover:text-foreground'>
+              {category.name}
+            </Link>
+          )}
+          <h1 className='mt-2 font-display text-[2.5rem] leading-[1.05] tracking-tight text-foreground md:text-5xl'>{product?.name}</h1>
           {product?.price ? (
-            <div className='text-2xl font-medium mb-6'>
+            <div className='mt-5'>
               {product.discountPercent ? (
-                <div className='flex items-center gap-4'>
-                  <p>{formatCurrency(priceToShow)}</p>
-                  <p className='text-gray-300 line-through'>{formatCurrency(selectedVariant?.price ?? product.price)}</p>
-                  <div className='text-lg bg-red-200 text-red-500 rounded-2xl w-20 h-10 flex items-center justify-center px-8 py-2'>
-                    -{product.discountPercent}%
-                  </div>
+                <div className='flex flex-wrap items-center gap-3'>
+                  <p className='price text-2xl text-foreground'>{formatCurrency(priceToShow)}</p>
+                  <p className='price text-lg text-muted-foreground line-through decoration-1'>
+                    {formatCurrency(selectedVariant?.price ?? product.price)}
+                  </p>
+                  <span className='sale-badge'>−{product.discountPercent}%</span>
                 </div>
               ) : (
-                <p>{formatCurrency(priceToShow)}</p>
+                <p className='price text-2xl text-foreground'>{formatCurrency(priceToShow)}</p>
               )}
             </div>
           ) : (
-            <p className='text-2xl'>Price not available</p>
+            <p className='mt-5 text-lg text-muted-foreground'>Price not available</p>
           )}
 
-          <p className='text-lg'>{product?.description}</p>
+          <p className='mt-6 max-w-prose text-base leading-relaxed text-muted-foreground'>{product?.description}</p>
         </div>
 
         {hasVariants && uniqueColors.length > 0 && (
-          <div className='my-5 border-b border-gray-300 pb-6'>
-            <p className='mb-4'>Select Color</p>
-            <div className='flex items-center gap-4'>
+          <fieldset className='border-b border-border py-6'>
+            <legend className='sr-only'>Colour</legend>
+            <p className='mb-4 text-sm font-medium text-foreground'>
+              Colour <span className='font-normal capitalize text-muted-foreground'>{selectedColor}</span>
+            </p>
+            <div className='flex flex-wrap items-center gap-3'>
               {uniqueColors.map(color => (
                 <button
+                  type='button'
                   key={color}
+                  aria-label={color ?? 'colour'}
+                  aria-pressed={selectedColor === color}
                   onClick={() => {
                     setSelectedColor(color);
                     if (!product.variants.find(v => v.color === color && v.size === selectedSize)) {
@@ -106,48 +122,55 @@ const ProductDetails = ({ product, cart }: ProductVariantType) => {
                     }
                   }}
                   style={{ backgroundColor: color || '' }}
-                  className='relative w-8 h-8 rounded-full border border-gray-400 cursor-pointer'>
-                  <div>
-                    {selectedColor === color && (
-                      <div className='absolute -top-1 -right-1 bg-black text-white rounded-full p-0.5'>
-                        <CheckIcon
-                          color='green'
-                          size={13}
-                        />
-                      </div>
-                    )}
-                  </div>
+                  className={`relative size-9 cursor-pointer rounded-full border border-black/10 ring-offset-[3px] ring-offset-background transition-shadow dark:border-white/15 ${
+                    selectedColor === color ? 'ring-2 ring-foreground' : 'hover:ring-2 hover:ring-border'
+                  }`}>
+                  {selectedColor === color && (
+                    <CheckIcon
+                      className='absolute inset-0 m-auto size-4 text-white mix-blend-difference'
+                      aria-hidden='true'
+                    />
+                  )}
                 </button>
               ))}
             </div>
-          </div>
+          </fieldset>
         )}
 
         {hasVariants && uniqueSizes.length > 0 && (
-          <div className='my-5 border-b border-gray-300 pb-6'>
-            <p>Select Sizes</p>
+          <fieldset className='border-b border-border py-6'>
+            <legend className='sr-only'>Size</legend>
+            <p className='mb-4 text-sm font-medium text-foreground'>Size</p>
 
-            <div className='flex items-center gap-4 mt-4'>
+            <div className='flex flex-wrap items-center gap-2.5'>
               {uniqueSizes.map(size => (
                 <button
+                  type='button'
                   key={size}
+                  aria-pressed={selectedSize === size}
                   disabled={!availableSizesForColor.includes(size)}
-                  className={`w-14 h-10 text-black rounded-md border cursor-pointer transition ${
+                  className={`h-11 min-w-14 cursor-pointer rounded-xl border px-4 text-sm font-medium transition-colors ${
                     selectedSize === size
-                      ? 'bg-black text-white border-black dark:border-white'
-                      : 'border-gray-500 hover:bg-black hover:text-white dark:text-gray-400'
-                  } ${!availableSizesForColor.includes(size) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      ? 'border-foreground bg-foreground text-background'
+                      : 'border-input bg-card text-foreground hover:border-foreground'
+                  } ${!availableSizesForColor.includes(size) ? 'cursor-not-allowed text-muted-foreground line-through opacity-50 hover:border-input' : ''}`}
                   onClick={() => setSelectedSize(size)}>
-                  <p>{size}</p>
+                  {size}
                 </button>
               ))}
             </div>
 
-            {hasVariants && !selectedSize && <p className='text-red-500 my-4'>Please select size</p>}
-          </div>
+            {hasVariants && !selectedSize && (
+              <p
+                role='status'
+                className='mt-4 text-sm text-destructive'>
+                Select a size to add this to your bag.
+              </p>
+            )}
+          </fieldset>
         )}
 
-        <div className={`${!hasVariants ? 'mt-10' : ''}`}>
+        <div className='pt-8'>
           <AddToCart
             cart={cart}
             product={product}
@@ -156,6 +179,29 @@ const ProductDetails = ({ product, cart }: ProductVariantType) => {
             price={priceToShow}
           />
         </div>
+
+        <ul className='mt-8 grid gap-4 rounded-2xl bg-secondary p-5 text-sm sm:grid-cols-2'>
+          <li className='flex gap-3'>
+            <TruckIcon
+              className='mt-0.5 size-[18px] shrink-0 text-brand-ink'
+              aria-hidden='true'
+            />
+            <span>
+              <span className='block font-medium text-foreground'>Pay on delivery</span>
+              <span className='text-muted-foreground'>Pay when your order arrives.</span>
+            </span>
+          </li>
+          <li className='flex gap-3'>
+            <ShieldCheckIcon
+              className='mt-0.5 size-[18px] shrink-0 text-brand-ink'
+              aria-hidden='true'
+            />
+            <span>
+              <span className='block font-medium text-foreground'>Secure checkout</span>
+              <span className='text-muted-foreground'>Card payments handled by Paystack.</span>
+            </span>
+          </li>
+        </ul>
       </div>
     </div>
   );

@@ -1,29 +1,21 @@
 import Link from 'next/link';
 import { Button } from '../ui/button';
-import { AlertTriangleIcon, ArrowLeft } from 'lucide-react';
+import { PackageSearchIcon } from 'lucide-react';
+import EmptyState from '../shared/empty-state';
 
 const ProductNotFound = () => {
   return (
-    <div className=' h-[60vh] flex items-center justify-center'>
-      <div className='flex flex-col items-center gap-3'>
-        <div className='flex items-center gap-2 text-2xl font-medium '>
-          Product not found
-          <AlertTriangleIcon
-            color='red'
-            size={30}
-          />
-        </div>
-
-        <p>We couldn&apos;t find the product you were looking for :(</p>
+    <div className='container'>
+      <EmptyState
+        icon={PackageSearchIcon}
+        title='Product not found'
+        description='This product may have been removed, or the link is incorrect.'>
         <Button
-          className='text-2xl w-fit py-7 px-6 mt-10 rounded-sm'
-          variant='default'
-          asChild>
-          <Link href='/'>
-            Back To Home <ArrowLeft className='' />
-          </Link>
+          asChild
+          className='h-11 rounded-full px-6'>
+          <Link href='/list'>Browse the shop</Link>
         </Button>
-      </div>
+      </EmptyState>
     </div>
   );
 };

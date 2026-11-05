@@ -7,14 +7,14 @@ import { useTransition } from 'react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { UserAccountSettingsSchema } from '@/schemas';
 import { toast } from 'sonner';
+import { storeInput, storeLabel, storePrimaryButton } from '@/components/shared/form-styles';
+import SettingsHeader from './settings-header';
 
 interface UserAccountFormProps {
   initialData: any;
@@ -40,36 +40,37 @@ const UserAccountForm = ({ userId }: { userId: string }) => {
         }
       } catch (error) {
         toast.error('something went wrong');
-        console.log(error);
+        console.error(error);
       }
     });
   };
   return (
-    <div className='space-y-6'>
-      <div>
-        <h3 className='text-lg font-medium'>Account Settings</h3>
-        <p className='text-sm text-muted-foreground'>Manage your account security and preferences.</p>
-      </div>
-      <Separator />
+    <div>
+      <SettingsHeader
+        title='Security'
+        description='Manage your password and account.'
+      />
 
-      {/* Password Section */}
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <Card>
-            <CardHeader>
-              <CardTitle>Password</CardTitle>
-              <CardDescription>Change your password to keep your account secure.</CardDescription>
-            </CardHeader>
-            <CardContent className='space-y-4'>
-              <div className='grid gap-2'>
+      <div className='space-y-6'>
+        {/* Password Section */}
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className='panel'>
+            <div className='p-6 md:p-8'>
+              <h3 className='text-[0.9375rem] font-semibold text-foreground'>Password</h3>
+              <p className='mt-1 text-sm text-muted-foreground'>Use a strong password you don&apos;t use anywhere else.</p>
+              <div className='mt-6 grid gap-5 md:max-w-md'>
                 <FormField
                   name='oldPassword'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Current Password</FormLabel>
+                      <FormLabel className={storeLabel}>Current password</FormLabel>
                       <FormControl>
                         <Input
                           type='password'
+                          autoComplete='current-password'
+                          className={storeInput}
                           disabled={isPending}
                           {...field}
                         />
@@ -78,16 +79,16 @@ const UserAccountForm = ({ userId }: { userId: string }) => {
                     </FormItem>
                   )}
                 />
-              </div>
-              <div className='grid gap-2'>
                 <FormField
                   name='newPassword'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>New Password</FormLabel>
+                      <FormLabel className={storeLabel}>New password</FormLabel>
                       <FormControl>
                         <Input
                           type='password'
+                          autoComplete='new-password'
+                          className={storeInput}
                           disabled={isPending}
                           {...field}
                         />
@@ -97,27 +98,30 @@ const UserAccountForm = ({ userId }: { userId: string }) => {
                   )}
                 />
               </div>
-            </CardContent>
-            <CardFooter className='border-t px-6 py-4'>
-              <Button>{isPending ? 'Updating...' : 'Update Password'}</Button>
-            </CardFooter>
-          </Card>
-        </form>
-      </Form>
+            </div>
+            <div className='flex justify-end border-t border-border px-6 py-4 md:px-8'>
+              <Button className={storePrimaryButton}>{isPending ? 'Updating…' : 'Update password'}</Button>
+            </div>
+          </form>
+        </Form>
 
-      {/* Danger Zone */}
-      <Card className='border-destructive/50'>
-        <CardHeader>
-          <CardTitle className='text-destructive'>Danger Zone</CardTitle>
-          <CardDescription>Irreversible actions for your account.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className='text-sm text-muted-foreground'>Deleting your account is permanent. All your data and order history will be wiped.</p>
-        </CardContent>
-        <CardFooter className='border-t border-destructive/10 px-6 py-4 bg-destructive/5'>
-          <Button variant='destructive'>Delete Account</Button>
-        </CardFooter>
-      </Card>
+        {/* Danger Zone */}
+        <section className='panel border-destructive/30'>
+          <div className='p-6 md:p-8'>
+            <h3 className='text-[0.9375rem] font-semibold text-destructive'>Delete account</h3>
+            <p className='mt-1 max-w-prose text-sm text-muted-foreground'>
+              Deleting your account is permanent. All your data and order history will be wiped.
+            </p>
+          </div>
+          <div className='flex justify-end border-t border-destructive/20 bg-destructive/5 px-6 py-4 md:px-8'>
+            <Button
+              variant='destructive'
+              className='h-10 cursor-pointer rounded-full px-5'>
+              Delete account
+            </Button>
+          </div>
+        </section>
+      </div>
     </div>
   );
 };

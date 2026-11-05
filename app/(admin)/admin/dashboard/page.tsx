@@ -14,9 +14,6 @@ import React from 'react';
 const AdminDashboardPage = async () => {
   const data = await getOrderSummary();
   const stats = await getMonthlySales();
-  console.log(stats);
-  console.log(data.topProducts);
-  console.log(data.recentSales);
   const topProducts = data.topProducts?.map(p => ({
     name: p.name,
     totalOrders: p._count.OrderItem,

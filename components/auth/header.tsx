@@ -1,9 +1,9 @@
-const Header = ({ label }: { label: string }) => {
+const Header = ({ label, description }: { label: string; description?: string }) => {
   return (
-    <div className='w-full flex flex-col gap-y-3 items-center'>
-      <h1 className='text-5xl font-semibold'>Zenn</h1>
-      <p className='text-white/70 text-lg'>{label}</p>
-    </div>
+    <header className='space-y-2'>
+      <h1 className='auth-title first-letter:uppercase'>{label}</h1>
+      {description && <p className='auth-description'>{description}</p>}
+    </header>
   );
 };
 

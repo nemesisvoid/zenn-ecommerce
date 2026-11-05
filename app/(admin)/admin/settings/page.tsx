@@ -3,7 +3,6 @@ import AdminGeneralSettingsForm from '@/components/admin/settings/admin-general-
 
 const SettingsPage = async () => {
   const settings = await getSettings();
-  console.log('settings', settings);
   const initialData = {
     storeName: settings.storeName,
     storeEmail: settings.storeEmail,

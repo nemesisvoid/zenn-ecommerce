@@ -55,7 +55,7 @@ export const retryVerificationToken = async (email: string) => {
     await sendVerificationMail(email, token);
     return { success: true, message: 'Verification token sent successfully' };
   } catch (err) {
-    console.log(err, 'error checking mail');
+    console.error(err, 'error checking mail');
     return { success: false, message: err.message };
   }
 };

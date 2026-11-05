@@ -3,6 +3,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { Button } from '../ui/button';
 
 import { providerLogin } from '@/actions/login.action';
+import { authSecondaryButton } from './auth-styles';
 
 const Social = () => {
   // const handleSignIn = async (provider: 'google' | 'github') => {
@@ -14,10 +15,13 @@ const Social = () => {
     <div className='flex items-center w-full gap-x-2'>
       <Button
         onClick={() => providerLogin('google')}
-        className='w-full py-6 cursor-pointer'
+        className={authSecondaryButton}
         variant='outline'
         size='lg'>
-        <FcGoogle className='w-5 h-5' />
+        <FcGoogle
+          className='size-5'
+          aria-hidden='true'
+        />
         <span>Continue with Google</span>
       </Button>
     </div>

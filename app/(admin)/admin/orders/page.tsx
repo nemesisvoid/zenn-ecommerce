@@ -20,8 +20,6 @@ const AllOrdersPage = async () => {
     deliveryStatus: order.deliveryStatus,
   }));
 
-  console.log(order);
-  console.log('orders', orders);
 
   return (
     <div className='admin-card px-0'>

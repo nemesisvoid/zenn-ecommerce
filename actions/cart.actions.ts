@@ -46,7 +46,6 @@ export const createCart = async (data: CartActionProps) => {
     }
 
     const colorImages = product.colorImages.find(ci => ci.color === variant?.color);
-    console.log('colorimages:', colorImages);
 
     const itemPrice = cartItems.price ?? product.price;
     const availabeStock = product.stock;
@@ -161,7 +160,7 @@ export const getCart = async () => {
 
     return cart;
   } catch (error) {
-    console.log('an error occured', error);
+    console.error('an error occured', error);
   }
 };
 
@@ -223,7 +222,7 @@ export const removeCartItem = async (productId: string, variantId?: string | nul
     revalidatePath('/cart');
     return { success: true, message: 'Cart item quantity updated' };
   } catch (error) {
-    console.log('an error occured', error);
+    console.error('an error occured', error);
     return { success: false, message: 'an error occured' };
   }
 };

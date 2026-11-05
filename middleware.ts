@@ -8,8 +8,7 @@ const { auth } = NextAuth(authConfig);
 export default auth(req => {
   const { nextUrl } = req;
   const res = NextResponse.next();
-  const userRole = req.auth?.user.role;
-  console.log('middleware user role', userRole);
+  const userRole = req.auth?.user?.role;
 
   if (!req.cookies.get('sessionCartId')) {
     const sessionCartId = crypto.randomUUID();
@@ -20,10 +19,9 @@ export default auth(req => {
       path: '/',
       maxAge: 60 * 60 * 24 * 30, // 30 days
     });
-    console.log('setting sessionCartId cookie:', sessionCartId);
   }
 
-  const isLoggedIn = !!req.auth;
+  const isLoggedIn = !!req.auth?.user?.id;
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
 
@@ -34,16 +32,12 @@ export default auth(req => {
     return nextUrl.pathname.startsWith(route);
   });
 
-  console.log('isPublicRoute:', isPublicRoute);
-
   const isAdminRoute = adminRoutes.some(route => nextUrl.pathname.startsWith(route));
-  console.log('');
   const isUserRoute = userRoutes.some(route => nextUrl.pathname.startsWith(route));
 
   if (isAdminRoute) {
     if (!isLoggedIn) return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
     if (userRole !== 'ADMIN') return NextResponse.redirect(new URL('/', nextUrl));
-    console.log('middle', res);
     return res;
   }
 
@@ -53,7 +47,6 @@ export default auth(req => {
   }
   const isPrivateRoute = privateRoutes.some(route => nextUrl.pathname.startsWith(route));
 
-  console.log('private route:', isPrivateRoute);
   if (isPrivateRoute && !isLoggedIn) {
     return NextResponse.redirect(new URL('/auth/login', nextUrl));
   }

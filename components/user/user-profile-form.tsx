@@ -4,7 +4,8 @@ import * as z from 'zod';
 import { updateUser } from '@/actions/user.action';
 import { useTransition, useRef, useState } from 'react';
 
-import { Separator } from '@/components/ui/separator';
+import { storeInput, storeLabel, storePrimaryButton } from '@/components/shared/form-styles';
+import SettingsHeader from './settings-header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -62,7 +63,6 @@ const UserProfileForm = ({ initialData }: UserProfileFormProps) => {
     if (!selectedFile) return;
 
     setFile(selectedFile);
-    console.log('file', file);
     const reader = new FileReader();
     reader.onload = e => {
       setAvatarPreview(e.target?.result as string);
@@ -71,13 +71,10 @@ const UserProfileForm = ({ initialData }: UserProfileFormProps) => {
   };
 
   const onSubmit = async (data: z.infer<typeof UserProfileSettingsSchema>) => {
-    console.log('form data', data);
 
     startTransition(async () => {
       try {
         if (file) {
-          console.log('working---------2');
-          console.log('file in form', file);
           const formData = new FormData();
           formData.append('file', file);
           formData.append('upload_preset', 'user-avatar');
@@ -97,8 +94,6 @@ const UserProfileForm = ({ initialData }: UserProfileFormProps) => {
           data.avatar = result.secure_url as string;
         }
 
-        console.log('form data 2', data.avatar);
-        console.log('form data 3', data);
         const res = await updateUser(initialData.id, data);
         if (res?.success) {
           toast.success(res?.message);
@@ -107,37 +102,38 @@ const UserProfileForm = ({ initialData }: UserProfileFormProps) => {
         }
       } catch (error) {
         toast.error('Something went wrong');
-        console.log(error);
+        console.error(error);
       }
     });
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit, err => console.log('form err', err))}>
-        <div className='space-y-6'>
-          <div>
-            <h3 className='text-lg font-medium'>Profile</h3>
-            <p className='text-sm text-muted-foreground'>This is how others will see you on the site.</p>
-          </div>
-          <Separator />
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <div>
+          <SettingsHeader
+            title='Profile'
+            description='Your name, photo and default delivery details.'
+          />
 
+          <div className='panel'>
           {/* Avatar Section */}
-          <div className='flex items-center gap-x-4'>
-            <Avatar className='w-20 h-20'>
+          <div className='flex items-center gap-5 border-b border-border p-6 md:p-8'>
+            <Avatar className='size-20 ring-1 ring-border'>
               <AvatarImage
                 src={avatarPreview}
                 className='object-cover'
               />
-              <AvatarFallback>{`${initialData.firstName[0]}${initialData.lastName[0]}s`}</AvatarFallback>
+              <AvatarFallback className='bg-secondary text-lg font-medium'>{`${initialData.firstName[0]}${initialData.lastName[0]}s`}</AvatarFallback>
             </Avatar>
-            <div className='flex flex-col gap-2'>
-              <p className='text-sm font-medium'>Change Avatar</p>
+            <div className='flex flex-col items-start gap-2'>
+              <p className='text-sm font-medium text-foreground'>Profile photo</p>
               <Button
                 type='button'
                 onClick={() => fileInputRef.current?.click()}
-                variant='outline'>
-                Upload Image
+                variant='outline'
+                className='h-9 cursor-pointer rounded-full px-4'>
+                Upload image
               </Button>
               <input
                 ref={fileInputRef}
@@ -150,16 +146,18 @@ const UserProfileForm = ({ initialData }: UserProfileFormProps) => {
           </div>
 
           {/* Form Section */}
-          <div className='grid gap-4 py-4 space-y-6'>
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+          <div className='grid gap-5 p-6 md:p-8'>
+            <div className='grid grid-cols-1 gap-5 md:grid-cols-2'>
               <FormField
                 name='firstName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>First name</FormLabel>
+                    <FormLabel className={storeLabel}>First name</FormLabel>
                     <FormControl>
                       <Input
                         type='text'
+                        autoComplete='given-name'
+                        className={storeInput}
                         disabled={isPending}
                         {...field}
                       />
@@ -173,10 +171,12 @@ const UserProfileForm = ({ initialData }: UserProfileFormProps) => {
                 name='lastName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Last Name</FormLabel>
+                    <FormLabel className={storeLabel}>Last name</FormLabel>
                     <FormControl>
                       <Input
                         type='text'
+                        autoComplete='family-name'
+                        className={storeInput}
                         disabled={isPending}
                         {...field}
                       />
@@ -192,10 +192,11 @@ const UserProfileForm = ({ initialData }: UserProfileFormProps) => {
                 name='email'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className={storeLabel}>Email</FormLabel>
                     <FormControl>
                       <Input
                         disabled
+                        className={storeInput}
                         {...field}
                         type='email'
                       />
@@ -204,7 +205,7 @@ const UserProfileForm = ({ initialData }: UserProfileFormProps) => {
                   </FormItem>
                 )}
               />
-              <p className='text-[0.8rem] text-muted-foreground'>Email cannot be changed via profile settings. Contact support.</p>
+              <p className='text-[0.8125rem] text-muted-foreground'>Your email can&apos;t be changed here. Contact support to update it.</p>
             </div>
 
             <div>
@@ -212,10 +213,12 @@ const UserProfileForm = ({ initialData }: UserProfileFormProps) => {
                 name='address'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Shipping Address</FormLabel>
+                    <FormLabel className={storeLabel}>Delivery address</FormLabel>
                     <FormControl>
                       <Input
                         type='text'
+                        autoComplete='street-address'
+                        className={storeInput}
                         {...field}
                         disabled={isPending}
                       />
@@ -226,19 +229,21 @@ const UserProfileForm = ({ initialData }: UserProfileFormProps) => {
               />
             </div>
 
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+            <div className='grid grid-cols-1 gap-5 md:grid-cols-2'>
               <FormField
                 name='country'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Country</FormLabel>
+                    <FormLabel className={storeLabel}>Country</FormLabel>
                     <FormControl>
                       <Input
                         type='text'
+                        autoComplete='country-name'
+                        className={storeInput}
                         {...field}
                         disabled={isPending}
                       />
-                    </FormControl>{' '}
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -248,10 +253,12 @@ const UserProfileForm = ({ initialData }: UserProfileFormProps) => {
                 name='city'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>City</FormLabel>
+                    <FormLabel className={storeLabel}>City</FormLabel>
                     <FormControl>
                       <Input
                         type='text'
+                        autoComplete='address-level2'
+                        className={storeInput}
                         {...field}
                         disabled={isPending}
                       />
@@ -261,14 +268,16 @@ const UserProfileForm = ({ initialData }: UserProfileFormProps) => {
                 )}
               />
             </div>
+          </div>
 
-            <div className='flex justify-end mt-4'>
-              <Button
-                type='submit'
-                disabled={isPending}>
-                {isPending ? 'Saving Changes...' : 'Save Changes'}
-              </Button>
-            </div>
+          <div className='flex justify-end border-t border-border px-6 py-4 md:px-8'>
+            <Button
+              type='submit'
+              className={storePrimaryButton}
+              disabled={isPending}>
+              {isPending ? 'Saving changes…' : 'Save changes'}
+            </Button>
+          </div>
           </div>
         </div>
       </form>

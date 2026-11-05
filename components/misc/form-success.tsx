@@ -8,8 +8,10 @@ interface FormSuccessProps {
 const FormSuccess = ({ message }: FormSuccessProps) => {
   if (!message) return null;
   return (
-    <div className='bg-emerald-500/40 p-3 rounded-md flex items-center gap-x-2 text-sm text-white'>
-      <CheckCircleIcon className='w-4 h-4' />
+    <div
+      role='status'
+      className='alert alert-success'>
+      <CheckCircleIcon aria-hidden='true' />
       <p>{message}</p>
     </div>
   );

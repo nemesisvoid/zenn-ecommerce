@@ -10,6 +10,7 @@ import Credentials from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { LoginSchema } from './schemas';
 import { sendAdminNotificationMail, sendUserWelcomeMail } from './helper/send-mail';
+import { passwordVersion } from './lib/password-session';
 
 export const {
   handlers: { GET, POST },
@@ -58,7 +59,14 @@ export const {
       if (!token.sub) return token;
       const existingUser = await getUserById(token.sub);
 
-      if (!existingUser) return token;
+      if (!existingUser) return null;
+
+      const currentPasswordVersion = passwordVersion(existingUser.password);
+      if (trigger === 'signIn' || trigger === 'signUp') {
+        token.passwordVersion = currentPasswordVersion;
+      } else if (token.passwordVersion !== currentPasswordVersion) {
+        return null;
+      }
 
       token.name = (token.name ?? existingUser.name ?? [existingUser.firstName, existingUser.lastName].filter(Boolean).join(' ').trim()) || '';
       token.role = existingUser.role;

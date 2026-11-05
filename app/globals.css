@@ -41,6 +41,22 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* Brand tokens — usable anywhere as bg-brand, text-brand, border-brand/30, etc. */
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-soft: var(--brand-soft);
+  --color-success: var(--success);
+  --color-subtle-foreground: var(--subtle-foreground);
+  --color-field: var(--field);
+  --color-field-hover: var(--field-hover);
+  --color-brand-ink: var(--brand-ink);
+  --color-sale: var(--sale);
+  --color-surface: var(--surface);
+  --font-display: var(--font-instrument-serif), 'Iowan Old Style', Georgia, serif;
+  --radius-modal: calc(var(--radius) + 10px);
+  --shadow-modal: var(--modal-shadow);
 }
 
 @media (prefers-color-scheme: light) {
@@ -89,6 +105,20 @@ body {
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Brand */
+  --brand: #c5a05a;
+  --brand-hover: #b38d47;
+  --brand-foreground: #1b1508;
+  --brand-soft: rgb(197 160 90 / 0.12);
+  --success: #15803d;
+  --subtle-foreground: oklch(0.5 0 0);
+  --field: oklch(1 0 0);
+  --field-hover: oklch(0.985 0 0);
+  --modal-shadow: 0 24px 60px -20px rgb(0 0 0 / 0.25);
+  --brand-ink: #8a6a2e;
+  --sale: #c2412d;
+  --surface: oklch(0.97 0 0);
 }
 
 .dark {
@@ -123,7 +153,174 @@ body {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  --brand-hover: #d4b272;
+  --brand-soft: rgb(197 160 90 / 0.1);
+  --success: #7fd1a3;
+  --subtle-foreground: oklch(0.62 0 0);
+  --field: oklch(1 0 0 / 4%);
+  --field-hover: oklch(1 0 0 / 7%);
+  --modal-shadow: 0 40px 80px -24px rgb(0 0 0 / 0.7);
+  --brand-ink: #d4b272;
+  --sale: #f08a78;
+  --surface: oklch(0.205 0 0);
 }
+
+/*
+ * Storefront theme. Applied whenever a storefront page is mounted (the (root) layout
+ * renders `.store-shell`), and set on :root so portalled UI — dropdowns, sheets,
+ * dialogs, toasts — gets it too. The admin area keeps the default tokens above.
+ */
+:root:has(.store-shell) {
+  --background: #f7f7f6;
+  --foreground: #17140f;
+  --card: #ffffff;
+  --card-foreground: #17140f;
+  --popover: #ffffff;
+  --popover-foreground: #17140f;
+  --primary: #17140f;
+  --primary-foreground: #faf9f7;
+  --secondary: #efedea;
+  --secondary-foreground: #17140f;
+  --muted: #efedea;
+  --muted-foreground: #6b645a;
+  --accent: #efedea;
+  --accent-foreground: #17140f;
+  --destructive: #c2412d;
+  --border: #e5e2dd;
+  --input: #dcd8d2;
+  --ring: #8a6a2e;
+
+  --brand-ink: #8a6a2e;
+  --brand-soft: rgb(197 160 90 / 0.14);
+  --sale: #c2412d;
+  --success: #15803d;
+  --subtle-foreground: #8a8378;
+  --surface: #efedea;
+  --field: #ffffff;
+  --field-hover: #fbfaf9;
+  --modal-shadow: 0 24px 60px -24px rgb(23 20 15 / 0.18);
+}
+
+:root.dark:has(.store-shell) {
+  --background: #0f0d0b;
+  --foreground: #f3eee6;
+  --card: #17140f;
+  --card-foreground: #f3eee6;
+  --popover: #1a1712;
+  --popover-foreground: #f3eee6;
+  --primary: #c5a05a;
+  --primary-foreground: #1b1508;
+  --secondary: #1f1b16;
+  --secondary-foreground: #f3eee6;
+  --muted: #1f1b16;
+  --muted-foreground: #a9a196;
+  --accent: #241f19;
+  --accent-foreground: #f3eee6;
+  --destructive: #f08a78;
+  --border: rgb(255 255 255 / 0.08);
+  --input: rgb(255 255 255 / 0.12);
+  --ring: #c5a05a;
+
+  --brand-ink: #d4b272;
+  --brand-soft: rgb(197 160 90 / 0.1);
+  --sale: #f08a78;
+  --success: #7fd1a3;
+  --subtle-foreground: #8b8478;
+  --surface: #1a1712;
+  --field: rgb(255 255 255 / 0.035);
+  --field-hover: rgb(255 255 255 / 0.06);
+  --modal-shadow: 0 40px 80px -24px rgb(0 0 0 / 0.7);
+}
+
+:root:has(.store-shell) body {
+  font-family: var(--font-sans);
+}
+
+/* Theme switch: the new theme is revealed as a circle growing from the toggle (see ThemeToggle). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+  z-index: 2;
+}
+
+/*
+ * Auth theme: light by default, dark under `.dark`. It re-points the shadcn tokens,
+ * so Input, Button, FormMessage, etc. pick it up without per-component overrides.
+ */
+.auth-theme {
+  color-scheme: light;
+  --background: #f5f4f1;
+  --foreground: #17140f;
+  --card: rgb(255 255 255 / 0.88);
+  --card-foreground: #17140f;
+  --popover: #ffffff;
+  --popover-foreground: #17140f;
+  --primary: #17140f;
+  --primary-foreground: #faf9f7;
+  --secondary: rgb(23 20 15 / 0.05);
+  --secondary-foreground: #17140f;
+  --muted: rgb(23 20 15 / 0.04);
+  --muted-foreground: #6b645a;
+  --accent: rgb(23 20 15 / 0.05);
+  --accent-foreground: #17140f;
+  --destructive: #c2412d;
+  --border: rgb(23 20 15 / 0.1);
+  --input: rgb(23 20 15 / 0.16);
+  --ring: #8a6a2e;
+
+  --brand-ink: #8a6a2e;
+  --brand-soft: rgb(197 160 90 / 0.1);
+  --success: #15803d;
+  --subtle-foreground: #7a7368;
+  --field: #ffffff;
+  --field-hover: #fbfaf9;
+  --auth-vignette: rgb(245 244 241 / 0.55);
+  --auth-artwork: url('/auth-bg-light.svg');
+  --modal-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.6), 0 30px 70px -30px rgb(23 20 15 / 0.28), 0 0 0 1px rgb(23 20 15 / 0.03);
+
+  font-family: var(--font-sans);
+  color: var(--foreground);
+}
+
+.dark .auth-theme {
+  color-scheme: dark;
+  --background: #0e0c0a;
+  --foreground: #f3eee6;
+  --card: rgb(21 18 15 / 0.9);
+  --card-foreground: #f3eee6;
+  --popover: #15120f;
+  --popover-foreground: #f3eee6;
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --secondary: rgb(255 255 255 / 0.06);
+  --secondary-foreground: #f3eee6;
+  --muted: rgb(255 255 255 / 0.05);
+  --muted-foreground: #a9a196;
+  --accent: rgb(255 255 255 / 0.07);
+  --accent-foreground: #f3eee6;
+  --destructive: #f08a78;
+  --border: rgb(197 160 90 / 0.16);
+  --input: rgb(255 255 255 / 0.12);
+  --ring: var(--brand);
+
+  --brand-hover: #d4b272;
+  --brand-soft: rgb(197 160 90 / 0.07);
+  --success: #7fd1a3;
+  --subtle-foreground: #8b8478;
+  --field: rgb(255 255 255 / 0.035);
+  --field-hover: rgb(255 255 255 / 0.06);
+  --brand-ink: #d4b272;
+  --auth-vignette: rgb(14 12 10 / 0.55);
+  --auth-artwork: url('/auth-bg.svg');
+  --modal-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.04), 0 40px 90px -30px rgb(0 0 0 / 0.85), 0 0 0 1px rgb(197 160 90 / 0.08);
+}
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
@@ -133,8 +330,9 @@ textarea:-webkit-autofill:focus,
 select:-webkit-autofill,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus {
-  -webkit-text-fill-color: white;
-  -webkit-box-shadow: 0 0 0px 1000px #000 inset;
+  -webkit-text-fill-color: var(--foreground);
+  -webkit-box-shadow: 0 0 0px 1000px var(--background) inset;
+  caret-color: var(--foreground);
   transition: background-color 5000s ease-in-out 0s;
 }
 
@@ -187,11 +385,170 @@ select:-webkit-autofill:focus {
   .bg-img {
     @apply bg-cover bg-center bg-no-repeat bg-[url('/bg-login.png')];
   }
+
+  .bg-auth {
+    background: var(--background) var(--auth-artwork, url('/auth-bg.svg')) center / cover no-repeat;
+  }
 }
 
 @layer components {
   .admin-card {
     @apply bg-white text-card-foreground rounded-lg p-6 shadow-md border border-border dark:bg-[#282F36];
+  }
+
+  /* Inline alerts (form errors / confirmations) */
+  .alert {
+    @apply flex items-start gap-2.5 rounded-lg border px-3.5 py-3 text-sm leading-snug;
+  }
+  .alert > svg {
+    @apply mt-px size-4 shrink-0;
+  }
+  .alert-error {
+    @apply border-destructive/30 bg-destructive/10 text-destructive;
+  }
+  .alert-success {
+    @apply border-success/30 bg-success/10 text-success;
+  }
+
+  /* Auth screens */
+  .auth-shell {
+    @apply relative isolate flex min-h-dvh w-full items-center justify-center px-4 py-10 sm:px-6 sm:py-16;
+  }
+  .auth-shell::before {
+    content: '';
+    @apply pointer-events-none absolute inset-0 -z-10;
+    background: radial-gradient(ellipse at center, transparent 40%, var(--auth-vignette) 100%);
+  }
+  .auth-modal {
+    @apply relative grid w-full max-w-[960px] overflow-hidden rounded-modal border border-border bg-card shadow-modal backdrop-blur-xl lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)];
+  }
+  .auth-aside {
+    @apply hidden flex-col justify-between gap-12 border-r border-border bg-brand-soft p-10 lg:flex;
+  }
+  .auth-wordmark {
+    @apply font-display leading-none tracking-tight text-brand-ink;
+  }
+  .auth-panel {
+    @apply flex flex-col gap-8 px-6 py-8 sm:px-10 sm:py-10;
+  }
+  .auth-title {
+    @apply font-display text-[2.25rem] leading-[1.1] tracking-tight text-foreground;
+  }
+  .auth-description {
+    @apply text-[0.9375rem] leading-relaxed text-muted-foreground;
+  }
+  .auth-label {
+    @apply text-[0.8125rem] font-medium text-foreground/90;
+  }
+  .auth-hint {
+    @apply text-[0.8125rem] leading-relaxed text-subtle-foreground;
+  }
+  .auth-link {
+    @apply rounded-sm font-medium text-brand-ink underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring;
+  }
+  .auth-divider {
+    @apply flex items-center gap-3 text-xs text-subtle-foreground;
+  }
+  .auth-divider::before,
+  .auth-divider::after {
+    content: '';
+    @apply h-px flex-1 bg-border;
+  }
+
+  /* Storefront */
+  .store-shell {
+    @apply flex min-h-dvh flex-col bg-background text-foreground;
+  }
+  .page-title {
+    @apply font-display text-[2.5rem] leading-[1.05] tracking-tight text-foreground md:text-5xl;
+  }
+  .section-title {
+    @apply font-display text-[2.25rem] leading-[1.05] tracking-tight text-foreground md:text-[2.75rem];
+  }
+  .lede {
+    @apply text-[0.9375rem] leading-relaxed text-muted-foreground;
+  }
+  .panel {
+    @apply rounded-2xl border border-border bg-card text-card-foreground;
+  }
+  .price {
+    @apply font-medium tabular-nums;
+  }
+  .text-link {
+    @apply inline-flex items-center gap-1.5 rounded-sm font-medium text-foreground underline-offset-4 transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring;
+  }
+  .sale-badge {
+    @apply inline-flex items-center rounded-full bg-sale px-2.5 py-1 text-xs font-semibold tabular-nums text-white dark:text-[#1b1508];
+  }
+  .icon-button {
+    @apply relative inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-foreground transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring;
+  }
+  .summary-row {
+    @apply flex items-center justify-between gap-4 text-[0.9375rem];
+  }
+}
+
+/* Loading & entrance motion */
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@layer components {
+  /* Placeholder block with a soft light sweep. */
+  .skeleton {
+    @apply relative isolate overflow-hidden rounded-xl bg-muted;
+  }
+  .skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in oklab, var(--foreground) 7%, transparent) 50%,
+      transparent 100%
+    );
+    animation: shimmer 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+  /* Stop sweeping once the image it stands in for has arrived (see FadeImage). */
+  .skeleton:has([data-loaded='true'])::after {
+    animation: none;
+    opacity: 0;
+  }
+  /*
+   * Route templates render `.page-enter`. Its direct child is either a loading screen
+   * or the page itself, and CSS animations run whenever an element is inserted — so
+   * the page settles in both on navigation and when it replaces its skeleton.
+   */
+  .page-enter > * {
+    animation: page-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  /* Loading screens wait a beat before appearing, so fast navigations don't flash. */
+  .loading-enter,
+  .page-enter > .loading-enter {
+    animation: fade-in 0.35s ease-out 0.12s both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after,
+  .page-enter > *,
+  .loading-enter {
+    animation: none !important;
   }
 }
 

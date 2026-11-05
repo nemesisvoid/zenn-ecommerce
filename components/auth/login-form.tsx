@@ -16,7 +16,11 @@ import FormSuccess from '../misc/form-success';
 import { login } from '@/actions/login.action';
 import { useSearchParams } from 'next/navigation';
 import BackButton from './back-button';
-import { ArrowRightIcon, LoaderIcon } from 'lucide-react';
+import { ArrowRightIcon } from 'lucide-react';
+import Spinner from '@/components/shared/spinner';
+import Link from 'next/link';
+import PasswordInput from './password-input';
+import { authInput, authPrimaryButton } from './auth-styles';
 
 const LoginForm = () => {
   const [error, setError] = useState<string | undefined>('');
@@ -37,39 +41,41 @@ const LoginForm = () => {
   const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
     setSuccess('');
     setError('');
-    startTransition(() => {
-      console.log(values);
-      login(values).then(data => {
+    startTransition(async () => {
+      const data = await login(values);
+      if (data) {
         setError(data.error);
-        setSuccess(data.success);
-      });
+        setSuccess(data.success ? data.message : undefined);
+      }
     });
   };
 
-  console.log(form);
   return (
     <CardWrapper
-      headerLabel='Welcome Back!'
+      headerLabel='Welcome back'
+      headerDescription='Sign in to your Zenn account to continue.'
       backButtonLabel="Don't have an account?"
+      backButtonCta='Create one'
       backButtonLink='/auth/register'
       showSocial>
       <Form {...form}>
         <form
           action=''
           onSubmit={form.handleSubmit(onSubmit)}
-          className='space-y-6 '>
+          className='space-y-5'>
           <div className='space-y-5'>
             <FormField
               name='email'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-xl text-white/70 mb-2'>Email</FormLabel>
+                  <FormLabel className='auth-label'>Email</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      className='py-5'
-                      placeholder='Enter your email'
+                      className={authInput}
+                      placeholder='you@example.com'
                       type='email'
+                      autoComplete='email'
                       disabled={isPending}
                     />
                   </FormControl>
@@ -83,13 +89,19 @@ const LoginForm = () => {
               name='password'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-xl text-white/70 mb-2'>Password</FormLabel>
+                  <div className='flex items-center justify-between gap-4'>
+                    <FormLabel className='auth-label'>Password</FormLabel>
+                    <Link
+                      href='/auth/forgot-password'
+                      className='auth-link text-[0.8125rem]'>
+                      Forgot password?
+                    </Link>
+                  </div>
                   <FormControl>
-                    <Input
+                    <PasswordInput
                       {...field}
-                      className='py-5'
-                      placeholder='*******'
-                      type='password'
+                      placeholder='Enter your password'
+                      autoComplete='current-password'
                       disabled={isPending}
                     />
                   </FormControl>
@@ -118,11 +130,15 @@ const LoginForm = () => {
           <FormSuccess message={isVerified ? 'Email verified successfully. Please login.' : ''} />
           <FormSuccess message={success} />
           <Button
-            className='w-full text-xl py-6 cursor-pointer'
+            className={authPrimaryButton}
             type='submit'
             disabled={isPending}>
-            Login
-            {isPending && <LoaderIcon className='animate-spin' />}
+            {isPending && (
+              <Spinner
+                aria-hidden='true'
+              />
+            )}
+            {isPending ? 'Signing in…' : 'Sign in'}
           </Button>
         </form>
       </Form>

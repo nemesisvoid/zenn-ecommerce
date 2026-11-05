@@ -27,7 +27,6 @@ const AdminUserAccountSection = ({ form }: { form: UseFormReturn<z.infer<typeof 
   const isEmailVerified = form.watch('isEmailVerified');
   const currentStatus = form.watch('userStatus');
   const [isBanAlertOpen, setIsBanAlertOpen] = useState(false);
-  console.log('current status:', currentStatus);
 
   const handleUserStatus = (value: z.nativeEnum<typeof AdminUserAccountManagementSchema.shape.userStatus>) => {
     if (value === 'BANNED') {

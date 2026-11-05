@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="base" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f8f7f4"/>
+      <stop offset="1" stop-color="#eeece7"/>
+    </linearGradient>
+    <radialGradient id="gold" gradientUnits="userSpaceOnUse" cx="360" cy="140" r="1150">
+      <stop offset="0" stop-color="#c5a05a" stop-opacity="0.24"/>
+      <stop offset="0.45" stop-color="#c5a05a" stop-opacity="0.07"/>
+      <stop offset="1" stop-color="#c5a05a" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="slate" gradientUnits="userSpaceOnUse" cx="1720" cy="1020" r="1000">
+      <stop offset="0" stop-color="#7d8a9b" stop-opacity="0.18"/>
+      <stop offset="0.5" stop-color="#7d8a9b" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#7d8a9b" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="lift" gradientUnits="userSpaceOnUse" cx="960" cy="540" r="720">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.7"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix values="0 0 0 0 0.09  0 0 0 0 0.08  0 0 0 0 0.06  0 0 0 0.05 0"/>
+    </filter>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#base)"/>
+  <rect width="1920" height="1080" fill="url(#gold)"/>
+  <rect width="1920" height="1080" fill="url(#slate)"/>
+  <rect width="1920" height="1080" fill="url(#lift)"/>
+
+  <g fill="none" stroke="#a8843f" stroke-width="1">
+    <g stroke-opacity="0.22">
+      <circle cx="-80" cy="1160" r="420"/>
+      <circle cx="-80" cy="1160" r="560"/>
+      <circle cx="-80" cy="1160" r="700"/>
+    </g>
+    <g stroke-opacity="0.11">
+      <circle cx="-80" cy="1160" r="840"/>
+      <circle cx="-80" cy="1160" r="980"/>
+    </g>
+    <g stroke-opacity="0.16">
+      <circle cx="2010" cy="-90" r="340"/>
+      <circle cx="2010" cy="-90" r="470"/>
+    </g>
+    <g stroke-opacity="0.08">
+      <circle cx="2010" cy="-90" r="600"/>
+    </g>
+  </g>
+
+  <rect width="1920" height="1080" filter="url(#grain)"/>
+</svg>

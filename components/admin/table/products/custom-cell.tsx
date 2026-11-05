@@ -24,7 +24,6 @@ import { Button } from '@/components/ui/button';
 
 export const CustomCell = ({ row }: { row: Row<AllProductsColumnType> }) => {
   const { isPending, handleDelete } = useDelete(deleteProduct);
-  console.log({ row });
   const router = useRouter();
 
   return (

@@ -1,12 +1,10 @@
-import Link from 'next/link';
-
 import { getCart, getCartItems } from '@/actions/cart.actions';
 import { auth } from '@/auth';
 
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { redirect } from 'next/navigation';
 import { PaymentForm } from '@/components/misc/payment-form';
 import { renderProduct } from '@/helper/utils';
+import PageBreadcrumb from '@/components/shared/page-breadcrumb';
 
 const CheckoutPage = async () => {
   const session = await auth();
@@ -18,40 +16,21 @@ const CheckoutPage = async () => {
   const selectedProducts = renderProduct(cart.cartItems);
   return (
     <div className='container'>
-      <Breadcrumb className='mb-8'>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href={'/'}>Home</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href={'/cart'}>Cart</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Checkout</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <PageBreadcrumb
+        items={[{ label: 'Home', href: '/' }, { label: 'Bag', href: '/cart' }, { label: 'Checkout' }]}
+        className='mb-6'
+      />
 
-      <div>
-        <h2 className='text-2xl font-medium mb-10'>Checkout</h2>
-        <div>
-          <PaymentForm
-            user={{
-              id: user?.id,
-              name: user?.name,
-              email: user?.email,
-            }}
-            selectedProducts={selectedProducts}
-            cart={cart}
-          />
-        </div>
-      </div>
+      <h1 className='page-title mb-8 md:mb-10'>Checkout</h1>
+      <PaymentForm
+        user={{
+          id: user?.id,
+          name: user?.name,
+          email: user?.email,
+        }}
+        selectedProducts={selectedProducts}
+        cart={cart}
+      />
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, DM_Mono, Work_Sans } from 'next/font/google';
+import { Geist, Geist_Mono, DM_Mono, Work_Sans, Instrument_Serif } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from 'next-themes';
@@ -30,14 +30,22 @@ const workSans = Work_Sans({
   subsets: ['latin'],
 });
 
+const instrumentSerif = Instrument_Serif({
+  variable: '--font-instrument-serif',
+  subsets: ['latin'],
+  weight: '400',
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en'>
-      <body className={` ${workSans.variable} ${geistSans.variable} ${geistMono.variable} ${dmMono.variable} antialiased`}>
+    <html
+      lang='en'
+      suppressHydrationWarning>
+      <body className={` ${workSans.variable} ${geistSans.variable} ${geistMono.variable} ${dmMono.variable} ${instrumentSerif.variable} antialiased`}>
         <ThemeProvider
           attribute='class'
           defaultTheme='system'

@@ -3,7 +3,7 @@
  * these routes do not require authentication
  * @type {string[]}
  */
-export const publicRoutes = ['/', '/product'];
+export const publicRoutes = ['/', '/product', '/auth/forgot-password', '/auth/reset-password'];
 
 /**
  * array of routes that require authentication

@@ -5,7 +5,6 @@ import Link from 'next/link';
 
 const CategoriesPage = async () => {
   const categories = await getAllCategories();
-  console.log('cat', categories);
 
   return (
     <div>

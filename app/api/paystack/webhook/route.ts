@@ -3,9 +3,7 @@ import crypto from 'crypto';
 export async function POST(req: Request) {
   const rawBody = await req.arrayBuffer();
 
-  console.log('rawBody:', rawBody);
   const raw = Buffer.from(rawBody);
-  console.log('raw:', raw);
   const signatures = req.headers.get('x-paystack-signature');
 
   const hash = crypto
@@ -19,7 +17,6 @@ export async function POST(req: Request) {
   }
 
   const event = JSON.parse(raw.toString('utf-8'));
-  console.log('event webhook:', event);
 
   if (event.event === 'charge.success') {
     const data = event.data;
@@ -60,9 +57,8 @@ export async function POST(req: Request) {
         console.warn('Error deleting cart items');
         // return new Response('Error deleting cart items', { status: 500 });
       }
-      console.log('deleted cart');
     } catch (err) {
-      console.log('webhook err:', err);
+      console.error('webhook err:', err);
       return new Response('Error updating order', { status: 500 });
     }
     return new Response('OK', { status: 200 });

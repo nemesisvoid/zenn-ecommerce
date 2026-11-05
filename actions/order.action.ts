@@ -63,7 +63,7 @@ export const createOrderPayOnDelivery = async (data: CreateOrderProps) => {
     await prisma.cart.delete({ where: { id: cart.id } });
     return { orderId: order.id, message: 'order success' };
   } catch (error) {
-    console.log(`error placing order on delivery: ${error}`);
+    console.error(`error placing order on delivery: ${error}`);
   }
 };
 
@@ -127,7 +127,6 @@ export const createOrderPaystack = async (data: CreateOrderProps) => {
     });
 
     const data = await res.json();
-    console.log('data', data);
 
     if (!res.ok) {
       await prisma.order.update({

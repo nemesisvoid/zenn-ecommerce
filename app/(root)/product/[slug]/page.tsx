@@ -2,6 +2,7 @@ import { getCart } from '@/actions/cart.actions';
 import { getProductBySlug } from '@/actions/product.actions';
 import ProductDetails from '@/components/product/product-details';
 import ProductNotFound from '@/components/product/product-not-found';
+import PageBreadcrumb from '@/components/shared/page-breadcrumb';
 
 async function ProductDetailsPage(props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params;
@@ -10,7 +11,11 @@ async function ProductDetailsPage(props: { params: Promise<{ slug: string }> }) 
   if (!product) return <ProductNotFound />;
 
   return (
-    <div className='container mt-4 mb-35'>
+    <div className='container'>
+      <PageBreadcrumb
+        items={[{ label: 'Home', href: '/' }, { label: 'Shop', href: '/list' }, { label: product.name }]}
+        className='mb-6 md:mb-8'
+      />
       <ProductDetails
         product={product}
         cart={cart}

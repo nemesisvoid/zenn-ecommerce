@@ -10,7 +10,7 @@ interface BackButtonProps {
 const BackButton = ({ link, label, icon }: BackButtonProps) => {
   return (
     <Button
-      className='text-white/70 font-normal w-full'
+      className='h-auto w-full px-0 py-1 text-sm font-medium text-brand-ink hover:text-foreground'
       size='sm'
       variant='link'
       asChild>

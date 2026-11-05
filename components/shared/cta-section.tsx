@@ -3,41 +3,40 @@ import { Button } from '../ui/button';
 
 const CtaSection = () => {
   return (
-    <div className='relative container'>
-      {/* Floating CTA */}
-      <div
-        className='
-          relative z-10
-          -mb-20 md:-mb-24   /* pulls footer up under it */
-          
-          rounded-3xl
-          px-6 py-8 md:px-10 md:py-10
-          
-          bg-gradient-to-br from-black via-gray-900 to-black
-          text-white shadow-2xl
-        '>
-        <div className='flex flex-col gap-6 md:flex-row md:items-center md:justify-between'>
-          {/* Text */}
-          <div className='max-w-lg'>
-            <p className='text-2xl md:text-3xl lg:text-4xl font-semibold leading-tight'>Stay up to date about our latest offers</p>
-            <p className='text-sm text-gray-300 mt-2'>Get exclusive drops and deals straight to your inbox.</p>
+    <section
+      aria-labelledby='newsletter-title'
+      className='container pb-16 md:pb-24'>
+      <div className='panel relative overflow-hidden bg-brand-soft px-6 py-10 md:px-12 md:py-14'>
+        <div className='relative flex flex-col gap-8 md:flex-row md:items-end md:justify-between'>
+          <div className='max-w-xl'>
+            <h2
+              id='newsletter-title'
+              className='section-title'>
+              New drops, first.
+            </h2>
+            <p className='lede mt-3 max-w-md'>Get new arrivals and member-only offers in your inbox. One email a week, unsubscribe anytime.</p>
           </div>
 
-          {/* Input */}
-          <div className='w-full md:w-auto md:min-w-[360px] space-y-3'>
-            <div className='flex items-center gap-3 rounded-xl px-4 py-3 bg-white/10 backdrop-blur border border-white/20'>
-              <MailIcon className='w-5 h-5 text-white/70' />
-              <input
-                className='w-full bg-transparent outline-none placeholder:text-white/50'
-                placeholder='Enter your email address'
+          <div className='flex w-full flex-col gap-3 sm:flex-row md:w-auto md:min-w-[420px]'>
+            <label className='relative flex-1'>
+              <span className='sr-only'>Email address</span>
+              <MailIcon
+                className='pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground'
+                aria-hidden='true'
               />
-            </div>
+              <input
+                type='email'
+                autoComplete='email'
+                className='h-12 w-full rounded-full border border-input bg-card pl-11 pr-4 text-[0.9375rem] text-foreground outline-none transition-[border-color,box-shadow] placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-4 focus-visible:ring-ring/15'
+                placeholder='you@example.com'
+              />
+            </label>
 
-            <Button className='w-full rounded-xl py-5 bg-white text-black hover:bg-gray-200'>Subscribe</Button>
+            <Button className='h-12 cursor-pointer rounded-full px-7 text-[0.9375rem] font-semibold'>Subscribe</Button>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

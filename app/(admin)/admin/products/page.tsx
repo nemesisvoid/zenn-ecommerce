@@ -8,7 +8,6 @@ import Link from 'next/link';
 
 const AdminProductsPage = async () => {
   const products = await getAllProducts();
-  console.log('products', products);
   return (
     <div className='admin-card'>
       <div className='flex justify-between'>

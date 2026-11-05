@@ -4,9 +4,9 @@ import Navbar from '@/components/shared/navbar';
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className='flex flex-col gap-10 justify-between'>
+    <div className='store-shell'>
       <Navbar />
-      <main>{children}</main>
+      <main className='flex-1 pb-24 pt-6 md:pt-10'>{children}</main>
       <CtaSection />
       <Footer />
     </div>

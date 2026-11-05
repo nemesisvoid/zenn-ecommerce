@@ -1,36 +1,42 @@
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { ShoppingCart, Trash2 } from 'lucide-react';
-import Image from 'next/image'; // Assuming Next.js
+import SettingsHeader from '@/components/user/settings-header';
+import { ImageIcon, ShoppingBag, Trash2 } from 'lucide-react';
+
 const UserWishlistPage = () => {
   return (
-    <div className='space-y-6'>
-      <div>
-        <h3 className='text-lg font-medium'>My Wishlist</h3>
-        <p className='text-sm text-muted-foreground'>Save items you want to buy later.</p>
-      </div>
-      <Separator />
+    <div>
+      <SettingsHeader
+        title='Wishlist'
+        description='Save items you want to buy later.'
+      />
 
-      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6'>
+      <div className='grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 md:gap-x-6'>
         {/* Wishlist Item Card */}
         {[1, 2, 3].map(item => (
           <div
             key={item}
-            className='group relative border rounded-lg overflow-hidden bg-background hover:shadow-md transition-all'>
-            <div className='relative h-48 w-full bg-muted'>
+            className='group flex flex-col'>
+            <div className='relative flex aspect-[4/5] w-full items-center justify-center overflow-hidden rounded-2xl bg-muted text-muted-foreground'>
               {/* Placeholder for Image */}
-              <div className='absolute inset-0 flex items-center justify-center text-muted-foreground'>Product Image</div>
-              <button className='absolute top-2 right-2 p-2 bg-white/80 rounded-full hover:bg-white hover:text-red-500 transition-colors'>
-                <Trash2 className='w-4 h-4' />
+              <ImageIcon
+                className='size-8 opacity-50'
+                aria-hidden='true'
+              />
+              <button
+                type='button'
+                aria-label='Remove from wishlist'
+                className='absolute right-3 top-3 flex size-9 cursor-pointer items-center justify-center rounded-full bg-card/90 text-muted-foreground shadow-sm backdrop-blur transition-colors hover:text-destructive'>
+                <Trash2 className='size-4' />
               </button>
             </div>
-            <div className='p-4'>
-              <h4 className='font-semibold truncate'>Ergonomic Office Chair</h4>
-              <p className='text-sm text-muted-foreground'>$299.00</p>
+            <div className='px-1 pt-4'>
+              <h3 className='truncate text-[0.9375rem] font-medium text-foreground'>Ergonomic Office Chair</h3>
+              <p className='price mt-1 text-[0.9375rem] text-foreground'>$299.00</p>
               <Button
-                className='w-full mt-4 gap-2'
+                className='mt-4 h-10 w-full gap-2 rounded-full'
+                variant='outline'
                 size='sm'>
-                <ShoppingCart className='w-4 h-4' /> Add to Cart
+                <ShoppingBag className='size-4' /> Add to bag
               </Button>
             </div>
           </div>

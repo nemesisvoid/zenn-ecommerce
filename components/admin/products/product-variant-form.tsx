@@ -54,7 +54,6 @@ const ProductVariantForm = ({ form, isPending }: ProductVariantFormProps) => {
     setOptions(currentOptions => currentOptions.map(opt => (opt.id === optionId ? { ...opt, values: newValues } : opt)));
   };
 
-  console.log('watchedColorImages', watchedColorImages);
 
   const handleSaveOptions = () => {
     const colorOption = options.find(option => option.name.toLowerCase() === 'color');
@@ -88,7 +87,6 @@ const ProductVariantForm = ({ form, isPending }: ProductVariantFormProps) => {
     }));
 
     replace(newVariants);
-    console.log('new Var:', newVariants);
   };
   return (
     <div>

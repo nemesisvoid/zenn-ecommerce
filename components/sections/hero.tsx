@@ -2,7 +2,7 @@ import HeroSlider from '../misc/hero-slider';
 
 const HeroSection = () => {
   return (
-    <section className=''>
+    <section aria-label='Featured collections'>
       <HeroSlider />
     </section>
   );

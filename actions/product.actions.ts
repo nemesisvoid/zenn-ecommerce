@@ -22,6 +22,22 @@ export const getProductsByNewArrivals = async () => {
   return data;
 };
 
+/** Products added within the last `days` days, newest first. */
+export const getRecentProducts = async (days = 30) => {
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+  const data = await prisma.product.findMany({
+    orderBy: {
+      createdAt: 'desc',
+    },
+    where: {
+      isArchived: false,
+      deletedAt: null,
+      createdAt: { gte: since },
+    },
+  });
+  return data;
+};
+
 export const getProductBySlug = async (slug: string) => {
   const data = await prisma.product.findUnique({
     where: { slug },
@@ -61,7 +77,7 @@ export const getAllProducts = async () => {
     });
     return data;
   } catch (error) {
-    console.log('error fetching products', error);
+    console.error('error fetching products', error);
   }
 };
 
@@ -109,7 +125,7 @@ export const getProductBySearch = async (params: { [key: string]: string }) => {
 
     return products;
   } catch (error) {
-    console.log('error fetching product', error);
+    console.error('error fetching product', error);
     return [];
   }
 };
@@ -158,7 +174,7 @@ export const createProduct = async (productData: z.infer<typeof CreateProductSch
 
     return { data: product, success: true, message: 'Product created successfully' };
   } catch (err) {
-    console.log('error creating product', err);
+    console.error('error creating product', err);
     return { success: false, message: 'Error creating product' };
   }
 };
@@ -174,8 +190,6 @@ export const editProduct = async (id: string, productData: z.infer<typeof Create
 
   const changes = compareData(oldProduct, productData);
 
-  console.log('server data', productData);
-  console.log('img', productData.categories);
   if (!id) throw new Error('Product ID is required');
 
   if (!validatedProduct.success) throw new Error(validatedProduct.error.message);

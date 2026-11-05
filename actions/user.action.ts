@@ -31,7 +31,7 @@ export const getAllCustomers = async () => {
 
     return res;
   } catch (err) {
-    console.log('error fetching users', err);
+    console.error('error fetching users', err);
   }
 };
 
@@ -49,7 +49,6 @@ export const editUser = async (id: string, userData: z.infer<typeof AdminUserSet
     const oldUserData = await prisma.user.findUnique({ where: { id } });
 
     if (!oldUserData) throw new Error('user not found');
-    console.log('old user data', oldUserData.name);
     const changes = compareData(oldUserData, { ...data, status: data.userStatus });
 
     await prisma.user.update({
@@ -80,7 +79,7 @@ export const editUser = async (id: string, userData: z.infer<typeof AdminUserSet
     return { success: true, message: 'User updated successfully' };
   } catch (err: unknown) {
     if (err instanceof Error) {
-      console.log('error editing user', err);
+      console.error('error editing user', err);
       return { success: false, message: err.message };
     }
   }
@@ -152,10 +151,9 @@ export const updateUser = async (id: string, userData: z.infer<typeof UserSettin
 
     hashedPassword = await bcrypt.hash(newPassword, 10);
   }
-  console.log('server action', newPassword);
 
   try {
-    const updatedUser = await prisma.user.update({
+    await prisma.user.update({
       where: { id },
       data: {
         name: `${firstName} ${lastName}`,
@@ -170,10 +168,9 @@ export const updateUser = async (id: string, userData: z.infer<typeof UserSettin
         // phone: userData.phone,
       },
     });
-    console.log('user updated', updatedUser);
     return { success: true, message: 'Profile updated successfully' };
   } catch (error) {
-    console.log('error', error);
-    if (error instanceof Error) console.log(error.message);
+    console.error('error', error);
+    if (error instanceof Error) console.error(error.message);
   }
 };

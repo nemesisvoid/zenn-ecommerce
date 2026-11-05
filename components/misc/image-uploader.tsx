@@ -25,7 +25,6 @@ const ImageUploader = ({ value = [], onChange, disabled, uploadMultiple }: Image
     }
   };
 
-  console.log('init', value);
 
   const handleRemoveImage = (indexToRemove: number, e: React.MouseEvent) => {
     e.preventDefault();

@@ -3,9 +3,9 @@ import React from 'react';
 
 const CheckoutCompletePage = () => {
   return (
-    <main className='container py-12'>
+    <div className='container py-8 md:py-12'>
       <CheckoutComplete />
-    </main>
+    </div>
   );
 };
 

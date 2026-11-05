@@ -10,7 +10,6 @@ import { toast } from 'sonner';
 const ActivitiesPage = async () => {
   const logs = await getAllActivityLogs();
   if (!logs) return <div>no logs</div>;
-  console.log(logs);
 
   // const handleDeleteActivityLogs = async () => {
   //   startTransition(async () => {

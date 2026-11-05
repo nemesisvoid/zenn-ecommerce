@@ -9,7 +9,6 @@ import { compareData, slugify } from '@/helper/utils';
 import { logActivity } from './activity.action';
 export const getAllCategories = async () => {
   const data = await prisma.category.findMany();
-  console.log(data);
   return data;
 };
 
@@ -72,7 +71,7 @@ export const createCategory = async (categoryData: z.infer<typeof CreateCategory
 
     return { success: true, message: 'Category created successfully', category: cat };
   } catch (error) {
-    console.log('error creating category', error);
+    console.error('error creating category', error);
   }
 };
 
@@ -112,7 +111,7 @@ export const editCategory = async (id: string, categoryData: z.infer<typeof Crea
 
     return { success: true, message: 'Category updated successfully' };
   } catch (error) {
-    console.log('error creating category', error);
+    console.error('error creating category', error);
   }
 };
 
@@ -124,6 +123,6 @@ export const getCategoryBySlug = async (slug: string) => {
     });
     return res;
   } catch (err) {
-    console.log('error fetching category', err);
+    console.error('error fetching category', err);
   }
 };

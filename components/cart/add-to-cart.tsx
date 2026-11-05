@@ -5,6 +5,7 @@ import { Button } from '../ui/button';
 import { useTransition } from 'react';
 import { createCart } from '@/actions/cart.actions';
 import { ShoppingBagIcon } from 'lucide-react';
+import Spinner from '@/components/shared/spinner';
 import { toast } from 'sonner';
 
 type AddToCartType = {
@@ -43,12 +44,21 @@ const AddToCart = ({ product, selectedVariant, price, canAddToCart }: AddToCartT
 
   return (
     <Button
-      className='md:w-1/2 text-2xl py-6 bg-black text-white flex items-center hover:bg-white hover:text-black border-0 hover:border-1 hover:border-black rounded-sm cursor-pointer dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white dark:border-0 dark:hover:border-1 dark:hover:border-white'
+      className='h-13 w-full cursor-pointer rounded-full text-base font-semibold transition-[background-color,transform] active:scale-[0.99]'
       disabled={!canAddToCart || isPending}
       onClick={handleAddToCart}>
-      <div className='flex items-center gap-2'>
-        <ShoppingBagIcon size={34} /> {isPending ? 'Adding...' : <p>Add to Cart</p>}
-      </div>
+      {isPending ? (
+        <Spinner
+          className='size-5'
+          aria-hidden='true'
+        />
+      ) : (
+        <ShoppingBagIcon
+          className='size-5'
+          aria-hidden='true'
+        />
+      )}
+      {isPending ? 'Adding to bag…' : 'Add to bag'}
     </Button>
   );
 };

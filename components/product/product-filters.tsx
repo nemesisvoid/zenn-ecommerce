@@ -12,6 +12,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSearchStore } from '../store/use-search-store';
+import { formatCurrency } from '@/helper/utils';
 
 const MIN_PRICE = 0;
 const MAX_PRICE = 1000000;
@@ -56,7 +57,6 @@ export default function ProductFilters({ categories, currentFilters }: { categor
         const params = new URLSearchParams(searchParams.toString());
         params.set('priceRange', newPriceString);
 
-        console.log('Debounce fired! Pushing to URL:', newPriceString);
         startTransition(() => {});
         router.push(`${pathname}?${params.toString()}`, { scroll: false });
       }
@@ -148,16 +148,22 @@ export default function ProductFilters({ categories, currentFilters }: { categor
   };
 
   const FilterContent = () => (
-    <div className='space-y-4 px-5'>
+    <div className='space-y-4'>
       {/* Active Filters Summary */}
 
-      <div className='flex flex-wrap gap-2 mb-4'>
-        {selectedCategory.map((cat, i) => (
-          <div key={i}>
-            <Badge variant='secondary'>{cat}</Badge>
-          </div>
-        ))}
-      </div>
+      {selectedCategory.length > 0 && (
+        <div className='flex flex-wrap gap-2'>
+          {selectedCategory.map((cat, i) => (
+            <div key={i}>
+              <Badge
+                variant='secondary'
+                className='rounded-full px-3 py-1 text-xs font-medium capitalize'>
+                {cat.replace('-', ' ')}
+              </Badge>
+            </div>
+          ))}
+        </div>
+      )}
 
       <Accordion
         type='multiple'
@@ -165,7 +171,7 @@ export default function ProductFilters({ categories, currentFilters }: { categor
         className='w-full'>
         {/* Category Filter */}
         <AccordionItem value='category'>
-          <AccordionTrigger className='text-base font-semibold'>Category</AccordionTrigger>
+          <AccordionTrigger className='cursor-pointer py-4 text-sm font-semibold hover:no-underline'>Category</AccordionTrigger>
           <AccordionContent>
             <div className='space-y-3 pt-1'>
               <CategoryList
@@ -179,9 +185,9 @@ export default function ProductFilters({ categories, currentFilters }: { categor
 
         {/* Price Range Filter */}
         <AccordionItem value='price'>
-          <AccordionTrigger className='text-base font-semibold'>Price Range</AccordionTrigger>
+          <AccordionTrigger className='cursor-pointer py-4 text-sm font-semibold hover:no-underline'>Price</AccordionTrigger>
           <AccordionContent>
-            <div className='space-y-6 pt-4 px-2'>
+            <div className='space-y-6 px-1 pt-3'>
               <PriceRangeSlider
                 initialValue={priceRange}
                 onValueChangeFinish={handleSlider}
@@ -214,9 +220,9 @@ export default function ProductFilters({ categories, currentFilters }: { categor
 
       <Button
         onClick={handleClearFilters}
-        className='w-full mt-6'
+        className='h-10 w-full cursor-pointer rounded-full'
         variant='outline'>
-        Clear All Filters
+        Clear filters
       </Button>
     </div>
   );
@@ -224,46 +230,57 @@ export default function ProductFilters({ categories, currentFilters }: { categor
   return (
     <>
       {/* DESKTOP VIEW: Sticky Sidebar */}
-      <div className='hidden md:block sticky top-24'>
-        <div className='flex items-center gap-2 mb-4'>
-          <SlidersHorizontalIcon className='w-5 h-5' />
-          <h2 className='text-lg font-semibold'>Filters</h2>
+      <div className='sticky top-28 hidden md:block'>
+        <div className='mb-2 flex items-center gap-2'>
+          <SlidersHorizontalIcon
+            className='size-4 text-muted-foreground'
+            aria-hidden='true'
+          />
+          <h2 className='text-sm font-semibold text-foreground'>Filters</h2>
         </div>
         <FilterContent />
       </div>
 
       {/* MOBILE VIEW: Bottom/Side Sheet */}
-      <div className='md:hidden w-full mb-4'>
+      <div className='w-full md:hidden'>
         <Sheet
           open={isOpen}
           onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
             <Button
               variant='outline'
-              className='w-full md:w-1/2 flex items-center justify-center gap-2 py-6'>
-              <SlidersHorizontalIcon className='w-4 h-4' />
-              Filter Results
+              className='h-11 w-full cursor-pointer gap-2 rounded-full'>
+              <SlidersHorizontalIcon
+                className='size-4'
+                aria-hidden='true'
+              />
+              Filters
+              {selectedCategory.length > 0 && (
+                <span className='flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[0.6875rem] font-semibold text-primary-foreground'>
+                  {selectedCategory.length}
+                </span>
+              )}
             </Button>
           </SheetTrigger>
 
           <SheetContent
             side='left'
-            className='w-[300px] sm:w-[400px] overflow-y-auto'>
-            <SheetHeader className='mb-6'>
-              <SheetTitle className='text-left flex items-center gap-2'>
-                <SlidersHorizontal className='w-5 h-5' /> Filters
+            className='w-[320px] gap-0 overflow-y-auto sm:w-[400px]'>
+            <SheetHeader className='border-b border-border'>
+              <SheetTitle className='flex items-center gap-2 text-left'>
+                <SlidersHorizontal className='size-4' /> Filters
               </SheetTitle>
-              <SheetDescription className='text-left'>Refine your search results.</SheetDescription>
+              <SheetDescription className='text-left'>Narrow down your results.</SheetDescription>
             </SheetHeader>
-            <div className='flex-1 overflow-y-auto'>
+            <div className='flex-1 overflow-y-auto px-4 py-2'>
               <FilterContent />
             </div>
-            <div className='pt-4 border-t mt-auto'>
+            <div className='mt-auto border-t border-border p-4'>
               <Button
-                className='w-full rounded-none'
+                className='h-11 w-full cursor-pointer rounded-full'
                 onClick={handleApplyMobileFilters}
                 disabled={transitionPending}>
-                {transitionPending ? 'Applying...' : 'Apply Filters'}
+                {transitionPending ? 'Applying…' : 'Show results'}
               </Button>
             </div>
           </SheetContent>
@@ -283,9 +300,9 @@ const PriceRangeSlider = ({ initialValue, onValueChangeFinish }: { initialValue:
         onValueChange={setLocalRange}
         onValueCommit={onValueChangeFinish}
       />
-      <div className='flex justify-between text-xs'>
-        <span>${localRange[0]}</span>
-        <span>${localRange[1]}</span>
+      <div className='flex justify-between text-xs tabular-nums text-muted-foreground'>
+        <span>{formatCurrency(Number(localRange[0]))}</span>
+        <span>{formatCurrency(Number(localRange[1]))}</span>
       </div>
     </div>
   );
@@ -294,16 +311,21 @@ const PriceRangeSlider = ({ initialValue, onValueChangeFinish }: { initialValue:
 const CategoryList = memo(
   ({ categories, selected, onToggle }: { categories: string[]; selected: string[]; onToggle: (category: string) => void }) => {
     return (
-      <div className='space-y-2'>
+      <div className='space-y-1'>
         {categories.map(cat => (
           <div
             key={cat}
-            className='flex items-center space-x-2'>
+            className='-mx-2 flex items-center gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-accent'>
             <Checkbox
+              id={`filter-${cat}`}
               checked={selected.includes(cat)}
               onCheckedChange={() => onToggle(cat)}
             />
-            <Label>{cat}</Label>
+            <Label
+              htmlFor={`filter-${cat}`}
+              className='flex-1 cursor-pointer text-sm font-normal capitalize'>
+              {cat.replace('-', ' ')}
+            </Label>
           </div>
         ))}
       </div>

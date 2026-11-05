@@ -14,7 +14,9 @@ import { Button } from '../ui/button';
 import FormError from '../misc/form-error';
 import FormSuccess from '../misc/form-success';
 import { register } from '@/actions/register.action';
-import { LoaderIcon } from 'lucide-react';
+import Spinner from '@/components/shared/spinner';
+import PasswordInput from './password-input';
+import { authInput, authPrimaryButton } from './auth-styles';
 
 const RegisterForm = () => {
   const [error, setError] = useState<string | undefined>('');
@@ -36,7 +38,6 @@ const RegisterForm = () => {
     setSuccess('');
     setError('');
     startTransition(() => {
-      console.log(values);
       register(values).then(data => {
         setError(data.error);
         setSuccess(data.message);
@@ -44,68 +45,74 @@ const RegisterForm = () => {
       });
     });
   };
-  console.log(form);
   return (
     <CardWrapper
-      headerLabel='Create an account'
+      headerLabel='Create your account'
+      headerDescription='Join Zenn to check out faster and keep track of every order.'
       backButtonLabel='Already have an account?'
+      backButtonCta='Sign in'
       backButtonLink='/auth/login'
       showSocial>
       <Form {...form}>
         <form
           action=''
           onSubmit={form.handleSubmit(onSubmit)}
-          className='space-y-6 '>
+          className='space-y-5'>
           <div className='space-y-5'>
-            <FormField
-              name='firstName'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className='text-xl text-white/70 mb-2'>First Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className='py-5'
-                      placeholder='John'
-                      type='text'
-                      disabled={isPending}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-              control={form.control}
-            />
-            <FormField
-              name='lastName'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className='text-xl text-white/70 mb-2'>Last Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className='py-5'
-                      placeholder='Smith'
-                      type='text'
-                      disabled={isPending}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-              control={form.control}
-            />
+            <div className='grid gap-5 sm:grid-cols-2 sm:gap-4'>
+              <FormField
+                name='firstName'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='auth-label'>First name</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        className={authInput}
+                        placeholder='Ada'
+                        type='text'
+                        autoComplete='given-name'
+                        disabled={isPending}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+                control={form.control}
+              />
+              <FormField
+                name='lastName'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='auth-label'>Last name</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        className={authInput}
+                        placeholder='Okafor'
+                        type='text'
+                        autoComplete='family-name'
+                        disabled={isPending}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+                control={form.control}
+              />
+            </div>
             <FormField
               name='email'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-xl text-white/70 mb-2'>Email</FormLabel>
+                  <FormLabel className='auth-label'>Email</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      className='py-5'
-                      placeholder='Enter your email'
+                      className={authInput}
+                      placeholder='you@example.com'
                       type='email'
+                      autoComplete='email'
                       disabled={isPending}
                     />
                   </FormControl>
@@ -119,13 +126,12 @@ const RegisterForm = () => {
               name='password'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-xl text-white/70 mb-2'>Password</FormLabel>
+                  <FormLabel className='auth-label'>Password</FormLabel>
                   <FormControl>
-                    <Input
+                    <PasswordInput
                       {...field}
-                      className='py-5'
-                      placeholder='*******'
-                      type='password'
+                      placeholder='Create a password'
+                      autoComplete='new-password'
                       disabled={isPending}
                     />
                   </FormControl>
@@ -138,11 +144,15 @@ const RegisterForm = () => {
           <FormError message={error} />
           <FormSuccess message={success} />
           <Button
-            className='w-full text-xl py-6 cursor-pointer'
+            className={authPrimaryButton}
             type='submit'
             disabled={isPending}>
-            {isPending ? 'Creating' : 'Create Account'}
-            {isPending && <LoaderIcon className='animate-spin' />}
+            {isPending && (
+              <Spinner
+                aria-hidden='true'
+              />
+            )}
+            {isPending ? 'Creating account…' : 'Create account'}
           </Button>
         </form>
       </Form>

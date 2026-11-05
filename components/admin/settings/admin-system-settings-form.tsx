@@ -42,13 +42,12 @@ const AdminSystemSettingsForm = ({ id, initialData }: AdminShippingSettingsFormP
           toast.success(res.message);
         }
       } catch (error) {
-        console.log('Error updating general settings:', error);
+        console.error('Error updating general settings:', error);
       }
     });
   };
   const { watch } = form;
   const mode = watch('maintenanceMode');
-  console.log('mode', mode);
   return (
     <Form {...form}>
       <form

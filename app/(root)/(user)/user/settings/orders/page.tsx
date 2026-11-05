@@ -1,8 +1,8 @@
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+import EmptyState from '@/components/shared/empty-state';
+import SettingsHeader from '@/components/user/settings-header';
 import { PackageSearch } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 // Mock Data
 const orders = [
@@ -11,52 +11,63 @@ const orders = [
 ];
 const UserOrdersPage = () => {
   return (
-    <div className='space-y-6'>
-      <div>
-        <h3 className='text-lg font-medium'>Order History</h3>
-        <p className='text-sm text-muted-foreground'>Check the status of recent orders.</p>
-      </div>
-      <Separator />
+    <div>
+      <SettingsHeader
+        title='Orders'
+        description='Track recent orders and view past purchases.'
+      />
 
       {/* Empty State (Toggle logic to show this if orders.length === 0) */}
       {orders.length === 0 ? (
-        <div className='flex flex-col items-center justify-center py-12 text-center'>
-          <PackageSearch className='h-12 w-12 text-muted-foreground mb-4' />
-          <h3 className='text-lg font-semibold'>No orders yet</h3>
-          <p className='text-muted-foreground mb-4'>You haven't placed any orders yet.</p>
-          <Button>Start Shopping</Button>
-        </div>
+        <EmptyState
+          icon={PackageSearch}
+          title='No orders yet'
+          description="You haven't placed any orders yet."
+          className='panel'>
+          <Button className='h-11 rounded-full px-6'>Start shopping</Button>
+        </EmptyState>
       ) : (
-        <div className='space-y-4'>
+        <ul className='space-y-4'>
           {orders.map(order => (
-            <Card key={order.id}>
-              <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                <div className='space-y-1'>
-                  <CardTitle className='text-base'>Order #{order.id}</CardTitle>
-                  <CardDescription>{order.date}</CardDescription>
+            <li
+              key={order.id}
+              className='panel overflow-hidden'>
+              <div className='flex flex-wrap items-start justify-between gap-3 p-5 md:p-6'>
+                <div>
+                  <p className='text-[0.9375rem] font-semibold text-foreground'>Order #{order.id}</p>
+                  <p className='mt-1 text-sm text-muted-foreground'>{order.date}</p>
                 </div>
-                <Badge variant={order.status === 'Delivered' ? 'default' : 'secondary'}>{order.status}</Badge>
-              </CardHeader>
-              <CardContent>
-                <div className='text-sm text-muted-foreground mt-2'>
-                  {order.items.join(', ')}
-                  {order.items.length > 2 && '...'}
-                </div>
-              </CardContent>
-              <CardFooter className='flex justify-between border-t p-4 bg-muted/20'>
-                <div className='font-medium'>{order.total}</div>
+                <span
+                  className={cn(
+                    'rounded-full px-3 py-1 text-xs font-medium',
+                    order.status === 'Delivered' ? 'bg-success/12 text-success' : 'bg-brand-soft text-brand-ink',
+                  )}>
+                  {order.status}
+                </span>
+              </div>
+              <p className='px-5 pb-5 text-sm text-muted-foreground md:px-6'>
+                {order.items.join(', ')}
+                {order.items.length > 2 && '...'}
+              </p>
+              <div className='flex flex-wrap items-center justify-between gap-3 border-t border-border bg-secondary/50 px-5 py-4 md:px-6'>
+                <p className='price text-foreground'>{order.total}</p>
                 <div className='flex gap-2'>
                   <Button
                     variant='outline'
-                    size='sm'>
-                    View Details
+                    size='sm'
+                    className='h-9 rounded-full px-4'>
+                    View details
                   </Button>
-                  <Button size='sm'>Buy Again</Button>
+                  <Button
+                    size='sm'
+                    className='h-9 rounded-full px-4'>
+                    Buy again
+                  </Button>
                 </div>
-              </CardFooter>
-            </Card>
+              </div>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );

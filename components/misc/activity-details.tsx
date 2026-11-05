@@ -1,5 +1,4 @@
 const ActivityDetails = ({ details }: { details: Record<string, { old: any; new: any }> }) => {
-  Object.entries(details).map(([field, value]) => console.log(field, value));
   return (
     <div className='mt-2 space-y-1 rounded bg-gray-50 px-4 p-2 text-xs dark:bg-dark-100'>
       {Object.entries(details).map(([field, value]) => (

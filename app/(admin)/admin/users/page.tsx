@@ -4,14 +4,10 @@ import AllCustomersTable from '@/components/admin/tables/users/all-customers-tab
 import { allCustomersColumn } from '@/components/admin/table/users/all-customers-column';
 import { getAllCustomers } from '@/actions/user.action';
 import DataTable from '@/components/admin/table/data-table';
-import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
 
 const CustomersPage = async () => {
   const getUsers = await getAllCustomers();
-
-  const user = await auth();
-  console.log('logged in user', user);
 
   // --- Admin metrics ---
 
@@ -42,7 +38,6 @@ const CustomersPage = async () => {
     // lastLogin:user.
   }));
 
-  console.log('userss', getUsers);
   return (
     <div>
       <div className='flex items-center gap-4 mb-5'>

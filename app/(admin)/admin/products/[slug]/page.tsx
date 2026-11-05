@@ -6,10 +6,8 @@ import AdminProductDetails from '@/components/admin/products/admin-product-detai
 
 const AdminProductPage = async (props: { params: Promise<{ slug: string }> }) => {
   const { slug } = await props.params;
-  console.log('slug:', slug);
 
   const product = await getProductBySlug(slug);
-  console.log('id here', product);
   const categories = await getAllCategories();
   if (!product) return <div className='my-50 text-center'>Product not found</div>;
   return (

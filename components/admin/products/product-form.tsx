@@ -63,7 +63,6 @@ const ProductForm = ({ categories, initialData }: ProductFormProps) => {
   const { handleSubmit, watch } = form;
 
   const watchedImages = watch('images');
-  console.log('watched images', watchedImages);
 
   const onSubmit = async (data: z.infer<typeof CreateProductSchema>) => {
     startTransition(async () => {
@@ -73,7 +72,6 @@ const ProductForm = ({ categories, initialData }: ProductFormProps) => {
         const finalData = { ...data, images: finalImageUrls };
 
         if (initialData) {
-          console.log('data passed', data);
           const res = await editProduct(initialData.id, finalData);
 
           if (res.success) {
@@ -87,7 +85,6 @@ const ProductForm = ({ categories, initialData }: ProductFormProps) => {
           router.refresh();
           router.push('/admin/products');
         }
-        console.log('submitted data:', data);
       } catch (error) {
         toast.error('Something went wrong. Please try again.');
         console.error('Error creating product:', error);
@@ -101,7 +98,7 @@ const ProductForm = ({ categories, initialData }: ProductFormProps) => {
         <form
           className='mt-6'
           action=''
-          onSubmit={handleSubmit(onSubmit, err => console.log('form error:', err))}>
+          onSubmit={handleSubmit(onSubmit)}>
           {/*  PRODUCT FORM */}
           <div className='bg-white text-gray-600 rounded-md py-4 mb-10 dark:bg-dark-100 dark:text-white'>
             <div>

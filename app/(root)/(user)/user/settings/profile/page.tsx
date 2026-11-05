@@ -8,7 +8,6 @@ const UserProfilePage = async () => {
 
   if (!userId) return null;
   const initialData = await getUserById(userId);
-  console.log('init', initialData);
 
   return <UserProfileForm initialData={initialData} />;
 };

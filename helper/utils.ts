@@ -44,7 +44,6 @@ export const calcPrice = (arr: CalcPriceProps[]) => {
     price: item.price,
     quantity: item.quantity,
   }));
-  console.log('newArr', newArr);
   const itemsPrice = newArr.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const shippingPrice = itemsPrice > 500000 ? 0 : 1000;
   const totalPrice = itemsPrice + shippingPrice;
@@ -130,8 +129,6 @@ export const compareData = (oldData: any, newData: any) => {
       old: oldValue,
       new: newValue,
     };
-    console.log('OLD:', oldData);
-    console.log('NEW:', newData);
   });
 
   return Object.keys(changes).length > 0 ? changes : null;
@@ -148,11 +145,8 @@ export const getProductVariants = (product: any[]) => {
 
 export const renderProduct = (product: CartItemType[]): RenderedCartItem[] => {
   return product?.map(item => {
-    console.log(typeof item.variants);
-    console.log(item);
 
     if (item.variants || item.hasVariants) {
-      console.log('item.variants', item.variants);
       const colorImage = item.products?.colorImages;
       const variantColors = item.variants.color;
       const foundVariant = colorImage?.find(color => color.color === variantColors && color.productId === item.products?.id);

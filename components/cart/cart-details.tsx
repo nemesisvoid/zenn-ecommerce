@@ -3,7 +3,8 @@
 import Image from 'next/image';
 
 import { Button } from '../ui/button';
-import { ArrowRight, LoaderIcon, MinusIcon, PlusIcon, Trash2Icon } from 'lucide-react';
+import { LockIcon, MinusIcon, PlusIcon, Trash2Icon } from 'lucide-react';
+import Spinner from '@/components/shared/spinner';
 
 import { CartItemType, CartType } from '@/types';
 import { createCart, removeCartItem } from '@/actions/cart.actions';
@@ -22,62 +23,93 @@ const CartDetails = ({ cart }: CartDetailsProps) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const selectedProduct: RenderedCartItem[] = renderProduct(cart?.cartItems ?? []);
-  console.log('selected', selectedProduct);
+
+  const itemCount = selectedProduct.reduce((total, item) => total + (item.quantity ?? 0), 0);
 
   return (
-    <div className='mb-10 md:mb-20'>
-      <h2 className='text-xl md:text-3xl font-medium mb-10'>Cart</h2>
-      <div className='flex flex-col md:flex-row justify-between gap-10 mt-1'>
-        <div className='border border-gray-300 rounded-xl p-4 flex-1'>
-          <div className='flex flex-col gap-14'>
-            {selectedProduct?.map((item, index) => {
-              const unitPrice = item.discountPrice || item.price;
-              const totalPrice = unitPrice * item.quantity;
-              return (
-                <div
-                  key={index}
-                  className='flex gap-2
-                  '>
-                  {item?.images?.slice(0, 1).map(img => (
-                    <div
-                      key={img}
-                      className='relative w-25 aspect-square'>
-                      <Image
-                        src={img}
-                        className='object-cover rounded-sm'
-                        fill
-                        alt='product image'
-                      />
-                    </div>
-                  ))}
-                  <div className='flex flex-col justify-between ml-2 flex-1'>
-                    <p className='text-lg font-medium'>{item?.name}</p>
-
-                    <p className='text-base font-semibold'>
-                      {item.discountPrice ? (
-                        <>
-                          <span className='text-sm line-through text-gray-500 mr-2'>{formatCurrency(item.price * item.quantity)}</span>
-                          <span>{formatCurrency(totalPrice)}</span>
-                        </>
-                      ) : (
-                        <span>{formatCurrency(totalPrice)}</span>
+    <div>
+      <header className='mb-8 flex items-end justify-between gap-4 md:mb-10'>
+        <h1 className='page-title'>Your bag</h1>
+        <p className='pb-1 text-sm tabular-nums text-muted-foreground'>
+          {itemCount} {itemCount === 1 ? 'item' : 'items'}
+        </p>
+      </header>
+      <div className='grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-10'>
+        <ul className='panel divide-y divide-border px-4 md:px-6'>
+          {selectedProduct?.map((item, index) => {
+            const unitPrice = item.discountPrice || item.price;
+            const totalPrice = unitPrice * item.quantity;
+            return (
+              <li
+                key={index}
+                className='flex gap-4 py-5 md:gap-5 md:py-6'>
+                {item?.images?.slice(0, 1).map(img => (
+                  <div
+                    key={img}
+                    className='relative aspect-[4/5] w-20 shrink-0 overflow-hidden rounded-xl bg-muted md:w-24'>
+                    <Image
+                      src={img}
+                      className='object-cover'
+                      fill
+                      sizes='96px'
+                      alt='product image'
+                    />
+                  </div>
+                ))}
+                <div className='flex min-w-0 flex-1 flex-col'>
+                  <div className='flex items-start justify-between gap-3'>
+                    <div className='min-w-0'>
+                      <p className='truncate text-[0.9375rem] font-medium text-foreground'>{item?.name}</p>
+                      {(item?.color || item?.size) && (
+                        <p className='mt-1 text-sm capitalize text-muted-foreground'>{[item?.color, item?.size].filter(Boolean).join(' / ')}</p>
                       )}
-                    </p>
-
-                    <p>
-                      {item?.color}
-                      <span className='text-gray-400'> x {item.quantity}</span>
-                    </p>
+                    </div>
+                    <Button
+                      variant='ghost'
+                      aria-label={`Remove ${item?.name ?? 'item'}`}
+                      className='-mr-2 -mt-1 size-9 shrink-0 cursor-pointer rounded-full text-muted-foreground hover:bg-accent hover:text-destructive'>
+                      <Trash2Icon className='size-4' />
+                    </Button>
                   </div>
 
-                  <div className='flex flex-col justify-between items-end'>
-                    <Button className='text-red-400 bg-transparent size-7 rounded-sm cursor-pointer'>
-                      <Trash2Icon />
-                    </Button>
-
-                    <div className='bg-gray-300 rounded-full flex items-center gap-5 px-2 py-1 ml-6 dark:bg-white'>
+                  <div className='mt-auto flex items-end justify-between gap-3 pt-4'>
+                    <div
+                      className='flex h-10 items-center rounded-full border border-input bg-card'
+                      role='group'
+                      aria-label='Quantity'>
                       <button
-                        className='text-sm rounded-sm cursor-pointer'
+                        type='button'
+                        aria-label='Decrease quantity'
+                        className='flex size-10 cursor-pointer items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40'
+                        disabled={isPending}
+                        onClick={() => {
+                          startTransition(async () => {
+                            const res = await removeCartItem(item.productId, item?.variantId);
+                            if (!res?.success) {
+                              toast.error(res?.message || 'Something went wrong');
+                            }
+                            toast.success(res?.message);
+                            router.refresh();
+                          });
+                        }}>
+                        <MinusIcon className='size-4' />
+                      </button>
+                      <span
+                        className='min-w-6 text-center text-sm font-medium tabular-nums text-foreground'
+                        aria-live='polite'>
+                        {isPending ? (
+                          <Spinner
+                            className='mx-auto size-4 text-muted-foreground'
+                            aria-label='Updating'
+                          />
+                        ) : (
+                          item.quantity
+                        )}
+                      </span>
+                      <button
+                        type='button'
+                        aria-label='Increase quantity'
+                        className='flex size-10 cursor-pointer items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40'
                         disabled={isPending}
                         onClick={() => {
                           startTransition(async () => {
@@ -95,76 +127,63 @@ const CartDetails = ({ cart }: CartDetailsProps) => {
                             router.refresh();
                           });
                         }}>
-                        {isPending ? (
-                          <LoaderIcon className='animate-spin text-black' />
-                        ) : (
-                          <PlusIcon
-                            size={18}
-                            className='dark:text-black'
-                          />
-                        )}
+                        <PlusIcon className='size-4' />
                       </button>
-                      <p className='text-base text-gray-800'>{item.quantity}</p>
-                      <button
-                        className='text-sm rounded-sm cursor-pointer'
-                        disabled={isPending}
-                        onClick={() => {
-                          startTransition(async () => {
-                            const res = await removeCartItem(item.productId, item?.variantId);
-                            if (!res?.success) {
-                              toast.error(res?.message || 'Something went wrong');
-                            }
-                            toast.success(res?.message);
-                            router.refresh();
-                          });
-                        }}>
-                        <MinusIcon
-                          size={18}
-                          className='dark:text-black'
-                        />
-                      </button>
+                    </div>
+
+                    <div className='text-right'>
+                      {item.discountPrice ? (
+                        <>
+                          <p className='price text-xs text-muted-foreground line-through'>{formatCurrency(item.price * item.quantity)}</p>
+                          <p className='price text-[0.9375rem] text-foreground'>{formatCurrency(totalPrice)}</p>
+                        </>
+                      ) : (
+                        <p className='price text-[0.9375rem] text-foreground'>{formatCurrency(totalPrice)}</p>
+                      )}
                     </div>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
+              </li>
+            );
+          })}
+        </ul>
 
-        <div className='lg:w-[36%] flex flex-col border border-gray-300 rounded-xl p-4'>
-          <h3 className='text-xl font-medium mb-4'>Order Summary</h3>
+        <aside className='panel h-fit p-6 lg:sticky lg:top-28'>
+          <h2 className='text-lg font-semibold text-foreground'>Order summary</h2>
 
-          <div className='flex flex-col gap-4 border-b border-gray-400 pb-2'>
-            <div className='flex justify-between'>
-              <p className='text-base text-gray-500'>Subtotal</p>
-
-              <p>{formatCurrency(cart?.itemsPrice)}</p>
+          <dl className='mt-6 space-y-3 border-b border-border pb-5'>
+            <div className='summary-row'>
+              <dt className='text-muted-foreground'>Subtotal</dt>
+              <dd className='price'>{formatCurrency(cart?.itemsPrice)}</dd>
             </div>
-            <div className='flex justify-between pb-2'>
-              <p className='text-base text-gray-500'>Delivery fee</p>
-
-              <p>{cart && cart.shippingPrice > 0 ? formatCurrency(cart?.shippingPrice) : 'Free'}</p>
+            <div className='summary-row'>
+              <dt className='text-muted-foreground'>Delivery</dt>
+              <dd className='price'>{cart && cart.shippingPrice > 0 ? formatCurrency(cart?.shippingPrice) : 'Free'}</dd>
             </div>
-          </div>
+          </dl>
 
-          <div className='pt-2 mb-10'>
-            <div className='flex justify-between'>
-              <p className='text-base text-gray-500'>Total Price</p>
-
-              <p>{cart && formatCurrency(cart?.totalPrice)}</p>
-            </div>
+          <div className='summary-row pt-5'>
+            <span className='font-semibold text-foreground'>Total</span>
+            <span className='price text-xl font-semibold text-foreground'>{cart && formatCurrency(cart?.totalPrice)}</span>
           </div>
 
           <Button
-            className='text-xl font-base text-white bg-black rounded-4xl py-7 w-full mt-auto dark:text-black dark:bg-white dark:hover:bg-black dark:hover:text-white hover:bg-white hover:text-black transition-colors duration-500'
+            className='mt-6 h-12 w-full rounded-full text-[0.9375rem] font-semibold'
             asChild>
-            <Link
-              href='/checkout'
-              className='flex items-center gap-4'>
-              Proceed to Checkout <ArrowRight className='size-6' />
+            <Link href='/checkout'>
+              <LockIcon
+                className='size-4'
+                aria-hidden='true'
+              />
+              Checkout securely
             </Link>
           </Button>
-        </div>
+          <Link
+            href='/list'
+            className='mt-4 block text-center text-sm text-muted-foreground transition-colors hover:text-foreground'>
+            Continue shopping
+          </Link>
+        </aside>
       </div>
     </div>
   );

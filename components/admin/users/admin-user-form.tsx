@@ -59,7 +59,7 @@ const AdminUserForm = ({ id, initialData }: AdminUserFormProps) => {
         });
       }
     } catch (error) {
-      console.log('error editing user', error);
+      console.error('error editing user', error);
     }
   };
   return (

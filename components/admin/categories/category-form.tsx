@@ -36,7 +36,6 @@ const CategoryForm = ({ initialData, products }: CategoryFormProps) => {
   const router = useRouter();
 
   const [tempSelectedProducts, setTempSelectedProducts] = useState<{ id: string; name: string; images: string[]; image?: string }[]>([]);
-  console.log('temp', tempSelectedProducts);
 
   const [searchInput, setSearchInput] = useState('');
 
@@ -90,7 +89,6 @@ const CategoryForm = ({ initialData, products }: CategoryFormProps) => {
             router.push('/admin/categories');
             toast.success(res?.message);
           }
-          console.log(data);
         }
       } catch (error) {
         console.error('error', error);
@@ -101,7 +99,7 @@ const CategoryForm = ({ initialData, products }: CategoryFormProps) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit(onSubmit, err => console.log('form error', err))}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className='admin-card rounded-md py-4 px-0 mb-10'>
           <div>
             <h2 className='text-sm font-medium mx-5 mb-2'>Category Information</h2>
@@ -245,7 +243,6 @@ const CategoryForm = ({ initialData, products }: CategoryFormProps) => {
                       key={product.id}
                       onClick={() => {
                         const image = product.images[0] || '';
-                        console.log('image in loop', image);
                         if (tempSelectedProducts.some(p => p.id === product.id)) {
                           setTempSelectedProducts(prev => prev.filter(p => p.id !== product.id));
                           return;

@@ -18,6 +18,10 @@ import { useTransition } from 'react';
 import { createOrder, createOrderPayOnDelivery, createOrderPaystack } from '@/actions/order.action';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { BanknoteIcon, CreditCardIcon, LockIcon } from 'lucide-react';
+import Spinner from '@/components/shared/spinner';
+import { cn } from '@/lib/utils';
+import { storeInput, storeLabel } from '../shared/form-styles';
 
 type PaymentFormProps = {
   user: { id: string | undefined; name: string | undefined | null; email: string | undefined | null };
@@ -44,12 +48,8 @@ export const PaymentForm = ({ user, cart, selectedProducts }: PaymentFormProps) 
     },
   });
 
-  const pay = form.watch('paymentMethod');
-  console.log(pay);
   const handleCreateOrder = async (data: z.infer<typeof OrderSchema>) => {
-    console.log('submitting');
     const newData = { cart, phoneNo: data.phone, ...data };
-    console.log('newData', newData);
     startTransition(async () => {
       if (data.paymentMethod === 'PAYSTACK') {
         const res = await createOrderPaystack(newData);
@@ -64,7 +64,7 @@ export const PaymentForm = ({ user, cart, selectedProducts }: PaymentFormProps) 
           router.replace(`/order/${res.orderId}`);
         } catch (err) {
           toast.error('Error placing order on delivery');
-          console.log('error placing order on delivery', err);
+          console.error('error placing order on delivery', err);
         }
       }
     });
@@ -74,88 +74,125 @@ export const PaymentForm = ({ user, cart, selectedProducts }: PaymentFormProps) 
       <form
         action=''
         onSubmit={form.handleSubmit(handleCreateOrder)}>
-        <div className='flex flex-col md:flex-row gap-12 lg:gap-20 justify-center'>
-          <div className='space-y-6 md:w-[40%]'>
-            <div className='space-y-10'>
-              <h3 className='font-medium'>Customer Details</h3>
-              <FormField
-                name='name'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Full Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        // value={field.value}
-                        {...field}
-                        required
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+        <div className='grid gap-8 lg:grid-cols-[minmax(0,1fr)_420px] lg:gap-10'>
+          <div className='space-y-6'>
+            <section
+              aria-labelledby='checkout-contact'
+              className='panel p-6 md:p-8'>
+              <h2
+                id='checkout-contact'
+                className='text-lg font-semibold text-foreground'>
+                Contact
+              </h2>
+              <p className='mt-1 text-sm text-muted-foreground'>We&apos;ll send your receipt and delivery updates here.</p>
+              <div className='mt-6 grid gap-5 sm:grid-cols-2'>
+                <FormField
+                  name='name'
+                  render={({ field }) => (
+                    <FormItem className='sm:col-span-2'>
+                      <FormLabel className={storeLabel}>Full name</FormLabel>
+                      <FormControl>
+                        <Input
+                          // value={field.value}
+                          {...field}
+                          autoComplete='name'
+                          className={storeInput}
+                          required
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                name='email'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        required
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  name='email'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={storeLabel}>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type='email'
+                          autoComplete='email'
+                          className={storeInput}
+                          required
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                name='phone'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone No</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                <FormField
+                  name='phone'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={storeLabel}>Phone number</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type='tel'
+                          autoComplete='tel'
+                          className={storeInput}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </section>
 
-            <div className='space-y-10'>
-              <h3>Billing Address</h3>
-              <FormField
-                name='address'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Address</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                name='country'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Country</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+            <section
+              aria-labelledby='checkout-address'
+              className='panel p-6 md:p-8'>
+              <h2
+                id='checkout-address'
+                className='text-lg font-semibold text-foreground'>
+                Delivery address
+              </h2>
+              <div className='mt-6 grid gap-5 sm:grid-cols-2'>
+                <FormField
+                  name='address'
+                  render={({ field }) => (
+                    <FormItem className='sm:col-span-2'>
+                      <FormLabel className={storeLabel}>Street address</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          autoComplete='street-address'
+                          className={storeInput}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  name='country'
+                  render={({ field }) => (
+                    <FormItem className='sm:col-span-2'>
+                      <FormLabel className={storeLabel}>Country</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          autoComplete='country-name'
+                          className={storeInput}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
 
-              <div className='flex items-center sm:gap-6 justify-between'>
                 <FormField
                   name='city'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>City</FormLabel>
+                      <FormLabel className={storeLabel}>City</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input
+                          {...field}
+                          autoComplete='address-level2'
+                          className={storeInput}
+                        />
                       </FormControl>
                     </FormItem>
                   )}
@@ -165,88 +202,148 @@ export const PaymentForm = ({ user, cart, selectedProducts }: PaymentFormProps) 
                   name='postalCode'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Postal Code</FormLabel>
+                      <FormLabel className={storeLabel}>Postal code</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input
+                          {...field}
+                          autoComplete='postal-code'
+                          className={storeInput}
+                        />
                       </FormControl>
                     </FormItem>
                   )}
                 />
               </div>
-            </div>
-          </div>
+            </section>
 
-          <aside className='md:w-1/2 flex flex-col gap-14'>
-            <div className='space-y-10'>
-              <h3 className='font-medium'>Order Summary</h3>
-              <div className='flex flex-col gap-6'>
-                {selectedProducts.map((item, index) => (
-                  <figure
-                    key={index}
-                    className='flex item-center gap-5'>
-                    <div className='relative aspect-square size-20'>
-                      <Image
-                        src={item.images[0]}
-                        fill
-                        alt='product image'
-                        className='object-cover rounded-md'
-                      />
-                    </div>
-
-                    <div className='flex flex-col justify-between'>
-                      <div className='flex flex-col gap-1'>
-                        <p className='text-sm'>{item.products?.name}</p>
-                        <p className='text-xs'>x{item.quantity}</p>
-                      </div>
-                      <p className='text-sm'>{item.variantId ? item.color : ''}</p>
-                      <p>{formatCurrency(item.price)}</p>
-                    </div>
-                  </figure>
-                ))}
-              </div>
-            </div>
-
-            <div className='space-y-5'>
-              <h3 className='font-medium'>Payment Method</h3>
+            <section
+              aria-labelledby='checkout-payment'
+              className='panel p-6 md:p-8'>
+              <h2
+                id='checkout-payment'
+                className='text-lg font-semibold text-foreground'>
+                Payment
+              </h2>
               <FormField
                 name='paymentMethod'
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className='mt-6'>
                     <FormControl>
                       <RadioGroup
                         onValueChange={field.onChange}
                         value={field.value}
                         defaultValue={field.value}
-                        className='space-y-2'>
+                        className='grid gap-3 sm:grid-cols-2'>
                         {PaymentMethods.map(method => (
-                          <div
-                            className='flex items-center space-x-2'
-                            key={method}>
+                          <label
+                            htmlFor={method}
+                            key={method}
+                            className={cn(
+                              'flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors',
+                              field.value === method ? 'border-foreground bg-accent/60' : 'border-input hover:border-muted-foreground',
+                            )}>
                             <RadioGroupItem
                               value={method}
                               id={method}
+                              className='mt-0.5'
                             />
-                            <FormLabel htmlFor={method}>{method === 'PAY_ON_DELIVERY' ? method.split('_').join(' ') : method}</FormLabel>
-                          </div>
+                            <span>
+                              <span className='flex items-center gap-2 text-[0.9375rem] font-medium text-foreground'>
+                                {method === 'PAY_ON_DELIVERY' ? (
+                                  <BanknoteIcon
+                                    className='size-4 text-muted-foreground'
+                                    aria-hidden='true'
+                                  />
+                                ) : (
+                                  <CreditCardIcon
+                                    className='size-4 text-muted-foreground'
+                                    aria-hidden='true'
+                                  />
+                                )}
+                                {method === 'PAY_ON_DELIVERY' ? 'Pay on delivery' : 'Pay online'}
+                              </span>
+                              <span className='mt-1 block text-sm text-muted-foreground'>
+                                {method === 'PAY_ON_DELIVERY' ? 'Pay when your order arrives.' : 'Pay securely with Paystack.'}
+                              </span>
+                            </span>
+                          </label>
                         ))}
                       </RadioGroup>
                     </FormControl>
                   </FormItem>
                 )}
               />
-            </div>
+            </section>
+          </div>
 
-            <div className='space-y-4'>
-              <h3 className='font-medium'>Review Order</h3>
-              <p className='text-gray-500 text-sm'>Please review the order and payment details before proceeding to confirm your order.</p>
-            </div>
+          <aside className='panel h-fit p-6 lg:sticky lg:top-28'>
+            <h2 className='text-lg font-semibold text-foreground'>Order summary</h2>
+            <ul className='mt-6 space-y-4 border-b border-border pb-6'>
+              {selectedProducts.map((item, index) => (
+                <li
+                  key={index}
+                  className='flex items-center gap-4'>
+                  <div className='relative aspect-[4/5] w-14 shrink-0 overflow-hidden rounded-lg bg-muted'>
+                    <Image
+                      src={item.images[0]}
+                      fill
+                      sizes='56px'
+                      alt='product image'
+                      className='object-cover'
+                    />
+                    <span className='absolute right-1 top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-foreground px-1 text-[0.6875rem] font-semibold tabular-nums text-background'>
+                      {item.quantity}
+                    </span>
+                  </div>
+
+                  <div className='min-w-0 flex-1'>
+                    <p className='truncate text-sm font-medium text-foreground'>{(item as { name?: string }).name ?? item.products?.name}</p>
+                    {item.variantId && item.color && <p className='mt-0.5 text-sm capitalize text-muted-foreground'>{item.color}</p>}
+                  </div>
+                  <p className='price text-sm text-foreground'>{formatCurrency(item.price)}</p>
+                </li>
+              ))}
+            </ul>
+
+            {cart && (
+              <>
+                <dl className='space-y-3 border-b border-border py-5'>
+                  <div className='summary-row'>
+                    <dt className='text-muted-foreground'>Subtotal</dt>
+                    <dd className='price'>{formatCurrency(cart.itemsPrice)}</dd>
+                  </div>
+                  <div className='summary-row'>
+                    <dt className='text-muted-foreground'>Delivery</dt>
+                    <dd className='price'>{cart.shippingPrice > 0 ? formatCurrency(cart.shippingPrice) : 'Free'}</dd>
+                  </div>
+                </dl>
+                <div className='summary-row pt-5'>
+                  <span className='font-semibold text-foreground'>Total</span>
+                  <span className='price text-xl font-semibold text-foreground'>{formatCurrency(cart.totalPrice)}</span>
+                </div>
+              </>
+            )}
 
             <Button
-              className='text-xl cursor-pointer mt-auto w-fit px-10 rounded-3xl py-6 md:translate-x-5'
+              className='mt-6 h-12 w-full cursor-pointer rounded-full text-[0.9375rem] font-semibold'
               disabled={isPending}
               type='submit'>
-              Place Order
+              {isPending ? (
+                <Spinner
+                  className='size-4'
+                  aria-hidden='true'
+                />
+              ) : (
+                <LockIcon
+                  className='size-4'
+                  aria-hidden='true'
+                />
+              )}
+              {isPending ? 'Placing order…' : 'Place order'}
             </Button>
+            <p className='mt-4 text-center text-xs leading-relaxed text-muted-foreground'>
+              Review your details and payment method before placing your order.
+            </p>
           </aside>
         </div>
       </form>

@@ -42,14 +42,12 @@ export const verifyPayment = async (reference: string) => {
 
     const paymentStatus = data.data.status;
 
-    console.log('paystack payment status', paymentStatus);
 
     const order = await prisma.order.findUnique({
       where: { paystackReference: reference },
       include: { orderItems: { include: { product: true, variant: true } } },
     });
 
-    console.log('order found during verification', order);
 
     if (!order) return { success: false, reason: 'Order not found', message: 'Order not found', paymentStatus };
 

@@ -4,7 +4,9 @@ import BackButton from '@/components/auth/back-button';
 import CardWrapper from '@/components/auth/card-wrapper';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { LoaderIcon } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { authInput, authPrimaryButton } from '@/components/auth/auth-styles';
+import Spinner from '@/components/shared/spinner';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -38,24 +40,39 @@ const AuthErrorPage = () => {
   return (
     <CardWrapper
       headerLabel={reason?.replaceAll('-', ' ') || 'Verify your email'}
-      backButtonLabel='Back to Login'
+      headerDescription='Enter the email you signed up with and we will send you a new verification link.'
+      backButtonLabel='Back to sign in'
       backButtonLink='/auth/login'>
-      <form>
-        <Input
-          className='mb-8'
-          value={email}
-          type='email'
-          onChange={e => setEmail(e.target.value)}
-          placeholder='Enter your email to retry'
-          disabled={isPending}
-          required
-        />
+      <form className='space-y-5'>
+        <div className='grid gap-2'>
+          <Label
+            htmlFor='retry-email'
+            className='auth-label'>
+            Email
+          </Label>
+          <Input
+            id='retry-email'
+            className={authInput}
+            value={email}
+            type='email'
+            autoComplete='email'
+            onChange={e => setEmail(e.target.value)}
+            placeholder='you@example.com'
+            disabled={isPending}
+            required
+          />
+        </div>
 
         <Button
+          className={authPrimaryButton}
           onClick={handleSubmit}
           disabled={isPending}>
-          Retry Token
-          {isPending && <LoaderIcon className='animate-spin' />}
+          {isPending && (
+            <Spinner
+              aria-hidden='true'
+            />
+          )}
+          {isPending ? 'Sending link…' : 'Resend verification link'}
         </Button>
       </form>
     </CardWrapper>

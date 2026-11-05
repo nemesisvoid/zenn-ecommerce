@@ -8,7 +8,6 @@ export const useDelete = (fn: (id: string) => Promise<{ success: boolean; messag
   const handleDelete = (id: string) => {
     startTransition(async () => {
       const res = await fn(id);
-      console.log('response', res);
       if (res?.success) {
         toast.success(res?.message);
         router.refresh();

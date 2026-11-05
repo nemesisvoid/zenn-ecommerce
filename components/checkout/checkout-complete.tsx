@@ -1,6 +1,8 @@
 'use client';
 
 import { verifyPayment } from '@/actions/payments.action';
+import { ReceiptTextIcon } from 'lucide-react';
+import Spinner from '@/components/shared/spinner';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
 
@@ -11,7 +13,6 @@ const CheckoutComplete = () => {
   const [message, setMessage] = useState('');
 
   const ref = search.get('reference') ?? null;
-  console.log(ref);
 
   useEffect(() => {
     if (!ref) {
@@ -22,7 +23,6 @@ const CheckoutComplete = () => {
     startTransition(async () => {
       try {
         const res = await verifyPayment(ref);
-        console.log('res:', res);
         if (res?.success) {
           setMessage('Payment successful! Thank you for your purchase. Redirection to order confirmation page....');
 
@@ -31,7 +31,6 @@ const CheckoutComplete = () => {
           }, 1000);
         } else {
           setMessage(`Payment verification failed: ${res?.message}`);
-          console.log('response:', res);
 
           if (res?.order?.id) {
             setTimeout(() => {
@@ -40,15 +39,37 @@ const CheckoutComplete = () => {
           }
         }
       } catch (err) {
-        console.log(err);
+        console.error(err);
         setMessage('An error occurred during payment verification. Please check your order page.');
       }
     });
   }, [ref, router]);
 
+  const verifying = isPending || !message;
+
   return (
-    <div className=''>
-      <p className='text-xl text-center my-5'>{isPending ? 'Verifying payment - please wait...' : (message ?? 'Verifying')}</p>
+    <div className='panel mx-auto flex max-w-lg flex-col items-center px-6 py-14 text-center md:px-10'>
+      <span className='flex size-14 items-center justify-center rounded-2xl bg-secondary text-muted-foreground'>
+        {verifying ? (
+          <Spinner
+            className='size-6'
+            aria-hidden='true'
+          />
+        ) : (
+          <ReceiptTextIcon
+            className='size-6'
+            aria-hidden='true'
+          />
+        )}
+      </span>
+      <h1 className='mt-6 font-display text-3xl tracking-tight text-foreground md:text-4xl'>
+        {verifying ? 'Confirming your payment' : 'Payment status'}
+      </h1>
+      <p
+        className='lede mt-3 max-w-sm'
+        aria-live='polite'>
+        {verifying ? 'This only takes a moment. Please keep this page open.' : message}
+      </p>
     </div>
   );
 };

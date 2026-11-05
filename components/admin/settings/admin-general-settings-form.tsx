@@ -46,7 +46,7 @@ const AdminGeneralSettingsForm = ({ id, initialData }: AdminGeneralSettingsFormP
           toast.success(res.message);
         }
       } catch (error) {
-        console.log('Error updating general settings:', error);
+        console.error('Error updating general settings:', error);
       }
     });
   };
