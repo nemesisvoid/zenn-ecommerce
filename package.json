@@ -8,8 +8,7 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "test:password-reset": "tsx --test tests/password-reset.test.ts",
-    "seed": "tsx db/seed.ts"
+    "test:password-reset": "tsx --test tests/password-reset.test.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.9.1",

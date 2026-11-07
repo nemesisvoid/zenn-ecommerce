@@ -88,3 +88,55 @@ export const decrementStock = async (
 
   return short;
 };
+
+/**
+ * Called when a user signs in. Moves this browser's guest cart into the user's account cart:
+ * - no guest cart: nothing to do
+ * - guest cart only: it becomes the user's cart
+ * - both: guest items are added in; the same product/variant has its quantities added
+ *   together (capped at available stock), then the guest cart is deleted.
+ */
+export const mergeGuestCart = async (sessionCartId: string, userId: string) => {
+  const itemInclude = {
+    products: { select: { stock: true } },
+    variants: { select: { stock: true } },
+  } as const;
+
+  const guest = await prisma.cart.findFirst({
+    where: { sessionCartId, userId: null },
+    include: { cartItems: { include: itemInclude } },
+  });
+  if (!guest) return;
+
+  const userCart = await prisma.cart.findUnique({
+    where: { userId },
+    include: { cartItems: true },
+  });
+
+  if (!userCart) {
+    await prisma.cart.update({ where: { id: guest.id }, data: { userId } });
+    await refreshCart(guest.id);
+    return;
+  }
+
+  for (const item of guest.cartItems) {
+    const stock = availableStock(item.products, item.variants);
+    const existing = userCart.cartItems.find(ci => ci.productId === item.productId && ci.variantId === item.variantId);
+
+    if (existing) {
+      // Never reduce what the user already had; checkout flags anything over stock.
+      const quantity = Math.max(existing.quantity, Math.min(existing.quantity + item.quantity, stock));
+      await prisma.cartItem.update({ where: { id: existing.id }, data: { quantity } });
+    } else if (stock > 0) {
+      // Move the line into the user's cart (re-pointing it keeps it when the guest cart is deleted).
+      await prisma.cartItem.update({
+        where: { id: item.id },
+        data: { cartId: userCart.id, quantity: Math.min(item.quantity, stock) },
+      });
+    }
+  }
+
+  // Deleting the guest cart also deletes any items that weren't moved (cascade).
+  await prisma.cart.delete({ where: { id: guest.id } });
+  await refreshCart(userCart.id);
+};

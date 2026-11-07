@@ -34,12 +34,12 @@ const CartDetails = ({ cart }: CartDetailsProps) => {
       </header>
       <div className='grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-10'>
         <ul className='panel divide-y divide-border px-4 md:px-6'>
-          {selectedProduct?.map((item, index) => {
+          {selectedProduct?.map(item => {
             const unitPrice = item.discountPrice ?? item.price;
             const totalPrice = unitPrice * item.quantity;
             return (
               <li
-                key={index}
+                key={`${item.productId}-${item.variantId ?? 'base'}`}
                 className='flex gap-4 py-5 md:gap-5 md:py-6'>
                 {item?.images?.slice(0, 1).map(img => (
                   <div

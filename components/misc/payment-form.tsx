@@ -279,9 +279,9 @@ export const PaymentForm = ({ user, cart, selectedProducts }: PaymentFormProps) 
           <aside className='panel h-fit p-6 lg:sticky lg:top-28'>
             <h2 className='text-lg font-semibold text-foreground'>Order summary</h2>
             <ul className='mt-6 space-y-4 border-b border-border pb-6'>
-              {selectedProducts.map((item, index) => (
+              {selectedProducts.map(item => (
                 <li
-                  key={index}
+                  key={`${item.productId}-${item.variantId ?? 'base'}`}
                   className='flex items-center gap-4'>
                   <div className='relative aspect-[4/5] w-14 shrink-0 overflow-hidden rounded-lg bg-muted'>
                     <Image

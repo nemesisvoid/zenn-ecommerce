@@ -84,17 +84,28 @@ export const createCart = async (data: CartActionProps) => {
 
 export const getCart = async () => {
   try {
-    const sessionCartId = (await cookies()).get('sessionCartId')?.value;
-
-    if (!sessionCartId) throw new Error('Session Cart not found');
-
+    // Signed-in users: the cart belongs to the account (works on any device, no cookie needed).
+    // Guests: the cookie identifies the browser, and only carts with no owner can match,
+    // so a signed-out browser can never pick up an account's cart.
     const session = await auth();
-    const userId = session?.user.id ? session?.user.id : undefined;
+    const userId = session?.user.id;
+
+    let where: { userId: string } | { sessionCartId: string; userId: null };
+    if (userId) {
+      where = { userId };
+    } else {
+      const sessionCartId = (await cookies()).get('sessionCartId')?.value;
+      if (!sessionCartId) return null;
+      where = { sessionCartId, userId: null };
+    }
 
     const cart = await prisma.cart.findFirst({
-      where: userId ? { userId } : { sessionCartId },
+      where,
       include: {
         cartItems: {
+          // Stable order: by when the item was first added. Without this, Postgres may
+          // return a just-updated row last, making items jump around when quantities change.
+          orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
           include: {
             products: {
               include: { colorImages: true },

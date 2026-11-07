@@ -11,6 +11,7 @@ import bcrypt from 'bcryptjs';
 import { LoginSchema } from './schemas';
 import { sendAdminNotificationMail, sendUserWelcomeMail } from './helper/send-mail';
 import { passwordVersion } from './lib/password-session';
+import { mergeGuestCart } from './lib/cart';
 import type { Prisma } from '@prisma/client';
 
 export const {
@@ -87,22 +88,13 @@ export const {
         const cookie = await cookies();
         const sessionCartId = cookie.get('sessionCartId')?.value;
 
-        // Guard on user.id: Prisma treats `userId: undefined` as "no filter", so the
-        // deleteMany below would otherwise wipe every cart in the table.
+        // Merge this browser's guest cart into the account's cart (never replace it).
+        // A cart problem must never block signing in.
         if (sessionCartId && user?.id) {
-          const sessionCart = await prisma.cart.findFirst({
-            where: { sessionCartId },
-          });
-
-          if (sessionCart) {
-            await prisma.cart.deleteMany({
-              where: { userId: user.id },
-            });
-
-            await prisma.cart.update({
-              where: { id: sessionCart.id },
-              data: { userId: user.id },
-            });
+          try {
+            await mergeGuestCart(sessionCartId, user.id);
+          } catch (err) {
+            console.error('guest cart merge failed', err);
           }
         }
       }
