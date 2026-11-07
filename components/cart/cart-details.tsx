@@ -6,8 +6,8 @@ import { Button } from '../ui/button';
 import { LockIcon, MinusIcon, PlusIcon, Trash2Icon } from 'lucide-react';
 import Spinner from '@/components/shared/spinner';
 
-import { CartItemType, CartType } from '@/types';
-import { createCart, removeCartItem } from '@/actions/cart.actions';
+import { CartType } from '@/types';
+import { createCart, deleteCartItem, removeCartItem } from '@/actions/cart.actions';
 import { useTransition } from 'react';
 import { toast } from 'sonner';
 import { formatCurrency, renderProduct, RenderedCartItem } from '@/helper/utils';
@@ -15,14 +15,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 type CartDetailsProps = {
-  cart: CartType | undefined;
-  cartItems: CartItemType[] | undefined;
-  cartItemsCount?: number;
+  cart: CartType;
 };
 const CartDetails = ({ cart }: CartDetailsProps) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const selectedProduct: RenderedCartItem[] = renderProduct(cart?.cartItems ?? []);
+  const selectedProduct: RenderedCartItem[] = renderProduct(cart.cartItems);
 
   const itemCount = selectedProduct.reduce((total, item) => total + (item.quantity ?? 0), 0);
 
@@ -37,7 +35,7 @@ const CartDetails = ({ cart }: CartDetailsProps) => {
       <div className='grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-10'>
         <ul className='panel divide-y divide-border px-4 md:px-6'>
           {selectedProduct?.map((item, index) => {
-            const unitPrice = item.discountPrice || item.price;
+            const unitPrice = item.discountPrice ?? item.price;
             const totalPrice = unitPrice * item.quantity;
             return (
               <li
@@ -66,6 +64,18 @@ const CartDetails = ({ cart }: CartDetailsProps) => {
                     </div>
                     <Button
                       variant='ghost'
+                      disabled={isPending}
+                      onClick={() => {
+                        startTransition(async () => {
+                          const res = await deleteCartItem(item.productId, item.variantId);
+                          if (!res.success) {
+                            toast.error(res.message);
+                            return;
+                          }
+                          toast.success(res.message);
+                          router.refresh();
+                        });
+                      }}
                       aria-label={`Remove ${item?.name ?? 'item'}`}
                       className='-mr-2 -mt-1 size-9 shrink-0 cursor-pointer rounded-full text-muted-foreground hover:bg-accent hover:text-destructive'>
                       <Trash2Icon className='size-4' />
@@ -87,6 +97,7 @@ const CartDetails = ({ cart }: CartDetailsProps) => {
                             const res = await removeCartItem(item.productId, item?.variantId);
                             if (!res?.success) {
                               toast.error(res?.message || 'Something went wrong');
+                              return;
                             }
                             toast.success(res?.message);
                             router.refresh();
@@ -114,11 +125,8 @@ const CartDetails = ({ cart }: CartDetailsProps) => {
                         onClick={() => {
                           startTransition(async () => {
                             const res = await createCart({
-                              productId: item.productId ?? '',
+                              productId: item.productId,
                               variantId: item.variantId ?? null,
-                              price: item.price,
-                              quantity: 1,
-                              discountPrice: item.discountPrice ?? null,
                             });
                             if (!res?.success) {
                               toast.error(res?.message);
@@ -132,7 +140,7 @@ const CartDetails = ({ cart }: CartDetailsProps) => {
                     </div>
 
                     <div className='text-right'>
-                      {item.discountPrice ? (
+                      {item.discountPrice != null ? (
                         <>
                           <p className='price text-xs text-muted-foreground line-through'>{formatCurrency(item.price * item.quantity)}</p>
                           <p className='price text-[0.9375rem] text-foreground'>{formatCurrency(totalPrice)}</p>

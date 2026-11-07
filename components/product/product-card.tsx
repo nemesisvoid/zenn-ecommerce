@@ -5,10 +5,9 @@ import { formatCurrency, getPercentagePrice } from '@/helper/utils';
 import Link from 'next/link';
 import FadeImage from '../shared/fade-image';
 
-type ProductCardProps = {
+export type ProductCardProps = {
   slug: string;
   name: string;
-  coverImage: string;
   price: number;
   images: string[];
   discountPercent?: number | null;

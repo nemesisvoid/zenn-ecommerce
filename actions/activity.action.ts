@@ -1,5 +1,7 @@
 'use server';
 
+import { requireAdmin } from '@/lib/auth-guards';
+
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 
@@ -36,6 +38,7 @@ export const logActivity = async ({ action, entity, entityId, entityName, detail
 };
 
 export const getAllActivityLogs = async () => {
+  await requireAdmin();
   try {
     const data = await prisma.activityLog.findMany({
       orderBy: {
@@ -50,6 +53,7 @@ export const getAllActivityLogs = async () => {
 };
 
 export const deleteAllActivityLogs = async () => {
+  await requireAdmin();
   try {
     await prisma.activityLog.deleteMany();
     return { success: true, message: 'Logs deleted successfully' };

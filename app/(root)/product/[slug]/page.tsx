@@ -1,4 +1,3 @@
-import { getCart } from '@/actions/cart.actions';
 import { getProductBySlug } from '@/actions/product.actions';
 import ProductDetails from '@/components/product/product-details';
 import ProductNotFound from '@/components/product/product-not-found';
@@ -7,7 +6,6 @@ import PageBreadcrumb from '@/components/shared/page-breadcrumb';
 async function ProductDetailsPage(props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params;
   const product = await getProductBySlug(slug);
-  const cart = await getCart();
   if (!product) return <ProductNotFound />;
 
   return (
@@ -18,7 +16,6 @@ async function ProductDetailsPage(props: { params: Promise<{ slug: string }> }) 
       />
       <ProductDetails
         product={product}
-        cart={cart}
       />
     </div>
   );

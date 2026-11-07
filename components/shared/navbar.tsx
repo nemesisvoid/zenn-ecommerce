@@ -27,7 +27,6 @@ const Navbar = async () => {
         <UserNav
           isLoggedIn={isLoggedIn}
           userRole={session?.user?.role}
-          cart={cartItemsCount}
           cartItemsCount={cartItemsCount}
         />
       </nav>

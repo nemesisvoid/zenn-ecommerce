@@ -8,12 +8,13 @@ import Link from 'next/link';
 
 export type AllCustomersColumnType = {
   id: string;
-  name: string;
+  name: string | null;
   email: string;
-  paymentMethod: string;
-  avatar: string;
+  paymentMethod: string | null;
+  avatar: string | null;
   totalOrders: number;
-  lastOrderDate: Date;
+  // undefined for customers with no orders
+  lastOrderDate?: Date;
   role: string;
   isEmailVerified: boolean;
   lastLogin?: Date | null;

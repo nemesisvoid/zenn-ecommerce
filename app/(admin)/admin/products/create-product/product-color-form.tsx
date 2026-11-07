@@ -51,6 +51,7 @@ const ProductColorForm = ({ form, isPending }: ProductColorFormProps) => {
                   <UploadProductImagWidget
                     isPending={isPending}
                     isVariant={true}
+                    title='Color Images'
                     // Note: You'll need to manage the 'field.value' (which is an array)
                     // and use 'field.onChange' to update it.
                     // This is slightly different from your current uploader logic.

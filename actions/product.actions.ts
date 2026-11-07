@@ -1,5 +1,6 @@
 'use server';
 
+import { requireAdmin } from '@/lib/auth-guards';
 import { revalidatePath } from 'next/cache';
 
 import { prisma } from '@/lib/prisma';
@@ -132,8 +133,7 @@ export const getProductBySearch = async (params: { [key: string]: string }) => {
 
 export const createProduct = async (productData: z.infer<typeof CreateProductSchema>) => {
   try {
-    const session = await auth();
-    if (session?.user?.role !== 'ADMIN') throw new Error('Unauthorized');
+    await requireAdmin();
     const validatedProduct = CreateProductSchema.safeParse(productData);
 
     if (!validatedProduct.success) throw new Error(validatedProduct.error.message);
@@ -180,6 +180,7 @@ export const createProduct = async (productData: z.infer<typeof CreateProductSch
 };
 
 export const editProduct = async (id: string, productData: z.infer<typeof CreateProductSchema>) => {
+  await requireAdmin();
   const validatedProduct = CreateProductSchema.safeParse(productData);
 
   const oldProduct = await prisma.product.findUnique({
@@ -220,7 +221,7 @@ export const editProduct = async (id: string, productData: z.infer<typeof Create
         hasVariants: data.hasVariants,
         discountPercent: data.discountPercent,
         categories: {
-          set: [...data.categories.map(id => ({ id })), { id: defaultCategory.id }],
+          set: [...(data.categories ?? []).map(id => ({ id })), { id: defaultCategory.id }],
         },
 
         colorImages:
@@ -255,6 +256,7 @@ export const editProduct = async (id: string, productData: z.infer<typeof Create
 };
 
 export const deleteProduct = async (id: string) => {
+  await requireAdmin();
   try {
     const product = await prisma.product.findUnique({ where: { id }, select: { name: true } });
 

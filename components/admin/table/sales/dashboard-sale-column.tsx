@@ -5,9 +5,9 @@ import Link from 'next/link';
 
 export type DashboardSaleColumn = {
   orderId: string;
-  orderDate: Date;
-  product: string;
-  customerName: string;
+  orderDate: string;
+  items: number;
+  customerName: string | null;
   email: string;
   address: string;
   paymentMethod: string;
@@ -27,7 +27,7 @@ export const dashboardSaleColumn: ColumnDef<DashboardSaleColumn>[] = [
     ),
   },
   { header: 'Order Date', accessorKey: 'orderDate' },
-  { header: 'Product', accessorKey: 'product' },
+  { header: 'Items', accessorKey: 'items' },
   { header: 'Customer Name', accessorKey: 'customerName' },
   { header: 'Email', accessorKey: 'email' },
   { header: 'Address', accessorKey: 'address' },

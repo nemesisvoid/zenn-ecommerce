@@ -1,5 +1,7 @@
 'use server';
 
+import { requireAdmin } from '@/lib/auth-guards';
+
 import * as z from 'zod';
 
 import { prisma } from '@/lib/prisma';
@@ -42,6 +44,7 @@ export const getProductsForCategory = async () => {
 };
 
 export const createCategory = async (categoryData: z.infer<typeof CreateCategorySchema>) => {
+  await requireAdmin();
   const validatedData = CreateCategorySchema.safeParse(categoryData);
   if (!validatedData.success) return { success: false, message: validatedData.error.message };
 
@@ -76,6 +79,7 @@ export const createCategory = async (categoryData: z.infer<typeof CreateCategory
 };
 
 export const editCategory = async (id: string, categoryData: z.infer<typeof CreateCategorySchema>) => {
+  await requireAdmin();
   const validatedData = CreateCategorySchema.safeParse(categoryData);
   if (!validatedData.success) return { success: false, message: validatedData.error.message };
   const oldCategoryData = await prisma.category.findUnique({ where: { id } });

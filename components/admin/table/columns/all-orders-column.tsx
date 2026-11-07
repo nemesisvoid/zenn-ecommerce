@@ -12,6 +12,8 @@ import { formatCurrency } from '@/helper/utils';
 export type AllOrdersColumnType = {
   id: string;
   customerName: string | null;
+  // Not currently provided: getAllOrders() does not select the user's image/avatar, so the fallback is shown.
+  avatar?: string | null;
   totalItems: number;
   orderNumber: string;
   totalAmount: number;

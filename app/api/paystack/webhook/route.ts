@@ -1,66 +1,35 @@
 import crypto from 'crypto';
+import { applyPaystackPayment, type PaystackTransaction } from '@/lib/payments';
 
 export async function POST(req: Request) {
-  const rawBody = await req.arrayBuffer();
-
-  const raw = Buffer.from(rawBody);
-  const signatures = req.headers.get('x-paystack-signature');
-
-  const hash = crypto
-    .createHmac('sha512', process.env.PAYSTACK_SECRET_KEY as string)
-    .update(raw)
-    .digest('hex');
-
-  if (signatures !== hash) {
-    console.warn('Invalid paystack signature');
-    return new Response('Invalid signature', { status: 400 });
+  const secret = process.env.PAYSTACK_SECRET_KEY;
+  if (!secret) {
+    console.error('Paystack webhook: PAYSTACK_SECRET_KEY is not configured');
+    return new Response('Not configured', { status: 500 });
   }
 
-  const event = JSON.parse(raw.toString('utf-8'));
+  const raw = Buffer.from(await req.arrayBuffer());
+  const signature = Buffer.from(req.headers.get('x-paystack-signature') ?? '');
+  const expected = Buffer.from(crypto.createHmac('sha512', secret).update(raw).digest('hex'));
 
-  if (event.event === 'charge.success') {
-    const data = event.data;
-    const ref = data.reference;
+  if (signature.length !== expected.length || !crypto.timingSafeEqual(signature, expected)) {
+    console.warn('Paystack webhook: invalid signature');
+    return new Response('Invalid signature', { status: 401 });
+  }
 
-    try {
-      const order = await prisma?.order.findUnique({
-        where: { paystackReference: ref },
-      });
+  const event = JSON.parse(raw.toString('utf-8')) as { event: string; data: PaystackTransaction };
 
-      if (!order) {
-        console.warn('Order not found');
-        return new Response('Order not found', { status: 400 });
-      }
+  // Acknowledge events we don't act on, so Paystack doesn't keep retrying them.
+  if (event.event !== 'charge.success') return new Response('Ignored', { status: 200 });
 
-      if (order.paymentStatus !== 'PAID') {
-        await prisma?.order.update({
-          where: { id: order.id },
-          data: {
-            status: 'CONFIRMED',
-            paymentStatus: 'PAID',
-            deliveryStatus: 'PROCESSING',
-            isPaid: true,
-            paidAt: new Date(),
-          },
-        });
-      }
-
-      // await prisma?.product.update({
-      //   where: { id: order.productId },
-      //   data: { stock: { decrement: item.quantity } },
-      // });
-
-      const deleted = await prisma?.order.delete({
-        where: { id: order.id },
-      });
-      if (!deleted) {
-        console.warn('Error deleting cart items');
-        // return new Response('Error deleting cart items', { status: 500 });
-      }
-    } catch (err) {
-      console.error('webhook err:', err);
-      return new Response('Error updating order', { status: 500 });
-    }
+  try {
+    const result = await applyPaystackPayment(event.data);
+    if (!result.ok) console.warn(`Paystack webhook: ${event.data.reference}: ${result.message}`);
+    // 200 either way: the event was received and handled; retrying won't change the outcome.
     return new Response('OK', { status: 200 });
+  } catch (err) {
+    console.error('Paystack webhook error:', err);
+    // Non-200 so Paystack retries later (e.g. a temporary database error).
+    return new Response('Error', { status: 500 });
   }
 }

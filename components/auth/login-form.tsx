@@ -27,6 +27,7 @@ const LoginForm = () => {
   const [success, setSuccess] = useState<string | undefined>('');
   const searchParams = useSearchParams();
   const isVerified = searchParams.get('verified');
+  const callbackUrl = searchParams.get('callbackUrl');
   // todo const [showPassword, setShowPassword] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -42,7 +43,7 @@ const LoginForm = () => {
     setSuccess('');
     setError('');
     startTransition(async () => {
-      const data = await login(values);
+      const data = await login(values, callbackUrl);
       if (data) {
         setError(data.error);
         setSuccess(data.success ? data.message : undefined);

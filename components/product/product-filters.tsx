@@ -19,12 +19,18 @@ const MAX_PRICE = 1000000;
 
 const DEFAULT_PRICE_RANGE = [MIN_PRICE, MAX_PRICE];
 
+// URL params are strings; the slider and the MIN/MAX comparisons need numbers.
+const parsePriceRange = (raw: string | null): number[] => {
+  const parsed = raw?.split(',').map(Number);
+  return parsed && parsed.length === 2 && parsed.every(Number.isFinite) ? parsed : DEFAULT_PRICE_RANGE;
+};
+
 export default function ProductFilters({ categories, currentFilters }: { categories: any; currentFilters: any }) {
   const [transitionPending, startTransition] = useTransition();
   const [isMounted, setIsMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const searchParams = useSearchParams();
-  const [priceRange, setPriceRange] = useState(searchParams.get('priceRange')?.split(',') || DEFAULT_PRICE_RANGE);
+  const [priceRange, setPriceRange] = useState<number[]>(parsePriceRange(searchParams.get('priceRange')));
 
   const { setIsPending } = useSearchStore();
 

@@ -18,10 +18,9 @@ export const RegisterSchema = z.object({
   password: z.string().min(5, { message: 'Password must be at least 5 characters' }),
 });
 
+// What the browser may send when adding to the cart. Prices are never accepted from the client.
 export const CartItemsSchema = z.object({
-  productId: z.string(),
-  quantity: z.number().int().nonnegative('Quantity must be a positive number'),
-  price: z.number().nonnegative('Price must be a positive number'),
+  productId: z.string().min(1),
   variantId: z.string().optional().nullable(),
 });
 
@@ -36,7 +35,6 @@ export const CartSchema = z.object({
 });
 
 export const OrderSchema = z.object({
-  userId: z.string().min(1, { message: 'User ID is required' }),
   name: z.string().min(3, { message: 'Name must be at least 3 characters' }),
   email: z.string().email({ message: 'Enter a valid email' }),
   phone: z.string().min(11, { message: 'Phone number must be at least 11 characters' }).optional(),

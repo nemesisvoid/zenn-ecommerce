@@ -15,6 +15,7 @@ const AdminDashboardPage = async () => {
   const data = await getOrderSummary();
   const stats = await getMonthlySales();
   const topProducts = data.topProducts?.map(p => ({
+    id: p.id,
     name: p.name,
     totalOrders: p._count.OrderItem,
     image: p.images[0],
@@ -27,6 +28,7 @@ const AdminDashboardPage = async () => {
     customerName: s.user.name,
     totalPrice: s.totalPrice,
     orderDate: s.createdAt.toDateString(),
+    items: s._count.orderItems,
     address: s.shippingAddress,
   }));
   return (

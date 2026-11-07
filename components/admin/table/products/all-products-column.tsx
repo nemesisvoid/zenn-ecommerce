@@ -15,7 +15,7 @@ export type AllProductsColumnType = {
   categories?: { name: string }[] | null;
   variants?: { size?: string | null; color?: string | null }[];
   stock?: number;
-  ratings?: number;
+  rating?: number | null;
 };
 
 export const allProductsColumn: ColumnDef<AllProductsColumnType>[] = [
@@ -88,7 +88,7 @@ export const allProductsColumn: ColumnDef<AllProductsColumnType>[] = [
     },
   },
   { header: 'Stock', accessorKey: 'stock', cell: ({ row }) => <p>{row.original.stock}</p> },
-  { header: 'Ratings', accessorKey: 'ratings' },
+  { header: 'Ratings', accessorKey: 'rating' },
 
   {
     header: 'Action',

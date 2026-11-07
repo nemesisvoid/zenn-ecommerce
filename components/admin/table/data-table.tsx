@@ -10,7 +10,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 interface DataTable<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  pageSize: number;
+  pageSize?: number;
 }
 const DataTable = <TData, TValue>({ columns, data, pageSize = 10 }: DataTable<TData, TValue>) => {
   const [columnVisibility, setColumnVisibility] = useState({});

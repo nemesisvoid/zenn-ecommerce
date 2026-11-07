@@ -35,3 +35,16 @@ export const userRoutes = ['/user'];
  * @type {string}
  */
 export const DEFAULT_LOGIN_REDIRECT = '/';
+
+/**
+ * Validates a post-login redirect target. Only same-site paths are allowed (blocks open
+ * redirects like "https://evil.com" or "//evil.com"); auth pages fall back to the default.
+ */
+export const getSafeRedirect = (url: string | null | undefined) => {
+  if (!url || !url.startsWith('/') || url.startsWith('//') || url.startsWith('/\\')) return DEFAULT_LOGIN_REDIRECT;
+  if (url.startsWith('/auth')) return DEFAULT_LOGIN_REDIRECT;
+  return url;
+};
+
+/** Login page URL that returns the user to `path` after signing in. */
+export const loginUrlFor = (path: string) => `/auth/login?callbackUrl=${encodeURIComponent(path)}`;

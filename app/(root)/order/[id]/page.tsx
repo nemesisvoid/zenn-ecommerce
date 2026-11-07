@@ -2,12 +2,27 @@
 
 import { getOrderById } from '@/actions/order.action';
 import { auth } from '@/auth';
-import { formatCurrency, renderProduct } from '@/helper/utils';
-import { ArrowLeftIcon, CheckIcon, CreditCardIcon, LockIcon, MapPinIcon, PackageSearchIcon } from 'lucide-react';
+import { formatCurrency } from '@/helper/utils';
+import {
+  ArrowLeftIcon,
+  CheckIcon,
+  ClockIcon,
+  CreditCardIcon,
+  LockIcon,
+  MapPinIcon,
+  PackageSearchIcon,
+  RotateCcwIcon,
+  TruckIcon,
+  WalletIcon,
+  XIcon,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
 import EmptyState from '@/components/shared/empty-state';
+import OrderStatusPill from '@/components/shared/order-status-pill';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
+import { loginUrlFor } from '@/routes';
 
 const OrderPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
@@ -22,36 +37,26 @@ const OrderPage = async ({ params }: { params: Promise<{ id: string }> }) => {
           <Button
             asChild
             className='h-11 rounded-full px-6'>
-            <Link href='/auth/login'>Sign in</Link>
+            <Link href={loginUrlFor(`/order/${id}`)}>Sign in</Link>
           </Button>
         </EmptyState>
       </div>
     );
 
-  const order = await getOrderById(id, session.user.id);
+  const order = await getOrderById(id);
 
+  // item.price is the unit price actually charged when the order was placed.
   const selectedProduct = order?.orderItems.map(item => {
-    if (item.variantId) {
-      const foundVariant = item.product.colorImages.find(ci => ci.color === item.variant?.color);
-      return {
-        productId: item.productId,
-        color: foundVariant?.color,
-        size: item.variant?.size,
-        images: foundVariant?.images,
-        price: item.variant?.price,
-        name: item.product?.name,
-        variantId: item.variant?.id,
-        quantity: item.quantity,
-      };
-    } else {
-      return {
-        productId: item.productId,
-        name: item.product?.name,
-        images: item.product?.images,
-        price: item.product?.price,
-        quantity: item.quantity,
-      };
-    }
+    const colorImages = item.variant ? item.product.colorImages.find(ci => ci.color === item.variant?.color)?.images : undefined;
+    return {
+      productId: item.productId,
+      name: item.product.name,
+      color: item.variant?.color,
+      size: item.variant?.size,
+      images: colorImages?.length ? colorImages : item.product.images,
+      price: item.price,
+      quantity: item.quantity,
+    };
   });
   if (!order)
     return (
@@ -76,20 +81,65 @@ const OrderPage = async ({ params }: { params: Promise<{ id: string }> }) => {
     );
 
   const isPayOnDelivery = order.paymentMethod === 'PAY_ON_DELIVERY';
+
+  const header = (() => {
+    if (order.status === 'CANCELLED')
+      return { icon: XIcon, tone: 'bg-destructive/10 text-destructive', title: 'This order was cancelled', message: 'This order has been cancelled.' };
+    switch (order.paymentStatus) {
+      case 'PAID':
+        return {
+          icon: CheckIcon,
+          tone: 'bg-success/12 text-success',
+          title: 'Thank you for your order',
+          message: 'Your payment was successful and your order is confirmed.',
+        };
+      case 'FAILED':
+        return {
+          icon: XIcon,
+          tone: 'bg-destructive/10 text-destructive',
+          title: 'Payment failed',
+          message: 'Your payment didn’t go through, so this order hasn’t been confirmed.',
+        };
+      case 'REFUNDED':
+      case 'PARTIALLY_REFUNDED':
+        return {
+          icon: RotateCcwIcon,
+          tone: 'bg-secondary text-muted-foreground',
+          title: order.paymentStatus === 'REFUNDED' ? 'This order was refunded' : 'This order was partially refunded',
+          message: 'Your refund has been issued to your original payment method.',
+        };
+      default:
+        return isPayOnDelivery
+          ? { icon: CheckIcon, tone: 'bg-success/12 text-success', title: 'Thank you for your order', message: 'Your order is confirmed. You’ll pay when it arrives.' }
+          : {
+              icon: ClockIcon,
+              tone: 'bg-brand-soft text-brand-ink',
+              title: 'Waiting for payment',
+              message: 'We haven’t received your payment yet. If you just paid, it can take a few minutes to update.',
+            };
+    }
+  })();
+  const HeaderIcon = header.icon;
+
   return (
     <div className='container'>
       <div className='mx-auto max-w-2xl'>
         <header className='flex flex-col items-center text-center'>
-          <span className='flex size-14 items-center justify-center rounded-full bg-success/12 text-success'>
-            <CheckIcon
+          <span className={cn('flex size-14 items-center justify-center rounded-full', header.tone)}>
+            <HeaderIcon
               className='size-7'
               aria-hidden='true'
             />
           </span>
-          <h1 className='page-title mt-6'>Thank you for your order</h1>
+          <h1 className='page-title mt-6'>{header.title}</h1>
           <p className='lede mt-3 max-w-md'>
-            {isPayOnDelivery ? 'Your order is confirmed. You’ll pay when it arrives.' : 'Your payment was successful and your order is confirmed.'} A receipt
-            has been sent to <span className='font-medium text-foreground'>{order.email}</span>.
+            {header.message}
+            {order.paymentStatus === 'PAID' && (
+              <>
+                {' '}
+                A receipt has been sent to <span className='font-medium text-foreground'>{order.email}</span>.
+              </>
+            )}
           </p>
           {order.paystackReference && (
             <p className='mt-4 rounded-full bg-secondary px-4 py-1.5 text-sm text-muted-foreground'>
@@ -122,6 +172,31 @@ const OrderPage = async ({ params }: { params: Promise<{ id: string }> }) => {
                 {isPayOnDelivery ? order.paymentMethod.split('_').join(' ').toLowerCase() : order.paymentMethod.toLowerCase()}
               </dd>
             </div>
+            <div>
+              <dt className='flex items-center gap-2 text-sm text-muted-foreground'>
+                <WalletIcon
+                  className='size-4'
+                  aria-hidden='true'
+                />
+                Payment status
+              </dt>
+              <dd className='mt-2'>
+                <OrderStatusPill status={order.paymentStatus} />
+              </dd>
+            </div>
+            <div>
+              <dt className='flex items-center gap-2 text-sm text-muted-foreground'>
+                <TruckIcon
+                  className='size-4'
+                  aria-hidden='true'
+                />
+                Delivery status
+              </dt>
+              <dd className='mt-2 flex flex-wrap gap-2'>
+                <OrderStatusPill status={order.deliveryStatus} />
+                {order.status === 'CANCELLED' && <OrderStatusPill status='CANCELLED' />}
+              </dd>
+            </div>
           </dl>
 
           <div className='p-6 md:p-8'>
@@ -133,7 +208,7 @@ const OrderPage = async ({ params }: { params: Promise<{ id: string }> }) => {
                   className='flex items-center gap-4 py-4 first:pt-0'>
                   <div className='relative aspect-[4/5] w-16 shrink-0 overflow-hidden rounded-lg bg-muted'>
                     <Image
-                      src={item.images[0] || ''}
+                      src={item.images?.[0] || ''}
                       alt='order item'
                       fill
                       sizes='64px'
@@ -146,11 +221,22 @@ const OrderPage = async ({ params }: { params: Promise<{ id: string }> }) => {
                       {[item.color, item.size, `Qty ${item.quantity}`].filter(Boolean).join(', ')}
                     </p>
                   </div>
-                  {item.price != null && <p className='price text-sm text-foreground'>{formatCurrency(item.price)}</p>}
+                  <p className='price text-sm text-foreground'>{formatCurrency(item.price * item.quantity)}</p>
                 </li>
               ))}
             </ul>
           </div>
+
+          <dl className='space-y-3 border-t border-border px-6 py-5 text-sm md:px-8'>
+            <div className='summary-row'>
+              <dt className='text-muted-foreground'>Subtotal</dt>
+              <dd className='price text-foreground'>{formatCurrency(order.itemsPrice)}</dd>
+            </div>
+            <div className='summary-row'>
+              <dt className='text-muted-foreground'>Delivery</dt>
+              <dd className='price text-foreground'>{order.shippingPrice > 0 ? formatCurrency(order.shippingPrice) : 'Free'}</dd>
+            </div>
+          </dl>
 
           <div className='summary-row border-t border-border bg-secondary/60 px-6 py-5 md:px-8'>
             <span className='font-semibold text-foreground'>Total</span>

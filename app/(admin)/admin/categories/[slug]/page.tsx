@@ -10,7 +10,7 @@ const CategoryDetailsPage = async (props: { params: Promise<{ slug: string }> })
     <div>
       <h3 className='mb-6'>Edit Category</h3>
       <CategoryForm
-        initialData={category}
+        initialData={category ? { ...category, description: category.description ?? undefined } : undefined}
         products={products}
       />
     </div>

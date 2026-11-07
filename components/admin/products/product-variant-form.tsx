@@ -192,7 +192,7 @@ const ProductVariantForm = ({ form, isPending }: ProductVariantFormProps) => {
                                       className='relative w-16 h-16 rounded-md overflow-hidden border'>
                                       <div
                                         className='absolute top-0 right-0 z-10 bg-red-500 text-white rounded-bl-md cursor-pointer p-1'
-                                        onClick={() => formField.onChange(formField.value.filter((_, index) => index !== i))}>
+                                        onClick={() => formField.onChange((formField.value ?? []).filter((_, index) => index !== i))}>
                                         <XIcon size={10} />
                                       </div>
                                       <img

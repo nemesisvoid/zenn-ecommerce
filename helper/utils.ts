@@ -1,6 +1,5 @@
 // import isEqual from 'lodash';
 import { CartItemType } from '@/types';
-import { CartItem } from '@prisma/client';
 import { isEqual } from 'lodash';
 
 // l.isEqual = require('lodash.isequal');
@@ -28,7 +27,7 @@ export const getPercentagePrice = (amount: number, percentage: number | null) =>
 };
 
 export interface RenderedCartItem {
-  productId?: string | null;
+  productId: string;
   color?: string | null;
   size?: string | null;
   images?: string[] | null;
@@ -134,51 +133,40 @@ export const compareData = (oldData: any, newData: any) => {
   return Object.keys(changes).length > 0 ? changes : null;
 };
 
-export const getProductVariants = (product: any[]) => {
-  variants.map(variant => variant.name);
-  if (product.variants && product.variants.length > 0) {
-    return {};
-  } else {
-    return {};
-  }
-};
+export const renderProduct = (items: CartItemType[]): RenderedCartItem[] => {
+  return items.map(item => {
+    // Prices are read exactly as stored on the cart item (set server-side by lib/cart.ts).
+    const product = item.products;
+    const variant = item.variants;
+    const discountPercent = product.discountPercent ?? null;
+    const unitPrice = item.price;
+    const discountPrice = item.discountPrice;
 
-export const renderProduct = (product: CartItemType[]): RenderedCartItem[] => {
-  return product?.map(item => {
-
-    if (item.variants || item.hasVariants) {
-      const colorImage = item.products?.colorImages;
-      const variantColors = item.variants.color;
-      const foundVariant = colorImage?.find(color => color.color === variantColors && color.productId === item.products?.id);
-      if (foundVariant)
-        return {
-          productId: foundVariant.productId,
-          color: foundVariant.color,
-          size: item.variants.size,
-          images: foundVariant.images,
-          price: item.variants.price ?? item.products?.price ?? 0,
-          name: item.products?.name,
-          variantId: item.variants.id,
-          quantity: item.quantity,
-          discountPercent: item.products?.discountPercent ?? null,
-          discountPrice:
-            item.discountPrice ??
-            (item.products?.discountPercent
-              ? getPercentagePrice(item.variants.price ?? item.products?.price ?? 0, item.products?.discountPercent ?? 0)
-              : null),
-        };
-    } else {
+    if (variant) {
+      const colorImage = product.colorImages.find(ci => ci.color === variant.color);
       return {
-        productId: item.products?.id,
-        name: item.products?.name,
-        images: item.products?.images,
-        price: item.price,
+        productId: product.id,
+        color: variant.color,
+        size: variant.size,
+        images: colorImage?.images.length ? colorImage.images : product.images,
+        price: unitPrice,
+        name: product.name,
+        variantId: variant.id,
         quantity: item.quantity,
-        discountPercent: item.products?.discountPercent ?? null,
-        discountPrice:
-          item.discountPrice ?? (item.products?.discountPercent ? getPercentagePrice(item.price, item.products?.discountPercent ?? 0) : null),
+        discountPercent,
+        discountPrice,
       };
     }
+
+    return {
+      productId: product.id,
+      name: product.name,
+      images: product.images,
+      price: unitPrice,
+      quantity: item.quantity,
+      discountPercent,
+      discountPrice,
+    };
   });
 };
 

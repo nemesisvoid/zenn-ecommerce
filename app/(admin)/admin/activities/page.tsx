@@ -50,7 +50,8 @@ const ActivitiesPage = async () => {
               {log.details && (
                 <details className='mt-1'>
                   <summary className='cursor-pointer text-xs text-blue-600'>View changes</summary>
-                  <ActivityDetails details={log.details} />
+                  {/* `details` is only ever written from compareData()'s Record<field, { old, new }> output */}
+                  <ActivityDetails details={log.details as Record<string, { old: unknown; new: unknown }>} />
                 </details>
               )}
 

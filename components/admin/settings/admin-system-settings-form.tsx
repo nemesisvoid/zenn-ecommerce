@@ -13,7 +13,7 @@ import { Switch } from '@/components/ui/switch';
 
 type AdminShippingSettingsFormProps = {
   id?: string;
-  initialData: z.infer<typeof SystemSettingsSchema>;
+  initialData?: z.infer<typeof SystemSettingsSchema>;
 };
 const AdminSystemSettingsForm = ({ id, initialData }: AdminShippingSettingsFormProps) => {
   const [isPending, startTransition] = useTransition();

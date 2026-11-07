@@ -1,4 +1,6 @@
-// 'use client';
+'use client';
+
+import { useSearchParams } from 'next/navigation';
 import { FcGoogle } from 'react-icons/fc';
 import { Button } from '../ui/button';
 
@@ -6,6 +8,7 @@ import { providerLogin } from '@/actions/login.action';
 import { authSecondaryButton } from './auth-styles';
 
 const Social = () => {
+  const callbackUrl = useSearchParams().get('callbackUrl');
   // const handleSignIn = async (provider: 'google' | 'github') => {
   //   signIn(provider, {
   //     callbackUrl: '/',
@@ -14,7 +17,7 @@ const Social = () => {
   return (
     <div className='flex items-center w-full gap-x-2'>
       <Button
-        onClick={() => providerLogin('google')}
+        onClick={() => providerLogin('google', callbackUrl)}
         className={authSecondaryButton}
         variant='outline'
         size='lg'>

@@ -4,17 +4,17 @@ import * as z from 'zod';
 
 import { LoginSchema } from '@/schemas';
 import { signIn, signOut } from '@/auth';
-import { DEFAULT_LOGIN_REDIRECT } from '@/routes';
+import { getSafeRedirect } from '@/routes';
 import { AuthError } from 'next-auth';
 
-export const login = async (values: z.infer<typeof LoginSchema>) => {
+export const login = async (values: z.infer<typeof LoginSchema>, callbackUrl?: string | null) => {
   try {
     const validatedFields = LoginSchema.safeParse(values);
 
     if (!validatedFields.success) return { error: 'invalid credentials' };
     const { email, password } = validatedFields.data;
 
-    await signIn('credentials', { email, password, redirectTo: DEFAULT_LOGIN_REDIRECT });
+    await signIn('credentials', { email, password, redirectTo: getSafeRedirect(callbackUrl) });
 
     return { success: true, message: 'login successful' };
   } catch (error) {
@@ -36,6 +36,7 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
   }
 };
 
-export const providerLogin = async (provider: 'google' | 'github') => await signIn(provider, { redirectTo: '/' });
+export const providerLogin = async (provider: 'google' | 'github', callbackUrl?: string | null) =>
+  await signIn(provider, { redirectTo: getSafeRedirect(callbackUrl) });
 
 export const logout = async () => await signOut({ redirectTo: '/' });

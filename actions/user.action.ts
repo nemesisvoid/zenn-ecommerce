@@ -3,6 +3,7 @@
 import * as z from 'zod';
 
 import { auth } from '@/auth';
+import { getSessionUser, isAdminRole, requireAdmin } from '@/lib/auth-guards';
 import { prisma } from '@/lib/prisma';
 import { AdminUserSettingsSchema, UserSettingsSchema } from '@/schemas';
 import { logActivity } from './activity.action';
@@ -11,6 +12,7 @@ import bcrypt from 'bcryptjs';
 
 export const getAllCustomers = async () => {
   try {
+    await requireAdmin();
     const res = await prisma.user.findMany({
       select: {
         name: true,
@@ -38,8 +40,7 @@ export const getAllCustomers = async () => {
 export const editUser = async (id: string, userData: z.infer<typeof AdminUserSettingsSchema>) => {
   try {
     const user = await auth();
-    const loggedInUserRole = user?.user.role;
-    if (loggedInUserRole !== 'ADMIN') throw new Error('only admins can update users');
+    if (!isAdminRole(user?.user.role)) throw new Error('only admins can update users');
 
     const validatedData = AdminUserSettingsSchema.safeParse(userData);
     if (!validatedData.success) throw new Error('error validating fields');
@@ -71,7 +72,7 @@ export const editUser = async (id: string, userData: z.infer<typeof AdminUserSet
         action: 'UPDATE',
         entity: 'USER',
         entityId: id,
-        entityName: oldUserData.name,
+        entityName: oldUserData.name ?? oldUserData.email,
         details: changes,
       });
     }
@@ -87,20 +88,13 @@ export const editUser = async (id: string, userData: z.infer<typeof AdminUserSet
 
 export const deleteUser = async (userId: string) => {
   try {
-    const session = await auth();
-    const loggedInUser = session?.user;
+    const admin = await requireAdmin();
+    if (admin.id === userId) throw new Error('You cannot delete your own account');
 
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true, role: true } });
     if (!user) throw new Error('User not found');
 
-    const isLoggedInUserAdmin = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { role: true },
-    });
-
-    if (loggedInUser?.role === 'USER') throw new Error('Unauthorized! users cannot delete admins!');
-
-    if (isLoggedInUserAdmin?.role === 'ADMIN') throw new Error('Admin users cannot be deleted!');
+    if (isAdminRole(user.role)) throw new Error('Admin users cannot be deleted!');
 
     await prisma.user.delete({
       where: { id: userId },
@@ -110,8 +104,8 @@ export const deleteUser = async (userId: string) => {
       action: 'DELETE',
       entity: 'USER',
       entityId: userId,
-      entityName: user.name,
-      details: JSON.stringify(user),
+      entityName: user.name ?? user.email,
+      details: JSON.stringify({ name: user.name, email: user.email }),
     });
 
     return { success: true, message: 'User deleted successfully' };
@@ -122,19 +116,29 @@ export const deleteUser = async (userId: string) => {
   }
 };
 
-export const getUserById = async (id: string) =>
-  prisma.user.findUnique({
+// Callers may read their own record; admins may read anyone's. The password hash is never returned.
+export const getUserById = async (id: string) => {
+  const sessionUser = await getSessionUser();
+  if (!sessionUser || (sessionUser.id !== id && !isAdminRole(sessionUser.role))) return null;
+
+  return prisma.user.findUnique({
     where: { id },
+    omit: { password: true },
     include: {
       orders: {
         orderBy: { createdAt: 'desc' },
       },
     },
   });
+};
 
+// Users can only update their own profile (admins use editUser).
 export const updateUser = async (id: string, userData: z.infer<typeof UserSettingsSchema>) => {
-  const user = await getUserById(id);
-  if (!user) throw new Error('user not found');
+  const sessionUser = await getSessionUser();
+  if (!sessionUser || sessionUser.id !== id) return { success: false, message: 'Unauthorized' };
+
+  const user = await prisma.user.findUnique({ where: { id }, select: { password: true } });
+  if (!user) return { success: false, message: 'User not found' };
 
   const validatedData = UserSettingsSchema.safeParse(userData);
   if (!validatedData.success) throw new Error('error validating fields');
@@ -144,7 +148,8 @@ export const updateUser = async (id: string, userData: z.infer<typeof UserSettin
   let hashedPassword: string | null = null;
 
   if (oldPassword && newPassword) {
-    const passwordMatch = await bcrypt.compare(oldPassword, user.password!);
+    if (!user.password) return { success: false, message: 'This account signs in with Google and has no password to change' };
+    const passwordMatch = await bcrypt.compare(oldPassword, user.password);
     if (!passwordMatch) {
       return { success: false, message: 'Current password is incorrect' };
     }
@@ -170,7 +175,7 @@ export const updateUser = async (id: string, userData: z.infer<typeof UserSettin
     });
     return { success: true, message: 'Profile updated successfully' };
   } catch (error) {
-    console.error('error', error);
-    if (error instanceof Error) console.error(error.message);
+    console.error('error updating profile', error);
+    return { success: false, message: 'Something went wrong updating your profile' };
   }
 };

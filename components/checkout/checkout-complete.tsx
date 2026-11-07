@@ -27,14 +27,14 @@ const CheckoutComplete = () => {
           setMessage('Payment successful! Thank you for your purchase. Redirection to order confirmation page....');
 
           setTimeout(() => {
-            router.push(`/order/${res?.order?.id}`);
+            router.push(`/order/${res?.orderId}`);
           }, 1000);
         } else {
           setMessage(`Payment verification failed: ${res?.message}`);
 
-          if (res?.order?.id) {
+          if (res?.orderId) {
             setTimeout(() => {
-              router.push(`/order/${res?.order?.id}`);
+              router.push(`/order/${res?.orderId}`);
             }, 2000);
           }
         }

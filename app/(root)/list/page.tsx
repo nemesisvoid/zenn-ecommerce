@@ -12,7 +12,9 @@ const ProductListPage = async ({ searchParams }: { searchParams: Promise<{ [key:
   const category = Array.isArray(filters.category) ? filters.category[0] : filters.category || 'all-products';
   const data = await getProductsByCategory(category);
   const title = category?.replace('-', ' ');
-  const count = data.products.length;
+  // Unknown category slugs return null; show the empty state instead of crashing.
+  const products = data?.products ?? [];
+  const count = products.length;
 
   return (
     <div className='container'>
@@ -39,7 +41,7 @@ const ProductListPage = async ({ searchParams }: { searchParams: Promise<{ [key:
           </Button>
         </EmptyState>
       ) : (
-        <ProductList data={data.products} />
+        <ProductList data={products} />
       )}
     </div>
   );

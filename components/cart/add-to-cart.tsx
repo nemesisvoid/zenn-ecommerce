@@ -1,6 +1,5 @@
 'use client';
 
-import { CartType } from '@/types';
 import { Button } from '../ui/button';
 import { useTransition } from 'react';
 import { createCart } from '@/actions/cart.actions';
@@ -9,14 +8,12 @@ import Spinner from '@/components/shared/spinner';
 import { toast } from 'sonner';
 
 type AddToCartType = {
-  cart: CartType | undefined;
   product: { id: string; price: number };
   canAddToCart: boolean;
   selectedVariant?: { id: string; productId: string; price: number } | null;
-  price: number;
 };
 
-const AddToCart = ({ product, selectedVariant, price, canAddToCart }: AddToCartType) => {
+const AddToCart = ({ product, selectedVariant, canAddToCart }: AddToCartType) => {
   // const isItemInCart = cart && product && cart.cartItems.find(item => item.productId === product.productId);
 
   const variantId = selectedVariant?.id ?? null;
@@ -26,12 +23,8 @@ const AddToCart = ({ product, selectedVariant, price, canAddToCart }: AddToCartT
 
   const handleAddToCart = async () => {
     startTransition(async () => {
-      const newData = {
-        productId,
-        variantId,
-        price,
-        quantity: 1,
-      };
+      // Only say what to add — the server looks up the price.
+      const newData = { productId, variantId };
       const res = await createCart(newData);
 
       if (!res?.success) {

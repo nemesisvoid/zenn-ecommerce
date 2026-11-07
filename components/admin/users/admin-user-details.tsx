@@ -6,17 +6,13 @@ import DataTable from '../table/data-table';
 import { formatCurrency } from '@/helper/utils';
 import { BoxIcon, DollarSignIcon } from 'lucide-react';
 import { UserType } from '@/types';
+import type { UserTransactionColumn } from '@/components/admin/table/users/user-transaction-column';
 
 interface AdminUserDetailsProps {
-  user: UserType;
-  userTransaction: {
-    id: string;
-    status: string;
-    isPaid?: boolean;
-    paymentMethod: string;
-    totalAmount: number;
-    orderDte: Date;
-  };
+  // The page renders a not-found state before mounting this, so the user is always present here.
+  // getUserById never returns the password hash.
+  user: Omit<NonNullable<UserType>, 'password'>;
+  userTransaction: UserTransactionColumn[];
   userStats: {
     totalExpense: number;
     totalOrders: number;
@@ -32,7 +28,7 @@ const AdminUserDetails = ({ user, userStats, userTransaction }: AdminUserDetails
             <div className='h-[100px] w-full bg-purple-300 mb-4 rounded-t-md' />
 
             <Image
-              src={user.image || user.avatarUrl || `/avatar-fallback.png`}
+              src={user.image || user.avatar || `/avatar-fallback.png`}
               width={65}
               alt='user image'
               height={65}

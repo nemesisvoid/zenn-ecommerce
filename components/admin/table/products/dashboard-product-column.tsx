@@ -9,6 +9,7 @@ export type DashboardProductColumnType = {
   name: string;
   image: string;
   price: number;
+  totalOrders: number;
 };
 
 export const dashboardProductColumn: ColumnDef<DashboardProductColumnType>[] = [
