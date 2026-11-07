@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ColumnDef } from '@tanstack/react-table';
 
-import { PaymentMethod, PaymentStatus, OrderStatus, DeliveryStatus } from '@prisma/client';
+import { PaymentMethod, PaymentStatus, OrderStatus, DeliveryStatus, RefundStatus } from '@prisma/client';
 import { StatusBadge } from '@/components/misc/status-badge';
 
 import { formatCurrency } from '@/helper/utils';
@@ -22,6 +22,7 @@ export type AllOrdersColumnType = {
   paymentStatus: PaymentStatus;
   orderStatus: OrderStatus;
   deliveryStatus: DeliveryStatus;
+  refundStatus: RefundStatus | null;
 };
 
 export const allOrdersColumn: ColumnDef<AllOrdersColumnType>[] = [
@@ -101,6 +102,34 @@ export const allOrdersColumn: ColumnDef<AllOrdersColumnType>[] = [
     accessorKey: 'deliveryStatus',
     cell: ({ row }) => {
       return <StatusBadge status={row.original.deliveryStatus} />;
+    },
+  },
+  {
+    header: 'Refund',
+    accessorKey: 'refundStatus',
+    cell: ({ row }) => {
+      const status = row.original.refundStatus;
+      if (!status) return <span className='text-muted-foreground'>—</span>;
+      // Highlight requests that are waiting on the admin.
+      const needsAction = status === 'REQUESTED' || status === 'RECEIVED' || status === 'FAILED';
+      const label: Record<RefundStatus, string> = {
+        REQUESTED: 'New request',
+        APPROVED: 'Awaiting return',
+        RECEIVED: 'Ready to refund',
+        REFUNDING: 'Refunding',
+        FAILED: 'Refund failed',
+        REFUNDED: 'Refunded',
+        REJECTED: 'Declined',
+      };
+      return (
+        <Link
+          href={`/admin/orders/${row.original.id}`}
+          className={`inline-flex whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium ${
+            needsAction ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' : 'bg-secondary text-muted-foreground'
+          }`}>
+          {label[status]}
+        </Link>
+      );
     },
   },
 

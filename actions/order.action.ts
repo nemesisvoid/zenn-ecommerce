@@ -184,6 +184,7 @@ export const getOrderById = async (orderId: string) => {
         orderItems: {
           include: { product: { include: { colorImages: true } }, variant: true },
         },
+        refundRequests: { orderBy: { createdAt: 'desc' } },
       },
     });
 
@@ -318,6 +319,7 @@ export const getAllOrders = async () => {
       include: {
         orderItems: true,
         user: { select: { id: true, name: true, firstName: true, lastName: true, email: true, image: true, avatar: true } },
+        refundRequests: { select: { status: true }, orderBy: { createdAt: 'desc' }, take: 1 },
       },
     });
     return orders;

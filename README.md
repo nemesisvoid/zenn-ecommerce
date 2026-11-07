@@ -45,13 +45,15 @@ Prices are in Nigerian Naira (₦).
 - **Profile**: name, address and avatar upload.
 - **Security**: change password.
 - **Orders**: order history with separate **payment** and **delivery** status badges, and an order details page showing items, subtotal, delivery and total.
+- **Refund requests**: within 3 days of delivery, customers can ask to return items for a refund (choosing items, quantities and a reason). Every request is reviewed and may be declined, and items must be returned before a refund is made. Customers follow the request's progress on the order page and by email.
 
 ### Admin dashboard (`/admin`)
 - **Overview**: total sales, orders, customers and products, a 12-month revenue chart, top products and recent sales.
 - **Products**: create and edit products with images, variants (colour, size, price, stock) and discounts. Products are **archived, never deleted**: archiving hides a product from the store (and blocks it at checkout) while keeping it for past orders and records, and it can be restored at any time.
 - **Categories**: create and edit categories with cover images and assigned products.
 - **Homepage banners**: manage the hero slides (image, headline, text, button label and link), set their order, show or hide them, and schedule start and end dates. The homepage falls back to built-in slides when none are live.
-- **Orders**: all orders in a paginated table.
+- **Orders**: all orders in a paginated table, newest first, with refund requests highlighted. Each order has a details page to update delivery status, record pay-on-delivery payments, re-check Paystack payments, record refunds and cancel (optionally returning items to stock). Customers are emailed when their order ships, is delivered, is cancelled or is refunded.
+- **Refunds**: review requests, approve with return instructions or decline with a reason, mark returned items received (optionally restocking them), then refund. Paystack orders are refunded automatically through the Paystack Refund API (updated by webhook, with a manual status check); pay-on-delivery orders are refunded by bank transfer to the details the customer provided.
 - **Customers**: customer list and per-customer details, order history and account management.
 - **Activity log**: a record of admin changes (what changed, by whom and when).
 - **Settings**: store details and shipping settings.

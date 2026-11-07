@@ -53,6 +53,7 @@ export const getAdminOrder = async (id: string) => {
           },
         },
         user: { select: { id: true, name: true, firstName: true, lastName: true, email: true, phone: true, image: true, avatar: true } },
+        refundRequests: { orderBy: { createdAt: 'desc' } },
       },
     }),
     prisma.activityLog.findMany({
@@ -61,7 +62,9 @@ export const getAdminOrder = async (id: string) => {
       include: { user: { select: { name: true, email: true } } },
     }),
   ]);
-  return order ? { order, history } : null;
+  if (!order) return null;
+  const settings = await prisma.settings.findFirst({ select: { storeName: true, storeAddress: true, storePhone: true } });
+  return { order, history, settings };
 };
 
 export const updateDeliveryStatus = async (id: string, status: DeliveryStatus): Promise<Result> => {

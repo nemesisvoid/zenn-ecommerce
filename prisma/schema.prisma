@@ -11,22 +11,22 @@ datasource db {
 }
 
 model User {
-  id              String         @id @default(uuid())
-  email           String         @unique
+  id              String          @id @default(uuid())
+  email           String          @unique
   name            String?
   password        String?
-  firstName       String?        @db.VarChar(50)
-  lastName        String?        @db.VarChar(50)
+  firstName       String?         @db.VarChar(50)
+  lastName        String?         @db.VarChar(50)
   phone           String?
-  status          AccountStatus  @default(ACTIVE)
+  status          AccountStatus   @default(ACTIVE)
   avatar          String?
-  isEmailVerified Boolean        @default(false)
-  role            UserRole       @default(USER)
+  isEmailVerified Boolean         @default(false)
+  role            UserRole        @default(USER)
   address         String?
   country         String?
   city            String?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
   emailVerified   DateTime?
   lastLogin       DateTime?
   image           String?
@@ -35,6 +35,7 @@ model User {
   account         Account[]
   Cart            Cart?
   orders          Order[]
+  refundRequests  RefundRequest[]
   Review          Review[]
   Session         Session[]
   wishlists       Wishlist[]
@@ -124,19 +125,19 @@ model Review {
 }
 
 model Order {
-  id                String         @id @default(uuid())
+  id                String          @id @default(uuid())
   userId            String
   productId         String?
   shippingAddress   String
-  status            OrderStatus    @default(PENDING)
-  deliveryStatus    DeliveryStatus @default(PENDING)
-  paymentStatus     PaymentStatus  @default(PENDING)
-  isPaid            Boolean        @default(false)
-  paidAt            DateTime?      @db.Timestamp(6)
-  isDelivered       Boolean        @default(false)
-  deliveredAt       DateTime?      @db.Timestamp(6)
+  status            OrderStatus     @default(PENDING)
+  deliveryStatus    DeliveryStatus  @default(PENDING)
+  paymentStatus     PaymentStatus   @default(PENDING)
+  isPaid            Boolean         @default(false)
+  paidAt            DateTime?       @db.Timestamp(6)
+  isDelivered       Boolean         @default(false)
+  deliveredAt       DateTime?       @db.Timestamp(6)
   totalPrice        Float
-  createdAt         DateTime       @default(now())
+  createdAt         DateTime        @default(now())
   email             String
   itemsPrice        Float
   shippingPrice     Float
@@ -144,14 +145,15 @@ model Order {
   paymentMethod     PaymentMethod
   cartId            String
   paystackPayload   Json?
-  paystackReference String?        @unique
+  paystackReference String?         @unique
   phoneNo           String?
   city              String
   country           String
   postalCode        String?
-  Product           Product?       @relation(fields: [productId], references: [id])
-  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Product           Product?        @relation(fields: [productId], references: [id])
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   orderItems        OrderItem[]
+  refundRequests    RefundRequest[]
 
   @@index([userId])
   @@index([productId])
@@ -312,6 +314,54 @@ model Banner {
   updatedAt DateTime  @updatedAt
 
   @@index([isActive, sortOrder])
+}
+
+// A customer's request to return items for a refund (3-day window after delivery).
+// Flow: REQUESTED -> APPROVED (send items back) -> RECEIVED -> REFUNDING (Paystack) -> REFUNDED.
+// REJECTED ends a request; FAILED means Paystack could not complete the refund.
+model RefundRequest {
+  id                String       @id @default(uuid())
+  orderId           String
+  userId            String
+  status            RefundStatus @default(REQUESTED)
+  reason            String
+  details           String?
+  /// Snapshot of requested lines: [{ orderItemId, name, option, quantity, unitPrice }]
+  items             Json
+  /// Value of the requested items (delivery is not included)
+  amount            Float
+  /// Amount actually refunded (may be adjusted by an admin)
+  refundedAmount    Float?
+  /// Bank details for pay-on-delivery orders, which can't be refunded through Paystack
+  bankName          String?
+  accountNumber     String?
+  accountName       String?
+  /// Message emailed to the customer (return instructions or rejection reason)
+  adminMessage      String?
+  restocked         Boolean      @default(false)
+  /// Our idempotency reference sent to Paystack, and Paystack's refund id
+  paystackRefundRef String?      @unique
+  paystackRefundId  String?
+  approvedAt        DateTime?
+  receivedAt        DateTime?
+  refundedAt        DateTime?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  order             Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([status])
+}
+
+enum RefundStatus {
+  REQUESTED
+  APPROVED
+  RECEIVED
+  REFUNDING
+  REFUNDED
+  REJECTED
+  FAILED
 }
 
 enum UserRole {

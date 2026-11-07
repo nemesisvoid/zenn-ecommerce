@@ -5,6 +5,7 @@ import { ArrowLeftIcon, CreditCardIcon, MailIcon, MapPinIcon, PhoneIcon, UserRou
 
 import { getAdminOrder } from '@/actions/admin-order.actions';
 import OrderActions from '@/components/admin/orders/order-actions';
+import RefundRequestPanel, { type AdminRefundRequest } from '@/components/admin/orders/refund-request-panel';
 import OrderStatusPill, { formatStatus } from '@/components/shared/order-status-pill';
 import { formatCurrency } from '@/helper/utils';
 
@@ -21,6 +22,7 @@ const FIELD_LABELS: Record<string, string> = {
   paymentStatus: 'Payment',
   status: 'Order',
   restocked: 'Items returned to stock',
+  refundRequest: 'Refund',
 };
 
 /** Turns a logged change ({ field: { old, new } }) into "Delivery: Processing → Shipped". */
@@ -37,7 +39,25 @@ const AdminOrderPage = async ({ params }: { params: Promise<{ id: string }> }) =
   const { id } = await params;
   const data = await getAdminOrder(id);
   if (!data) notFound();
-  const { order, history } = data;
+  const { order, history, settings } = data;
+
+  // Refunds: the newest request gets the action panel; older ones are listed for the record.
+  const toPanel = (r: (typeof order.refundRequests)[number]): AdminRefundRequest => ({
+    ...r,
+    items: r.items as AdminRefundRequest['items'],
+    createdAt: r.createdAt.toISOString(),
+  });
+  const [latestRefund, ...olderRefunds] = order.refundRequests;
+  const alreadyRefunded = order.refundRequests.filter(r => r.status === 'REFUNDED').reduce((sum, r) => sum + (r.refundedAmount ?? 0), 0);
+  const maxRefund = Math.max(0, order.totalPrice - alreadyRefunded);
+  const defaultInstructions = [
+    'Please pack the items securely, include your order number, and send them to:',
+    settings?.storeAddress || '[add your return address in Settings]',
+    settings?.storePhone ? `Phone: ${settings.storePhone}` : null,
+    'Reply to this email with the courier tracking number once you have sent them.',
+  ]
+    .filter(Boolean)
+    .join('\n');
 
   const customerName =
     [order.user.firstName, order.user.lastName].filter(Boolean).join(' ') || order.user.name || order.user.email;
@@ -190,6 +210,27 @@ const AdminOrderPage = async ({ params }: { params: Promise<{ id: string }> }) =
               />
             </div>
           </section>
+
+          {latestRefund && (
+            <section className={`${card} ${['REQUESTED', 'RECEIVED', 'FAILED'].includes(latestRefund.status) ? 'ring-2 ring-amber-400/60' : ''}`}>
+              <h2 className={cardTitle}>Refund request</h2>
+              <div className='p-5'>
+                <RefundRequestPanel
+                  key={`${latestRefund.id}-${latestRefund.status}`}
+                  request={toPanel(latestRefund)}
+                  paymentMethod={order.paymentMethod}
+                  defaultInstructions={defaultInstructions}
+                  maxRefund={maxRefund}
+                />
+                {olderRefunds.length > 0 && (
+                  <p className='mt-5 border-t border-border pt-4 text-xs text-muted-foreground'>
+                    Earlier requests:{' '}
+                    {olderRefunds.map(r => `${formatStatus(r.status)} (${formatCurrency(r.refundedAmount ?? r.amount)})`).join(', ')}
+                  </p>
+                )}
+              </div>
+            </section>
+          )}
 
           <section className={card}>
             <h2 className={cardTitle}>Customer</h2>

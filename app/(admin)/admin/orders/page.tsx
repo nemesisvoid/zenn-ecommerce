@@ -18,6 +18,7 @@ const AllOrdersPage = async () => {
     paymentStatus: order.paymentStatus,
     orderStatus: order.status,
     deliveryStatus: order.deliveryStatus,
+    refundStatus: order.refundRequests[0]?.status ?? null,
   }));
 
 
