@@ -16,7 +16,7 @@ export type PaystackTransaction = {
 
 export type PaymentResult =
   | { ok: true; orderId: string; alreadyPaid: boolean }
-  | { ok: false; orderId?: string; reason: 'not_found' | 'not_successful' | 'amount_mismatch'; message: string };
+  | { ok: false; orderId?: string; reason: 'not_found' | 'not_successful' | 'amount_mismatch' | 'cancelled'; message: string };
 
 /** Looks a transaction up directly with Paystack (used when the customer returns from checkout). */
 export const fetchPaystackTransaction = async (reference: string): Promise<PaystackTransaction | null> => {
@@ -40,7 +40,7 @@ export const fetchPaystackTransaction = async (reference: string): Promise<Payst
 export const applyPaystackPayment = async (tx: PaystackTransaction): Promise<PaymentResult> => {
   const order = await prisma.order.findUnique({
     where: { paystackReference: tx.reference },
-    select: { id: true, totalPrice: true, paymentStatus: true, cartId: true },
+    select: { id: true, totalPrice: true, paymentStatus: true, cartId: true, status: true },
   });
   if (!order) return { ok: false, reason: 'not_found', message: 'Order not found' };
   if (order.paymentStatus === 'PAID') return { ok: true, orderId: order.id, alreadyPaid: true };
@@ -52,6 +52,18 @@ export const applyPaystackPayment = async (tx: PaystackTransaction): Promise<Pay
     console.error(`payment mismatch for order ${order.id}: paid ${tx.amount} ${tx.currency}, expected ${expectedKobo} NGN`);
     await prisma.order.updateMany({ where: { id: order.id, paymentStatus: { not: 'PAID' } }, data: { paymentStatus: 'FAILED' } });
     return { ok: false, orderId: order.id, reason: 'amount_mismatch', message: 'Payment amount does not match the order total' };
+  }
+
+  // A cancelled order that gets paid anyway: record the payment truthfully, but don't take stock
+  // or complete it. The admin needs to refund the customer.
+  if (order.status === 'CANCELLED') {
+    await prisma.order.updateMany({
+      where: { id: order.id, paymentStatus: { not: 'PAID' } },
+      data: { paymentStatus: 'PAID', isPaid: true, paidAt: new Date() },
+    });
+    console.error(`order ${order.id} was paid after it was cancelled; refund the customer`);
+    revalidatePath(`/admin/orders/${order.id}`);
+    return { ok: false, orderId: order.id, reason: 'cancelled', message: 'This order was cancelled. Your payment will be refunded.' };
   }
 
   // Atomically claim the order: if another request already marked it paid, count is 0 and we stop.

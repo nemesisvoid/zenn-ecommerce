@@ -1,16 +1,16 @@
 import { getAllOrders } from '@/actions/order.action';
 import { allOrdersColumn } from '@/components/admin/table/columns/all-orders-column';
 import DataTable from '@/components/admin/table/data-table';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 
 const AllOrdersPage = async () => {
   const orders = await getAllOrders();
 
   const order = orders?.map(order => ({
     id: order.id,
-    customerName: order.user.firstName ? `${order.user.firstName} ${order.user.lastName}` : order.user.name,
-    totalItems: order.orderItems.length,
+    userId: order.user.id,
+    customerName: order.user.firstName ? `${order.user.firstName} ${order.user.lastName ?? ''}`.trim() : order.user.name || order.user.email,
+    avatar: order.user.avatar ?? order.user.image,
+    totalItems: order.orderItems.reduce((sum, item) => sum + item.quantity, 0),
     orderNumber: order.id.slice(0, 8).toUpperCase(),
     totalAmount: order.totalPrice,
     orderDate: order.createdAt,
@@ -24,18 +24,11 @@ const AllOrdersPage = async () => {
   return (
     <div className='admin-card px-0'>
       <div className='flex justify-between px-4'>
-        <h2 className='table-header'>All Orders List</h2>
-        <Button asChild>
-          <Link
-            href='/admin/products/create-product'
-            className='text-sm text-gray-700 mx-4 mb-5  px-4 py-2 rounded-md dark:bg-white'>
-            Add Product
-          </Link>
-        </Button>
+        <h2 className='table-header'>All Orders</h2>
       </div>
       <DataTable
         data={order ?? []}
-        pageSize={5}
+        pageSize={10}
         columns={allOrdersColumn}
       />
     </div>

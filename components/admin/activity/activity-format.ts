@@ -8,6 +8,7 @@ import {
   PackageIcon,
   PencilIcon,
   PlusIcon,
+  ReceiptTextIcon,
   ScrollTextIcon,
   Trash2Icon,
   UserRoundIcon,
@@ -96,6 +97,7 @@ const ENTITY_META: Record<string, EntityMeta> = {
   PRODUCT: { noun: 'product', plural: 'Products', icon: PackageIcon },
   CATEGORY: { noun: 'category', plural: 'Categories', icon: FolderTreeIcon },
   BANNER: { noun: 'banner', plural: 'Banners', icon: GalleryHorizontalIcon },
+  ORDER: { noun: 'order', plural: 'Orders', icon: ReceiptTextIcon },
   USER: { noun: 'user', plural: 'Users', icon: UserRoundIcon },
   ACTIVITY_LOG: { noun: 'activity log', plural: 'Activity log', icon: ScrollTextIcon },
 };

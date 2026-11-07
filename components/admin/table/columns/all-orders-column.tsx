@@ -11,8 +11,8 @@ import { formatCurrency } from '@/helper/utils';
 
 export type AllOrdersColumnType = {
   id: string;
+  userId: string;
   customerName: string | null;
-  // Not currently provided: getAllOrders() does not select the user's image/avatar, so the fallback is shown.
   avatar?: string | null;
   totalItems: number;
   orderNumber: string;
@@ -26,15 +26,31 @@ export type AllOrdersColumnType = {
 
 export const allOrdersColumn: ColumnDef<AllOrdersColumnType>[] = [
   {
-    header: 'Order Id',
-    accessorKey: 'id',
+    header: 'Order',
+    accessorKey: 'orderNumber',
+    cell: ({ row }) => (
+      <Link
+        href={`/admin/orders/${row.original.id}`}
+        className='font-medium text-foreground hover:underline'>
+        #{row.original.orderNumber}
+      </Link>
+    ),
+  },
+  {
+    header: 'Date',
+    accessorKey: 'orderDate',
+    cell: ({ row }) => (
+      <span className='whitespace-nowrap text-sm'>
+        {new Date(row.original.orderDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+      </span>
+    ),
   },
   {
     header: 'Customer Name',
     accessorKey: 'customerName',
     cell: ({ row }) => {
       return (
-        <Link href={`/admin/customers/${row.original.id}`}>
+        <Link href={`/admin/users/${row.original.userId}`}>
           <div className='flex items-center gap-2'>
             <Image
               src={row.original.avatar ? row.original.avatar : '/avatar-fallback.png'}
@@ -53,13 +69,24 @@ export const allOrdersColumn: ColumnDef<AllOrdersColumnType>[] = [
   },
 
   {
-    header: 'Total Items',
+    header: 'Items',
     accessorKey: 'totalItems',
+  },
+  {
+    header: 'Total',
+    accessorKey: 'totalAmount',
+    cell: ({ row }) => <span className='whitespace-nowrap tabular-nums'>{formatCurrency(row.original.totalAmount)}</span>,
   },
 
   {
     header: 'Payment Method',
     accessorKey: 'paymentMethod',
+    cell: ({ row }) => (row.original.paymentMethod === 'PAYSTACK' ? 'Paystack' : 'Pay on delivery'),
+  },
+  {
+    header: 'Order Status',
+    accessorKey: 'orderStatus',
+    cell: ({ row }) => <StatusBadge status={row.original.orderStatus} />,
   },
 
   {

@@ -6,6 +6,8 @@ import { auth } from '@/auth';
 import { getCart } from '@/actions/cart.actions';
 import { decrementStock, effectiveUnitPrice, refreshCart } from '@/lib/cart';
 import { revalidatePath } from 'next/cache';
+import { after } from 'next/server';
+import { sendOrderEmail } from '@/helper/order-emails';
 import { prisma } from '@/lib/prisma';
 import { OrderSchema } from '@/schemas';
 import { randomUUID } from 'crypto';
@@ -96,6 +98,8 @@ export const createOrderPayOnDelivery = async (input: CreateOrderInput) => {
     });
 
     revalidatePath('/user/settings/orders');
+    // Pay-on-delivery customers get a confirmation now (online payments get a receipt once paid).
+    after(() => sendOrderEmail(order.id, 'confirmed'));
     return { success: true as const, orderId: order.id, message: 'Order placed' };
   } catch (error) {
     if (error instanceof OutOfStockError) return { success: false as const, message: 'Some items just went out of stock. Please review your bag.' };
@@ -310,9 +314,10 @@ export const getAllOrders = async () => {
   await requireAdmin();
   try {
     const orders = await prisma.order.findMany({
+      orderBy: { createdAt: 'desc' },
       include: {
         orderItems: true,
-        user: { select: { id: true, name: true, firstName: true, lastName: true, email: true } },
+        user: { select: { id: true, name: true, firstName: true, lastName: true, email: true, image: true, avatar: true } },
       },
     });
     return orders;

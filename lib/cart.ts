@@ -143,3 +143,18 @@ export const mergeGuestCart = async (sessionCartId: string, userId: string) => {
   await prisma.cart.delete({ where: { id: guest.id } });
   await refreshCart(userCart.id);
 };
+
+/** Puts ordered quantities back into stock (the reverse of decrementStock, same variant/product rule). */
+export const incrementStock = async (
+  db: Prisma.TransactionClient,
+  items: { productId: string; variantId: string | null; quantity: number }[],
+) => {
+  for (const item of items) {
+    const variant = item.variantId ? await db.productVariant.findUnique({ where: { id: item.variantId }, select: { stock: true } }) : null;
+    if (variant && variant.stock !== null) {
+      await db.productVariant.update({ where: { id: item.variantId! }, data: { stock: { increment: item.quantity } } });
+    } else {
+      await db.product.update({ where: { id: item.productId }, data: { stock: { increment: item.quantity } } });
+    }
+  }
+};
