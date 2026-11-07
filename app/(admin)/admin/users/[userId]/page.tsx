@@ -1,75 +1,97 @@
+import Link from 'next/link';
+import { ArrowLeftIcon } from 'lucide-react';
+
 import { getUserById } from '@/actions/user.action';
 import AdminUserDetails from '@/components/admin/users/admin-user-details';
 import AdminUserForm from '@/components/admin/users/admin-user-form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
+const BackLink = () => (
+  <Link
+    href='/admin/users'
+    className='inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground'>
+    <ArrowLeftIcon
+      className='size-4'
+      aria-hidden='true'
+    />
+    All users
+  </Link>
+);
+
 const CustomersDetailsPage = async (props: { params: Promise<{ userId: string }> }) => {
   const { userId } = await props.params;
 
   const user = await getUserById(userId);
-  const initialData = {
-    name: user?.name,
-    email: user?.email,
-    address: user?.address,
-    role: user?.role,
-    phone: user?.phone,
-    isEmailVerified: user?.isEmailVerified,
-    userStatus: user?.status,
-  };
 
   if (!user)
     return (
-      <div className='flex items-center justify-center h-[50vh] -translate-x-15'>
-        <p className='text-3xl font-medium'>Requested user not found!</p>
+      <div className='py-16 text-center'>
+        <p className='text-lg font-semibold text-foreground'>User not found</p>
+        <p className='mt-1 text-sm text-muted-foreground'>This account may have been deleted.</p>
+        <div className='mt-6'>
+          <BackLink />
+        </div>
       </div>
     );
 
+  const initialData = {
+    name: user.name,
+    email: user.email,
+    address: user.address,
+    role: user.role,
+    phone: user.phone,
+    isEmailVerified: user.isEmailVerified,
+    userStatus: user.status,
+  };
+
+  // Money only counts once it's actually been paid (not pending, failed or fully refunded orders).
+  const paid = user.orders.filter(order => order.paymentStatus === 'PAID' || order.paymentStatus === 'PARTIALLY_REFUNDED');
   const userStats = {
-    totalExpense: user.orders.reduce((acc, cur) => acc + cur.totalPrice, 0),
+    totalSpent: paid.reduce((sum, order) => sum + order.totalPrice, 0),
+    paidOrders: paid.length,
     totalOrders: user.orders.length,
+    deliveredOrders: user.orders.filter(order => order.deliveryStatus === 'DELIVERED').length,
+    lastOrderAt: user.orders[0]?.createdAt ?? null, // orders come newest first
   };
 
   const userTransaction = user.orders.map(order => ({
     id: order.id,
     status: order.status,
+    paymentStatus: order.paymentStatus,
+    deliveryStatus: order.deliveryStatus,
     totalAmount: order.totalPrice,
-    isPaid: order.isPaid,
     paymentMethod: order.paymentMethod,
     orderDate: order.createdAt,
   }));
 
   return (
-    <Tabs defaultValue='user-details'>
-      <TabsList className='bg-dark-100 mt-4 mb-6'>
-        <TabsTrigger
-          className='py-4'
-          value='user-details'>
-          User Details
-        </TabsTrigger>
-        <TabsTrigger
-          className='py-4'
-          value='edit-user'>
-          Edit User
-        </TabsTrigger>
-      </TabsList>
+    <div>
+      <BackLink />
 
-      <TabsContent value='user-details'>
-        <AdminUserDetails
-          user={user}
-          userTransaction={userTransaction}
-          userStats={userStats}
-        />
-      </TabsContent>
+      <Tabs
+        defaultValue='user-details'
+        className='mt-4'>
+        <TabsList className='mb-6'>
+          <TabsTrigger value='user-details'>Overview</TabsTrigger>
+          <TabsTrigger value='edit-user'>Edit user</TabsTrigger>
+        </TabsList>
 
-      <TabsContent value='edit-user'>
-        <div>
+        <TabsContent value='user-details'>
+          <AdminUserDetails
+            user={user}
+            userTransaction={userTransaction}
+            userStats={userStats}
+          />
+        </TabsContent>
+
+        <TabsContent value='edit-user'>
           <AdminUserForm
             id={user.id}
             initialData={initialData}
           />
-        </div>
-      </TabsContent>
-    </Tabs>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 

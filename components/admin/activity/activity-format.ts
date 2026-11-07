@@ -126,11 +126,7 @@ export const getActorName = (user: ActivityLogEntry['user']) => {
   return user.name?.trim() || fullName || user.email;
 };
 
-export const getInitials = (name: string) => {
-  const words = name.replace(/@.*/, '').split(/[\s._-]+/).filter(Boolean);
-  const initials = words.length > 1 ? words[0][0] + words[words.length - 1][0] : (words[0] ?? '?').slice(0, 2);
-  return initials.toUpperCase();
-};
+export { getInitials } from '@/lib/utils';
 
 // ---------------------------------------------------------------------------
 // Field labels & values

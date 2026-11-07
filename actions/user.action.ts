@@ -1,6 +1,7 @@
 'use server';
 
 import * as z from 'zod';
+import { revalidatePath } from 'next/cache';
 
 import { auth } from '@/auth';
 import { getSessionUser, isAdminRole, requireAdmin } from '@/lib/auth-guards';
@@ -173,6 +174,8 @@ export const updateUser = async (id: string, userData: z.infer<typeof UserSettin
         // phone: userData.phone,
       },
     });
+    // Re-render layouts (store header, admin top bar) so the new name and photo show straight away.
+    revalidatePath('/', 'layout');
     return { success: true, message: 'Profile updated successfully' };
   } catch (error) {
     console.error('error updating profile', error);
