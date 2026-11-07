@@ -1,9 +1,12 @@
+import { getActiveBanners } from '@/actions/banner.actions';
 import HeroSlider from '../misc/hero-slider';
 
-const HeroSection = () => {
+const HeroSection = async () => {
+  const banners = await getActiveBanners();
+
   return (
     <section aria-label='Featured collections'>
-      <HeroSlider />
+      <HeroSlider banners={banners} />
     </section>
   );
 };

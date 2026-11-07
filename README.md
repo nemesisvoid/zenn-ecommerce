@@ -50,6 +50,7 @@ Prices are in Nigerian Naira (₦).
 - **Overview**: total sales, orders, customers and products, a 12-month revenue chart, top products and recent sales.
 - **Products**: create and edit products with images, variants (colour, size, price, stock) and discounts.
 - **Categories**: create and edit categories with cover images and assigned products.
+- **Homepage banners**: manage the hero slides (image, headline, text, button label and link), set their order, show or hide them, and schedule start and end dates. The homepage falls back to built-in slides when none are live.
 - **Orders**: all orders in a paginated table.
 - **Customers**: customer list and per-customer details, order history and account management.
 - **Activity log**: a record of admin changes (what changed, by whom and when).
@@ -118,7 +119,7 @@ Create a `.env` file in the project root. It is git-ignored; never commit it.
 ### 3. Set up the database
 
 ```bash
-npx prisma migrate deploy   # apply the migrations
+npx prisma db push          # create the tables from prisma/schema.prisma
 ```
 
 The store starts empty. Add categories and products from the admin dashboard once you have an admin account (next steps).
@@ -183,7 +184,7 @@ lib/
   auth-guards.ts     Session and admin checks for server actions
   prisma.ts          Prisma client (Neon adapter)
 components/          UI components (storefront, admin, auth, shadcn/ui)
-prisma/              Schema and migrations
+prisma/              Database schema
 schemas/             Zod validation schemas
 helper/              Formatting, email sending and email templates
 auth.ts, auth.config.ts, middleware.ts, routes.ts   Authentication and route protection

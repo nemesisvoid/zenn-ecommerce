@@ -5,36 +5,47 @@ import { useState } from 'react';
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion';
 import { Button } from '../ui/button';
 
-const slides = [
+export type HeroSlide = {
+  id: string;
+  title: string;
+  subtitle: string | null;
+  imageUrl: string;
+  href: string;
+  ctaLabel: string;
+};
+
+// Shown only when no banners are live (manage banners at /admin/banners).
+const DEFAULT_SLIDES: HeroSlide[] = [
   {
-    id: 1,
+    id: 'default-1',
     title: 'Flash Sale Collections',
-    desc: 'Get the best deals on our exclusive collections',
-    img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    bg: 'bg-gradient-to-r from-yellow-50 to-pink-100',
-    url: '/list',
+    subtitle: 'Get the best deals on our exclusive collections',
+    imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    href: '/list',
+    ctaLabel: 'Shop now',
   },
   {
-    id: 2,
+    id: 'default-2',
     title: 'Gadget Collections',
-    desc: 'Get the best deals on our exclusive collections',
-    img: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    bg: 'bg-gradient-to-r from-yellow-50 to-green-200',
-    url: '/list',
+    subtitle: 'Get the best deals on our exclusive collections',
+    imageUrl: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    href: '/list',
+    ctaLabel: 'Shop now',
   },
   {
-    id: 3,
+    id: 'default-3',
     title: 'Gadget Collections',
-    desc: 'Get the best deals on our exclusive collections',
-    img: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    bg: 'bg-gradient-to-r from-yellow-50 to-orange-200',
-    url: '/list',
+    subtitle: 'Get the best deals on our exclusive collections',
+    imageUrl: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    href: '/list',
+    ctaLabel: 'Shop now',
   },
 ];
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
-const HeroSlider = () => {
+const HeroSlider = ({ banners }: { banners: HeroSlide[] }) => {
+  const slides = banners.length > 0 ? banners : DEFAULT_SLIDES;
   const [sliderIndex, setSliderIndex] = useState(0);
 
   // useEffect(() => {
@@ -44,7 +55,9 @@ const HeroSlider = () => {
   //   }, 6000);
   // }, []);
 
-  const slide = slides[sliderIndex];
+  // Clamp in case the banner list shrank while the page was open.
+  const activeIndex = sliderIndex < slides.length ? sliderIndex : 0;
+  const slide = slides[activeIndex];
 
   return (
     <MotionConfig reducedMotion='user'>
@@ -68,18 +81,20 @@ const HeroSlider = () => {
                 className='font-display text-[3.25rem] leading-[0.95] tracking-tight text-foreground sm:text-7xl xl:text-[6.5rem]'>
                 {slide.title}
               </motion.h1>
-              <motion.p
-                variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.6, ease } } }}
-                className='mt-6 max-w-md text-lg leading-relaxed text-muted-foreground'>
-                {slide.desc}
-              </motion.p>
+              {slide.subtitle && (
+                <motion.p
+                  variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.6, ease } } }}
+                  className='mt-6 max-w-md text-lg leading-relaxed text-muted-foreground'>
+                  {slide.subtitle}
+                </motion.p>
+              )}
               <motion.div
                 variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.6, ease } } }}
                 className='mt-9'>
                 <Button
                   asChild
                   className='h-12 rounded-full px-8 text-[0.9375rem] font-semibold'>
-                  <Link href={slide.url}>Shop now</Link>
+                  <Link href={slide.href}>{slide.ctaLabel}</Link>
                 </Button>
               </motion.div>
             </motion.div>
@@ -94,19 +109,19 @@ const HeroSlider = () => {
                 key={s.id}
                 type='button'
                 role='tab'
-                aria-selected={sliderIndex === i}
+                aria-selected={activeIndex === i}
                 aria-label={`Show slide ${i + 1} of ${slides.length}`}
                 onClick={() => setSliderIndex(i)}
                 className='group flex h-8 cursor-pointer items-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring'>
                 <span
                   className={`block h-[3px] rounded-full transition-all duration-500 ${
-                    sliderIndex === i ? 'w-12 bg-foreground' : 'w-6 bg-border group-hover:bg-muted-foreground'
+                    activeIndex === i ? 'w-12 bg-foreground' : 'w-6 bg-border group-hover:bg-muted-foreground'
                   }`}
                 />
               </button>
             ))}
             <span className='ml-3 text-sm tabular-nums text-muted-foreground'>
-              {String(sliderIndex + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
+              {String(activeIndex + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
             </span>
           </div>
         </div>
@@ -120,7 +135,7 @@ const HeroSlider = () => {
               animate={{ opacity: 1, scale: 1, transition: { duration: 0.9, ease } }}
               exit={{ opacity: 0, transition: { duration: 0.6 } }}>
               <Image
-                src={slide.img}
+                src={slide.imageUrl}
                 alt={slide.title}
                 fill
                 priority={true}
