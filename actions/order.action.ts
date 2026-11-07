@@ -29,7 +29,9 @@ const prepareOrder = async (input: CreateOrderInput) => {
   const cart = await getCart();
   if (!cart || cart.cartItems.length === 0) return { success: false, message: 'Your bag is empty' } as OrderFailure;
 
-  const { outOfStock } = await refreshCart(cart.id);
+  const { outOfStock, unavailable } = await refreshCart(cart.id);
+  if (unavailable.length > 0)
+    return { success: false, message: `No longer available: ${unavailable.join(', ')}. Please remove it from your bag.` } as OrderFailure;
   if (outOfStock.length > 0) return { success: false, message: `Not enough stock for: ${outOfStock.join(', ')}` } as OrderFailure;
 
   const fresh = await prisma.cart.findUniqueOrThrow({ where: { id: cart.id }, include: { cartItems: true } });

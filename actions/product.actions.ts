@@ -4,10 +4,10 @@ import { requireAdmin } from '@/lib/auth-guards';
 import { revalidatePath } from 'next/cache';
 
 import { prisma } from '@/lib/prisma';
-import { auth } from '@/auth';
 import * as z from 'zod';
 import { CreateProductSchema } from '@/schemas';
-import { compareData, slugify } from '@/helper/utils';
+import { formatCurrency, slugify } from '@/helper/utils';
+import { isEqual } from 'lodash';
 import { logActivity } from './activity.action';
 import { Prisma } from '@prisma/client';
 
@@ -39,9 +39,24 @@ export const getRecentProducts = async (days = 30) => {
   return data;
 };
 
+/** Products with a discount, biggest discount first (archived products excluded). */
+export const getSaleProducts = async () => {
+  try {
+    return await prisma.product.findMany({
+      where: { isArchived: false, discountPercent: { gt: 0 } },
+      orderBy: [{ discountPercent: 'desc' }, { createdAt: 'desc' }],
+      select: { id: true, slug: true, name: true, price: true, images: true, discountPercent: true },
+    });
+  } catch (error) {
+    console.error('error fetching sale products', error);
+    return [];
+  }
+};
+
+/** Storefront product page: archived products are treated as not found. */
 export const getProductBySlug = async (slug: string) => {
-  const data = await prisma.product.findUnique({
-    where: { slug },
+  const data = await prisma.product.findFirst({
+    where: { slug, isArchived: false },
     include: {
       variants: true,
       colorImages: true,
@@ -54,13 +69,14 @@ export const getProductBySlug = async (slug: string) => {
   return data;
 };
 
+/** Admin product list, including archived products (shown last). */
 export const getAllProducts = async () => {
+  await requireAdmin();
   try {
     const data = await prisma.product.findMany({
-      where: {
-        isArchived: false,
-      },
+      orderBy: [{ isArchived: 'asc' }, { createdAt: 'desc' }],
       select: {
+        isArchived: true,
         id: true,
         name: true,
         slug: true,
@@ -79,55 +95,6 @@ export const getAllProducts = async () => {
     return data;
   } catch (error) {
     console.error('error fetching products', error);
-  }
-};
-
-export const getProductBySearch = async (params: { [key: string]: string }) => {
-  try {
-    const whereClause: Prisma.ProductWhereInput = {};
-
-    if (params.query) {
-      whereClause.name = {
-        contains: params.query,
-        mode: 'insensitive',
-      };
-      whereClause.description = {
-        contains: params.query,
-        mode: 'insensitive',
-      };
-      whereClause.OR = [{ name: { contains: params.query, mode: 'insensitive' } }, { description: { contains: params.query, mode: 'insensitive' } }];
-    }
-
-    if (params.category) {
-      const categoryArray = params.category.split(',');
-      whereClause.categories = {
-        some: {
-          name: {
-            in: categoryArray,
-          },
-        },
-      };
-    }
-
-    if (params.priceRange) {
-      const [min, max] = params.priceRange.split(',').map(Number);
-      whereClause.price = {
-        gte: min,
-        lte: max,
-      };
-    }
-
-    const products = await prisma.product.findMany({
-      where: whereClause,
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-
-    return products;
-  } catch (error) {
-    console.error('error fetching product', error);
-    return [];
   }
 };
 
@@ -179,36 +146,92 @@ export const createProduct = async (productData: z.infer<typeof CreateProductSch
   }
 };
 
+/** Admin edit page: loads any product, including archived ones. */
+export const getProductBySlugForAdmin = async (slug: string) => {
+  await requireAdmin();
+  return prisma.product.findUnique({
+    where: { slug },
+    include: { variants: true, colorImages: true, categories: true },
+  });
+};
+
+// ---- Activity-log snapshots: a readable, comparable view of everything an edit can change.
+
+type VariantLike = { color?: string | null; size?: string | null; price?: number | null; stock?: number | null };
+type ColorImagesLike = { color: string; images: unknown[] };
+
+const variantLabel = (v: VariantLike) =>
+  `${[v.color, v.size].filter(Boolean).join(' / ') || 'Default'} — ${formatCurrency(v.price ?? 0)} · stock ${v.stock ?? 0}`;
+const colorImagesLabel = (c: ColorImagesLike) => `${c.color}: ${c.images.length} image${c.images.length === 1 ? '' : 's'}`;
+const imageLabel = (url: string) => decodeURIComponent(url.split('/').pop() ?? url);
+const sorted = (values: string[]) => [...values].sort((a, b) => a.localeCompare(b));
+
+const productSnapshot = (p: {
+  name: string;
+  price: number;
+  description: string;
+  stock: number;
+  discountPercent: number | null | undefined;
+  hasVariants: boolean;
+  images: string[];
+  categories: string[];
+  variants: VariantLike[];
+  colorImages: ColorImagesLike[];
+}) => ({
+  name: p.name,
+  price: p.price,
+  description: p.description,
+  stock: p.stock,
+  discountPercent: p.discountPercent ?? 0,
+  hasVariants: p.hasVariants,
+  categories: sorted(p.categories),
+  variants: sorted(p.variants.map(variantLabel)),
+  colorImages: sorted(p.colorImages.map(colorImagesLabel)),
+  images: p.images.map(imageLabel),
+});
+
+type Snapshot = ReturnType<typeof productSnapshot>;
+type FieldChange = { old: Prisma.InputJsonValue | null; new: Prisma.InputJsonValue | null };
+
+const diffSnapshots = (before: Snapshot, after: Snapshot) => {
+  const changes: Record<string, FieldChange> = {};
+  for (const key of Object.keys(after) as (keyof Snapshot)[]) {
+    if (!isEqual(before[key], after[key])) {
+      changes[key] = { old: before[key] ?? null, new: after[key] ?? null };
+    }
+  }
+  return Object.keys(changes).length > 0 ? changes : null;
+};
+
 export const editProduct = async (id: string, productData: z.infer<typeof CreateProductSchema>) => {
   await requireAdmin();
+  if (!id) return { success: false, message: 'Product ID is required' };
+
   const validatedProduct = CreateProductSchema.safeParse(productData);
-
-  const oldProduct = await prisma.product.findUnique({
-    where: { id },
-  });
-
-  if (!oldProduct) throw new Error('Product not found');
-
-  const changes = compareData(oldProduct, productData);
-
-  if (!id) throw new Error('Product ID is required');
-
-  if (!validatedProduct.success) throw new Error(validatedProduct.error.message);
-
+  if (!validatedProduct.success) return { success: false, message: validatedProduct.error.issues[0]?.message ?? 'Invalid product' };
   const { data } = validatedProduct;
 
   try {
+    const oldProduct = await prisma.product.findUnique({
+      where: { id },
+      include: { categories: { select: { name: true } }, variants: true, colorImages: true },
+    });
+    if (!oldProduct) return { success: false, message: 'Product not found' };
+
     const defaultCategory = await prisma.category.upsert({
       where: { slug: 'all-products' },
       update: {},
       create: {
         name: 'All Products',
         slug: 'all-products',
-        coverImage: '/all-products-cover-img.png',
+        coverImage: '/all-products-cover.jpg',
       },
     });
 
-    const variants = data.variants?.length ? { deleteMany: {}, create: data.variants } : undefined;
+    // Variants and colour images are only replaced when new ones are sent.
+    const replacesVariants = !!data.variants?.length;
+    const replacesColorImages = !!data.colorImages?.length;
+    const images = data.images.filter((img): img is string => typeof img === 'string');
 
     const res = await prisma.product.update({
       where: { id },
@@ -216,38 +239,38 @@ export const editProduct = async (id: string, productData: z.infer<typeof Create
         name: data.name,
         price: data.price,
         description: data.description,
-        images: data.images,
+        images,
         stock: data.stock,
         hasVariants: data.hasVariants,
         discountPercent: data.discountPercent,
         categories: {
-          set: [...(data.categories ?? []).map(id => ({ id })), { id: defaultCategory.id }],
+          set: [...(data.categories ?? []).map(categoryId => ({ id: categoryId })), { id: defaultCategory.id }],
         },
-
-        colorImages:
-          data.colorImages && data.colorImages.length > 0
-            ? {
-                deleteMany: {},
-                create: data.colorImages?.map(cl => ({
-                  color: cl.color,
-                  images: cl.images,
-                })),
-              }
-            : undefined,
-        variants: variants,
+        colorImages: replacesColorImages
+          ? {
+              deleteMany: {},
+              create: (data.colorImages ?? []).map(cl => ({
+                color: cl.color,
+                images: cl.images.filter((img): img is string => typeof img === 'string'),
+              })),
+            }
+          : undefined,
+        variants: replacesVariants ? { deleteMany: {}, create: data.variants } : undefined,
       },
+      include: { categories: { select: { name: true } }, variants: true, colorImages: true },
     });
 
+    // Compare what was stored before with what is stored now, so every field the edit changed is recorded.
+    const changes = diffSnapshots(
+      productSnapshot({ ...oldProduct, categories: oldProduct.categories.map(c => c.name) }),
+      productSnapshot({ ...res, categories: res.categories.map(c => c.name) }),
+    );
     if (changes) {
-      await logActivity({
-        action: 'UPDATE',
-        entity: 'PRODUCT',
-        entityId: id,
-        entityName: oldProduct.name,
-        details: changes,
-      });
+      await logActivity({ action: 'UPDATE', entity: 'PRODUCT', entityId: id, entityName: res.name, details: changes });
     }
 
+    revalidatePath('/admin/products');
+    revalidatePath(`/product/${res.slug}`);
     return { success: true, data: res, message: 'Product updated successfully' };
   } catch (error) {
     console.error('error updating product', error);
@@ -255,25 +278,38 @@ export const editProduct = async (id: string, productData: z.infer<typeof Create
   }
 };
 
-export const deleteProduct = async (id: string) => {
+// Products are never deleted, so orders and records keep pointing at them.
+// Archiving hides a product from the store; restoring brings it back.
+const setProductArchived = async (id: string, isArchived: boolean) => {
   await requireAdmin();
   try {
-    const product = await prisma.product.findUnique({ where: { id }, select: { name: true } });
+    const existing = await prisma.product.findUnique({ where: { id }, select: { isArchived: true } });
+    if (!existing) return { success: false, message: 'Product not found' };
+    if (existing.isArchived === isArchived) {
+      return { success: true, message: isArchived ? 'Product is already archived' : 'Product is already active' };
+    }
 
-    if (!product) throw new Error('Product not found');
-    await prisma.product.delete({ where: { id } });
-    revalidatePath('/admin/products');
+    const product = await prisma.product.update({ where: { id }, data: { isArchived }, select: { name: true, slug: true } });
 
     await logActivity({
-      action: 'ARCHIVE',
+      action: isArchived ? 'ARCHIVE' : 'RESTORE',
       entity: 'PRODUCT',
       entityId: id,
       entityName: product.name,
       details: null,
     });
 
-    return { success: true, message: 'Product deleted successfully' };
+    revalidatePath('/admin/products');
+    revalidatePath('/');
+    revalidatePath('/list');
+    revalidatePath('/new-arrivals');
+    revalidatePath(`/product/${product.slug}`);
+    return { success: true, message: isArchived ? 'Product archived. It is hidden from the store.' : 'Product restored to the store.' };
   } catch (error) {
-    console.error('error deleting product', error);
+    console.error('error changing product archive state', error);
+    return { success: false, message: 'Could not update the product' };
   }
 };
+
+export const archiveProduct = async (id: string) => setProductArchived(id, true);
+export const restoreProduct = async (id: string) => setProductArchived(id, false);

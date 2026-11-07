@@ -7,7 +7,7 @@ import { requireAdmin } from '@/lib/auth-guards';
 import { prisma } from '@/lib/prisma';
 
 // A 'use server' file may only export async functions, so these stay module-private.
-const ACTIVITY_ACTIONS = ['CREATE', 'UPDATE', 'DELETE', 'ARCHIVE'] as const;
+const ACTIVITY_ACTIONS = ['CREATE', 'UPDATE', 'DELETE', 'ARCHIVE', 'RESTORE'] as const;
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 100;
 const MAX_QUERY_LENGTH = 100;

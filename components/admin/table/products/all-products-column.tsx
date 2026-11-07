@@ -16,6 +16,7 @@ export type AllProductsColumnType = {
   variants?: { size?: string | null; color?: string | null }[];
   stock?: number;
   rating?: number | null;
+  isArchived: boolean;
 };
 
 export const allProductsColumn: ColumnDef<AllProductsColumnType>[] = [
@@ -39,7 +40,14 @@ export const allProductsColumn: ColumnDef<AllProductsColumnType>[] = [
             />
           </div>
           <div className='flex flex-col gap-2'>
-            <p className='text-black text-base dark:text-white'>{row.original.name}</p>
+            <p className='text-black text-base dark:text-white'>
+              {row.original.name}
+              {row.original.isArchived && (
+                <span className='ml-2 rounded-full bg-amber-100 px-2 py-0.5 align-middle text-xs font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-300'>
+                  Archived
+                </span>
+              )}
+            </p>
             {row.original.variants && (
               <>
                 <p className='text-xs text-muted-foreground'>{row.original.variants?.length} variants</p>

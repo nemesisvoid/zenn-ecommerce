@@ -1,253 +1,172 @@
 'use client';
 
-import { Dispatch, memo, SetStateAction, useEffect, useState, useTransition } from 'react';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { SlidersHorizontal, SlidersHorizontalIcon, X } from 'lucide-react';
+import { useEffect, useState, useTransition } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { SlidersHorizontalIcon } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
-import { Badge } from '@/components/ui/badge';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { useSearchStore } from '../store/use-search-store';
 import { formatCurrency } from '@/helper/utils';
 
-const MIN_PRICE = 0;
-const MAX_PRICE = 1000000;
+type FilterCategory = { slug: string; name: string };
 
-const DEFAULT_PRICE_RANGE = [MIN_PRICE, MAX_PRICE];
-
-// URL params are strings; the slider and the MIN/MAX comparisons need numbers.
-const parsePriceRange = (raw: string | null): number[] => {
-  const parsed = raw?.split(',').map(Number);
-  return parsed && parsed.length === 2 && parsed.every(Number.isFinite) ? parsed : DEFAULT_PRICE_RANGE;
+type ProductFiltersProps = {
+  /** Omit to hide the category filter (e.g. on a single-category page). */
+  categories?: FilterCategory[];
+  priceCeiling: number;
+  total: number;
 };
 
-export default function ProductFilters({ categories, currentFilters }: { categories: any; currentFilters: any }) {
-  const [transitionPending, startTransition] = useTransition();
-  const [isMounted, setIsMounted] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const searchParams = useSearchParams();
-  const [priceRange, setPriceRange] = useState<number[]>(parsePriceRange(searchParams.get('priceRange')));
-
-  const { setIsPending } = useSearchStore();
-
-  const [selectedCategory, setSelectedCategory] = useState<string[]>(searchParams.get('category')?.split(',') || []);
-
+/** Reads and updates catalogue filters in the URL. Any change goes back to page 1. */
+const useCatalogParams = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const isMobile = useIsMobile();
+  const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
+  const { setIsPending } = useSearchStore();
 
-  useEffect(() => {
-    setIsPending(transitionPending);
-  }, [transitionPending, setIsPending]);
+  useEffect(() => setIsPending(isPending), [isPending, setIsPending]);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isMounted || isMobile) return;
-
-    const delayTimeoutId = setTimeout(() => {
-      const currentUrlPrice = searchParams.get('priceRange');
-      const newPriceString = priceRange.join(',');
-
-      if (!currentUrlPrice && priceRange[0] === MIN_PRICE && priceRange[1] === MAX_PRICE) {
-        return;
-      }
-
-      if (currentUrlPrice !== newPriceString) {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set('priceRange', newPriceString);
-
-        startTransition(() => {});
-        router.push(`${pathname}?${params.toString()}`, { scroll: false });
-      }
-    }, 500);
-
-    return () => clearTimeout(delayTimeoutId);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [priceRange, isMounted, isMobile]);
-
-  // const handleFilterChange = (key: string, value: string) => {
-  //   const params = new URLSearchParams(searchParams.toString());
-  //   console.log('params', params);
-  //   console.log('params 2', key, value);
-  //   const currentValue = params.get(key);
-  //   console.log('currentValue', currentValue);
-
-  //   if (currentValue) {
-  //     const valueArray = currentValue.split(',');
-
-  //     if (valueArray.includes(value)) {
-  //       const newValue = valueArray.filter(v => v !== value);
-  //       if (newValue.length > 0) {
-  //         params.set(key, newValue.join(','));
-  //       } else {
-  //         params.delete(key);
-  //       }
-  //     } else {
-  //       params.set(key, [...valueArray, value].join(','));
-  //     }
-  //   } else {
-  //     params.set(key, value);
-  //   }
-  //   if (!isMobile) {
-  //     startTransition(() => {
-  //       router.push(`${pathname}?${params.toString()}`);
-  //     });
-  //   }
-  // };
-
-  const handleToggleCategory = (category: string) => {
-    const next = selectedCategory.includes(category) ? selectedCategory.filter(c => c !== category) : [...selectedCategory, category];
-    setSelectedCategory(next);
-
-    if (!isMobile) {
-      const params = new URLSearchParams(searchParams.toString());
-      if (next.length > 0) {
-        params.set('category', next.join(','));
-      } else {
-        params.delete('category');
-      }
-      startTransition(() => {
-        router.push(`${pathname}?${params.toString()}`, { scroll: false });
-      });
+  const update = (changes: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    for (const [key, value] of Object.entries(changes)) {
+      if (value === null || value === '') params.delete(key);
+      else params.set(key, value);
     }
+    params.delete('page');
+    const qs = params.toString();
+    startTransition(() => router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false }));
   };
 
-  const handleClearFilters = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete('priceRange');
-    params.delete('category');
-    setPriceRange([0, 1000000]);
-    router.push(`${pathname}?${params.toString()}`);
+  return { searchParams, update, isPending };
+};
+
+const sectionTitle = 'text-sm font-semibold text-foreground';
+
+export default function ProductFilters({ categories, priceCeiling, total }: ProductFiltersProps) {
+  const { searchParams, update, isPending } = useCatalogParams();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const selectedCategories = searchParams.get('category')?.split(',').filter(Boolean) ?? [];
+  const minPrice = Number(searchParams.get('minPrice') ?? '') || 0;
+  const maxParam = Number(searchParams.get('maxPrice') ?? '');
+  const maxPrice = maxParam > 0 ? Math.min(maxParam, priceCeiling) : priceCeiling;
+  const onSale = searchParams.get('sale') === '1';
+  const inStock = searchParams.get('stock') === '1';
+
+  const activeCount =
+    selectedCategories.length + (searchParams.has('minPrice') || searchParams.has('maxPrice') ? 1 : 0) + (onSale ? 1 : 0) + (inStock ? 1 : 0);
+
+  const toggleCategory = (slug: string) => {
+    const next = selectedCategories.includes(slug) ? selectedCategories.filter(c => c !== slug) : [...selectedCategories, slug];
+    update({ category: next.length ? next.join(',') : null });
   };
 
-  const handleApplyMobileFilters = () => {
-    const params = new URLSearchParams(searchParams.toString());
-
-    if (selectedCategory.length > 0) {
-      params.set('category', selectedCategory.join(','));
-    } else {
-      params.delete('category');
-    }
-
-    params.set('priceRange', priceRange.join(','));
-
-    startTransition(() => {
-      router.push(`${pathname}?${params.toString()}`);
-      setIsOpen(false);
+  const commitPrice = ([low, high]: number[]) =>
+    update({
+      minPrice: low > 0 ? String(low) : null,
+      maxPrice: high < priceCeiling ? String(high) : null,
     });
-  };
 
-  const handleSlider = (val: number[]) => {
-    setPriceRange(val);
-    if (!isMobile) {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('priceRange', val.join(','));
-    }
-  };
+  const clearAll = () => update({ category: null, minPrice: null, maxPrice: null, sale: null, stock: null });
 
-  const FilterContent = () => (
-    <div className='space-y-4'>
-      {/* Active Filters Summary */}
-
-      {selectedCategory.length > 0 && (
-        <div className='flex flex-wrap gap-2'>
-          {selectedCategory.map((cat, i) => (
-            <div key={i}>
-              <Badge
-                variant='secondary'
-                className='rounded-full px-3 py-1 text-xs font-medium capitalize'>
-                {cat.replace('-', ' ')}
-              </Badge>
-            </div>
-          ))}
-        </div>
+  const content = (
+    <div className='space-y-8'>
+      {categories && categories.length > 0 && (
+        <fieldset>
+          <legend className={sectionTitle}>Category</legend>
+          <div className='mt-3 space-y-1'>
+            {categories.map(cat => (
+              <div
+                key={cat.slug}
+                className='-mx-2 flex items-center gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-accent'>
+                <Checkbox
+                  id={`filter-cat-${cat.slug}`}
+                  checked={selectedCategories.includes(cat.slug)}
+                  onCheckedChange={() => toggleCategory(cat.slug)}
+                />
+                <Label
+                  htmlFor={`filter-cat-${cat.slug}`}
+                  className='flex-1 cursor-pointer text-sm font-normal'>
+                  {cat.name}
+                </Label>
+              </div>
+            ))}
+          </div>
+        </fieldset>
       )}
 
-      <Accordion
-        type='multiple'
-        defaultValue={['category', 'price', 'brand']}
-        className='w-full'>
-        {/* Category Filter */}
-        <AccordionItem value='category'>
-          <AccordionTrigger className='cursor-pointer py-4 text-sm font-semibold hover:no-underline'>Category</AccordionTrigger>
-          <AccordionContent>
-            <div className='space-y-3 pt-1'>
-              <CategoryList
-                categories={categories}
-                selected={selectedCategory}
-                onToggle={handleToggleCategory}
-              />
-            </div>
-          </AccordionContent>
-        </AccordionItem>
+      <fieldset>
+        <legend className={sectionTitle}>Price</legend>
+        {/* Keyed on the URL values so the slider resets when a filter chip is removed. */}
+        <PriceRange
+          key={`${minPrice}-${maxPrice}-${priceCeiling}`}
+          initial={[minPrice, maxPrice]}
+          ceiling={priceCeiling}
+          onCommit={commitPrice}
+        />
+      </fieldset>
 
-        {/* Price Range Filter */}
-        <AccordionItem value='price'>
-          <AccordionTrigger className='cursor-pointer py-4 text-sm font-semibold hover:no-underline'>Price</AccordionTrigger>
-          <AccordionContent>
-            <div className='space-y-6 px-1 pt-3'>
-              <PriceRangeSlider
-                initialValue={priceRange}
-                onValueChangeFinish={handleSlider}
-              />
-            </div>
-          </AccordionContent>
-        </AccordionItem>
+      <fieldset>
+        <legend className={sectionTitle}>Availability</legend>
+        <div className='mt-3 space-y-1'>
+          <div className='-mx-2 flex items-center gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-accent'>
+            <Checkbox
+              id='filter-sale'
+              checked={onSale}
+              onCheckedChange={checked => update({ sale: checked ? '1' : null })}
+            />
+            <Label
+              htmlFor='filter-sale'
+              className='flex-1 cursor-pointer text-sm font-normal'>
+              On sale only
+            </Label>
+          </div>
+          <div className='-mx-2 flex items-center gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-accent'>
+            <Checkbox
+              id='filter-stock'
+              checked={inStock}
+              onCheckedChange={checked => update({ stock: checked ? '1' : null })}
+            />
+            <Label
+              htmlFor='filter-stock'
+              className='flex-1 cursor-pointer text-sm font-normal'>
+              In stock only
+            </Label>
+          </div>
+        </div>
+      </fieldset>
 
-        {/* Brand Filter */}
-        {/* <AccordionItem value='brand'>
-          <AccordionTrigger className='text-base font-semibold'>Brand</AccordionTrigger>
-          <AccordionContent>
-            <div className='space-y-3 pt-1'>
-              {BRANDS.map(brand => (
-                <div
-                  key={brand}
-                  className='flex items-center space-x-2'>
-                  <Checkbox id={`brand-${brand}`} />
-                  <Label
-                    htmlFor={`brand-${brand}`}
-                    className='text-sm font-normal cursor-pointer'>
-                    {brand}
-                  </Label>
-                </div>
-              ))}
-            </div>
-          </AccordionContent>
-        </AccordionItem> */}
-      </Accordion>
-
-      <Button
-        onClick={handleClearFilters}
-        className='h-10 w-full cursor-pointer rounded-full'
-        variant='outline'>
-        Clear filters
-      </Button>
+      {activeCount > 0 && (
+        <Button
+          onClick={clearAll}
+          className='h-10 w-full cursor-pointer rounded-full'
+          variant='outline'>
+          Clear filters
+        </Button>
+      )}
     </div>
   );
 
   return (
     <>
-      {/* DESKTOP VIEW: Sticky Sidebar */}
+      {/* Desktop: sticky sidebar */}
       <div className='sticky top-28 hidden md:block'>
-        <div className='mb-2 flex items-center gap-2'>
+        <div className='mb-5 flex items-center gap-2'>
           <SlidersHorizontalIcon
             className='size-4 text-muted-foreground'
             aria-hidden='true'
           />
           <h2 className='text-sm font-semibold text-foreground'>Filters</h2>
         </div>
-        <FilterContent />
+        {content}
       </div>
 
-      {/* MOBILE VIEW: Bottom/Side Sheet */}
+      {/* Mobile: side sheet; filters apply as you change them */}
       <div className='w-full md:hidden'>
         <Sheet
           open={isOpen}
@@ -261,9 +180,9 @@ export default function ProductFilters({ categories, currentFilters }: { categor
                 aria-hidden='true'
               />
               Filters
-              {selectedCategory.length > 0 && (
+              {activeCount > 0 && (
                 <span className='flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[0.6875rem] font-semibold text-primary-foreground'>
-                  {selectedCategory.length}
+                  {activeCount}
                 </span>
               )}
             </Button>
@@ -274,19 +193,17 @@ export default function ProductFilters({ categories, currentFilters }: { categor
             className='w-[320px] gap-0 overflow-y-auto sm:w-[400px]'>
             <SheetHeader className='border-b border-border'>
               <SheetTitle className='flex items-center gap-2 text-left'>
-                <SlidersHorizontal className='size-4' /> Filters
+                <SlidersHorizontalIcon className='size-4' /> Filters
               </SheetTitle>
               <SheetDescription className='text-left'>Narrow down your results.</SheetDescription>
             </SheetHeader>
-            <div className='flex-1 overflow-y-auto px-4 py-2'>
-              <FilterContent />
-            </div>
+            <div className='flex-1 overflow-y-auto px-4 py-6'>{content}</div>
             <div className='mt-auto border-t border-border p-4'>
               <Button
                 className='h-11 w-full cursor-pointer rounded-full'
-                onClick={handleApplyMobileFilters}
-                disabled={transitionPending}>
-                {transitionPending ? 'Applying…' : 'Show results'}
+                onClick={() => setIsOpen(false)}
+                disabled={isPending}>
+                {isPending ? 'Updating…' : `Show ${total} ${total === 1 ? 'result' : 'results'}`}
               </Button>
             </div>
           </SheetContent>
@@ -296,47 +213,25 @@ export default function ProductFilters({ categories, currentFilters }: { categor
   );
 }
 
-const PriceRangeSlider = ({ initialValue, onValueChangeFinish }: { initialValue: number[]; onValueChangeFinish: (value: number[]) => void }) => {
-  const [localRange, setLocalRange] = useState(initialValue);
+const PriceRange = ({ initial, ceiling, onCommit }: { initial: number[]; ceiling: number; onCommit: (value: number[]) => void }) => {
+  const [range, setRange] = useState(initial);
+  const step = Math.max(500, Math.round(ceiling / 200 / 500) * 500);
+
   return (
-    <div className='space-y-4'>
+    <div className='mt-4 space-y-4 px-1'>
       <Slider
-        max={100000}
-        value={localRange}
-        onValueChange={setLocalRange}
-        onValueCommit={onValueChangeFinish}
+        min={0}
+        max={ceiling}
+        step={step}
+        value={range}
+        onValueChange={setRange}
+        onValueCommit={onCommit}
+        aria-label='Price range'
       />
       <div className='flex justify-between text-xs tabular-nums text-muted-foreground'>
-        <span>{formatCurrency(Number(localRange[0]))}</span>
-        <span>{formatCurrency(Number(localRange[1]))}</span>
+        <span>{formatCurrency(range[0])}</span>
+        <span>{formatCurrency(range[1])}</span>
       </div>
     </div>
   );
 };
-
-const CategoryList = memo(
-  ({ categories, selected, onToggle }: { categories: string[]; selected: string[]; onToggle: (category: string) => void }) => {
-    return (
-      <div className='space-y-1'>
-        {categories.map(cat => (
-          <div
-            key={cat}
-            className='-mx-2 flex items-center gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-accent'>
-            <Checkbox
-              id={`filter-${cat}`}
-              checked={selected.includes(cat)}
-              onCheckedChange={() => onToggle(cat)}
-            />
-            <Label
-              htmlFor={`filter-${cat}`}
-              className='flex-1 cursor-pointer text-sm font-normal capitalize'>
-              {cat.replace('-', ' ')}
-            </Label>
-          </div>
-        ))}
-      </div>
-    );
-  },
-);
-
-CategoryList.displayName = 'CategoryList';

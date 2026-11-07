@@ -14,14 +14,6 @@ export const getAllCategories = async () => {
   return data;
 };
 
-export const getProductsByCategory = async (category: string) => {
-  const data = await prisma.category.findUnique({
-    where: { slug: category },
-    include: { products: { select: { id: true, slug: true, name: true, price: true, images: true } } },
-  });
-  return data;
-};
-
 export const getSelectableCategories = async () => {
   const data = await prisma.category.findMany({
     select: {
@@ -35,6 +27,7 @@ export const getSelectableCategories = async () => {
 
 export const getProductsForCategory = async () => {
   return await prisma.product.findMany({
+    where: { isArchived: false },
     select: {
       id: true,
       name: true,

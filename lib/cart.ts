@@ -23,23 +23,26 @@ export const availableStock = (product: { stock: number }, variant: { stock: num
 /**
  * Re-prices every item in the cart from current product/variant data, then recalculates
  * the cart totals from the stored rows. Returns the names of items whose quantity
- * exceeds available stock (the cart is still updated; callers decide what to do).
+ * exceeds available stock, and of archived products that can no longer be bought
+ * (the cart is still updated; callers decide what to do).
  */
 export const refreshCart = async (cartId: string) => {
   const items = await prisma.cartItem.findMany({
     where: { cartId },
     include: {
-      products: { select: { name: true, price: true, discountPercent: true, stock: true } },
+      products: { select: { name: true, price: true, discountPercent: true, stock: true, isArchived: true } },
       variants: { select: { price: true, stock: true } },
     },
   });
 
   const outOfStock: string[] = [];
+  const unavailable: string[] = [];
 
   await Promise.all(
     items.map(item => {
       const { price, discountPrice } = getUnitPrice(item.products, item.variants);
-      if (item.quantity > availableStock(item.products, item.variants)) outOfStock.push(item.products.name);
+      if (item.products.isArchived) unavailable.push(item.products.name);
+      else if (item.quantity > availableStock(item.products, item.variants)) outOfStock.push(item.products.name);
       if (price === item.price && discountPrice === item.discountPrice) return null;
       return prisma.cartItem.update({ where: { id: item.id }, data: { price, discountPrice } });
     }),
@@ -54,7 +57,7 @@ export const refreshCart = async (cartId: string) => {
 
   await prisma.cart.update({ where: { id: cartId }, data: totals });
 
-  return { outOfStock };
+  return { outOfStock, unavailable };
 };
 
 /**

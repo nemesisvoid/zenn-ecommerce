@@ -1,6 +1,7 @@
 import type { Prisma } from '@prisma/client';
 import {
   ArchiveIcon,
+  ArchiveRestoreIcon,
   BoxIcon,
   FolderTreeIcon,
   GalleryHorizontalIcon,
@@ -58,6 +59,13 @@ export const ACTION_META: Record<ActivityAction, ActionMeta> = {
     icon: ArchiveIcon,
     badgeClass: 'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800/70 dark:bg-amber-900/30 dark:text-amber-300',
     markerClass: 'bg-amber-500 text-white',
+  },
+  RESTORE: {
+    label: 'Restored',
+    verb: 'restored',
+    icon: ArchiveRestoreIcon,
+    badgeClass: 'border-teal-200 bg-teal-50 text-teal-700 dark:border-teal-800/70 dark:bg-teal-900/30 dark:text-teal-300',
+    markerClass: 'bg-teal-500 text-white',
   },
 };
 

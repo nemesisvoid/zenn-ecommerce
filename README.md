@@ -48,7 +48,7 @@ Prices are in Nigerian Naira (₦).
 
 ### Admin dashboard (`/admin`)
 - **Overview**: total sales, orders, customers and products, a 12-month revenue chart, top products and recent sales.
-- **Products**: create and edit products with images, variants (colour, size, price, stock) and discounts.
+- **Products**: create and edit products with images, variants (colour, size, price, stock) and discounts. Products are **archived, never deleted**: archiving hides a product from the store (and blocks it at checkout) while keeping it for past orders and records, and it can be restored at any time.
 - **Categories**: create and edit categories with cover images and assigned products.
 - **Homepage banners**: manage the hero slides (image, headline, text, button label and link), set their order, show or hide them, and schedule start and end dates. The homepage falls back to built-in slides when none are live.
 - **Orders**: all orders in a paginated table.
