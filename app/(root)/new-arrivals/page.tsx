@@ -61,7 +61,7 @@ const NewArrivalsPage = async () => {
       {count === 0 ? (
         <EmptyState
           icon={SparklesIcon}
-          title='Nothing new just yet'
+          title='Nothing new yet'
           description={`No products have been added in the last ${WINDOW_DAYS} days. Browse the full collection in the meantime.`}>
           <Button
             asChild
