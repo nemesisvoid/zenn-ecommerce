@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import type { Prisma } from '@prisma/client';
 
 export type CategoryListType = Awaited<ReturnType<typeof prisma.category.findMany>>;
 
@@ -16,16 +17,12 @@ export type VariantType = Awaited<ReturnType<typeof prisma.productVariant.findMa
 
 export type ColorImagesType = Awaited<ReturnType<typeof prisma.productColorImage.findFirst>>;
 
-export type CartType = Awaited<ReturnType<typeof prisma.cart.findFirst>> & {
-  cartItems: Awaited<ReturnType<typeof prisma.cartItem.findMany>>;
-  variants: VariantType | null;
-};
+// Shapes returned by getCart() in actions/cart.actions.ts — keep the includes in sync.
+type CartItemInclude = { products: { include: { colorImages: true } }; variants: true };
 
-export type CartItemType = Awaited<ReturnType<typeof prisma.cartItem.findFirst>> & {
-  products: ProductType | null;
-  variants: VariantType | null;
-  colorImages: ColorImagesType | null;
-};
+export type CartItemType = Prisma.CartItemGetPayload<{ include: CartItemInclude }>;
+
+export type CartType = Prisma.CartGetPayload<{ include: { cartItems: { include: CartItemInclude } } }>;
 
 export type UserType = Awaited<ReturnType<typeof prisma.user.findUnique>>;
 export type CartItemT = Awaited<ReturnType<typeof prisma.cartItem.findFirst>>;

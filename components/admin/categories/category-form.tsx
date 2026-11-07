@@ -31,11 +31,18 @@ interface CategoryFormProps {
   };
   products: { id: string; name: string; images: string[] }[];
 }
+
+type CategoryFormProduct = NonNullable<z.infer<typeof CreateCategorySchema>['products']>[number];
+
+// Normalise DB products ({ images: string[] }) into the form/schema shape ({ image?: string }).
+const toFormProducts = (products: { id: string; name: string; images: string[] }[] = []): CategoryFormProduct[] =>
+  products.map(p => ({ id: p.id, name: p.name, image: p.images[0] }));
+
 const CategoryForm = ({ initialData, products }: CategoryFormProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
-  const [tempSelectedProducts, setTempSelectedProducts] = useState<{ id: string; name: string; images: string[]; image?: string }[]>([]);
+  const [tempSelectedProducts, setTempSelectedProducts] = useState<CategoryFormProduct[]>([]);
 
   const [searchInput, setSearchInput] = useState('');
 
@@ -46,7 +53,7 @@ const CategoryForm = ({ initialData, products }: CategoryFormProps) => {
   const form = useForm({
     resolver: zodResolver(CreateCategorySchema) as unknown as Resolver<z.infer<typeof CreateCategorySchema>>,
     defaultValues: initialData
-      ? { ...initialData }
+      ? { ...initialData, products: toFormProducts(initialData.products) }
       : {
           name: '',
           coverImage: '',
@@ -61,7 +68,7 @@ const CategoryForm = ({ initialData, products }: CategoryFormProps) => {
         coverImage: initialData.coverImage,
         name: initialData.name,
         description: initialData.description,
-        products: initialData.products || [],
+        products: toFormProducts(initialData.products),
       });
     }
   }, [initialData, form]);
@@ -180,18 +187,20 @@ const CategoryForm = ({ initialData, products }: CategoryFormProps) => {
             {watchedProducts ? (
               <div className='grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4'>
                 {watchedProducts.map(product => {
-                  const imageSrc = product.image || product.images?.[0];
+                  const imageSrc = product.image;
                   return (
                     <div
                       key={product.id}
                       className='pb-4 shadow-md rounded-xs mb-4'>
                       <div className='relative aspect-square'>
-                        <Image
-                          src={imageSrc}
-                          alt=''
-                          fill
-                          className='object-cover rounded-xs hover:opacity-80 transition-opacity  duration-300'
-                        />
+                        {imageSrc && (
+                          <Image
+                            src={imageSrc}
+                            alt=''
+                            fill
+                            className='object-cover rounded-xs hover:opacity-80 transition-opacity  duration-300'
+                          />
+                        )}
                         {/* <div className='absolute top-1 right-1'>
                         <Button
                           variant='destructive'
@@ -247,7 +256,7 @@ const CategoryForm = ({ initialData, products }: CategoryFormProps) => {
                           setTempSelectedProducts(prev => prev.filter(p => p.id !== product.id));
                           return;
                         }
-                        setTempSelectedProducts(prev => [...prev, { ...product, image }]);
+                        setTempSelectedProducts(prev => [...prev, { id: product.id, name: product.name, image }]);
                       }}
                       className='flex items-center justify-between p-2 border-b border-gray-200 hover:bg-gray-100 cursor-pointer'>
                       {product.name}

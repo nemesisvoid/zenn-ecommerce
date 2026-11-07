@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 
 type AdminGeneralSettingsFormProps = {
   id?: string;
-  initialData: z.infer<typeof GeneralSettingsSchema>;
+  initialData?: z.infer<typeof GeneralSettingsSchema>;
 };
 
 const AdminGeneralSettingsForm = ({ id, initialData }: AdminGeneralSettingsFormProps) => {

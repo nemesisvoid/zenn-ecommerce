@@ -16,7 +16,10 @@ import { Edit2Icon, Trash2Icon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-const AllCustomersCustomCell = ({ row }) => {
+import type { Row } from '@tanstack/react-table';
+import type { AllCustomersColumnType } from './all-customers-column';
+
+const AllCustomersCustomCell = ({ row }: { row: Row<AllCustomersColumnType> }) => {
   const { isPending, handleDelete } = useDelete(deleteUser);
   return (
     <div className='flex items-center gap-5'>

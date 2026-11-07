@@ -97,7 +97,7 @@ export const sendVerificationMail = async (email: string, token: string) => {
   });
 };
 
-export const sendAdminNotificationMail = async (email: string, user) => {
+export const sendAdminNotificationMail = async (email: string, user: { name?: string | null; email?: string | null }) => {
   await transporter.sendMail({
     to: email,
     subject: 'New User Registered',

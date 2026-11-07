@@ -1,5 +1,7 @@
 'use server';
 
+import { requireAdmin } from '@/lib/auth-guards';
+
 import * as z from 'zod';
 
 import { prisma } from '@/lib/prisma';
@@ -9,14 +11,6 @@ import { compareData, slugify } from '@/helper/utils';
 import { logActivity } from './activity.action';
 export const getAllCategories = async () => {
   const data = await prisma.category.findMany();
-  return data;
-};
-
-export const getProductsByCategory = async (category: string) => {
-  const data = await prisma.category.findUnique({
-    where: { slug: category },
-    include: { products: { select: { id: true, slug: true, name: true, price: true, images: true } } },
-  });
   return data;
 };
 
@@ -33,6 +27,7 @@ export const getSelectableCategories = async () => {
 
 export const getProductsForCategory = async () => {
   return await prisma.product.findMany({
+    where: { isArchived: false },
     select: {
       id: true,
       name: true,
@@ -42,6 +37,7 @@ export const getProductsForCategory = async () => {
 };
 
 export const createCategory = async (categoryData: z.infer<typeof CreateCategorySchema>) => {
+  await requireAdmin();
   const validatedData = CreateCategorySchema.safeParse(categoryData);
   if (!validatedData.success) return { success: false, message: validatedData.error.message };
 
@@ -76,6 +72,7 @@ export const createCategory = async (categoryData: z.infer<typeof CreateCategory
 };
 
 export const editCategory = async (id: string, categoryData: z.infer<typeof CreateCategorySchema>) => {
+  await requireAdmin();
   const validatedData = CreateCategorySchema.safeParse(categoryData);
   if (!validatedData.success) return { success: false, message: validatedData.error.message };
   const oldCategoryData = await prisma.category.findUnique({ where: { id } });

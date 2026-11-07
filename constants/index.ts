@@ -1,4 +1,5 @@
 import {
+  GalleryHorizontalIcon,
   BoxIcon,
   ChartBarBigIcon,
   ChartBarIcon,
@@ -61,6 +62,11 @@ export const sidebarLinks = [
     name: 'Categories',
     link: '/admin/categories',
     icon: ChartBarStackedIcon,
+  },
+  {
+    name: 'Banners',
+    link: '/admin/banners',
+    icon: GalleryHorizontalIcon,
   },
   {
     name: 'Activities',

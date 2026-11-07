@@ -3,12 +3,15 @@ import AdminGeneralSettingsForm from '@/components/admin/settings/admin-general-
 
 const SettingsPage = async () => {
   const settings = await getSettings();
-  const initialData = {
-    storeName: settings.storeName,
-    storeEmail: settings.storeEmail,
-    storePhone: settings.storePhone,
-    storeAddress: settings.storeAddress,
-  };
+  // No settings row yet -> leave initialData undefined so the form runs in "create" mode.
+  const initialData = settings
+    ? {
+        storeName: settings.storeName,
+        storeEmail: settings.storeEmail ?? '',
+        storePhone: settings.storePhone ?? '',
+        storeAddress: settings.storeAddress ?? '',
+      }
+    : undefined;
 
   return (
     <div>

@@ -22,7 +22,7 @@ const AdminProductsPage = async () => {
         </Button>
       </div>
       <DataTable
-        data={products}
+        data={products ?? []}
         pageSize={5}
         columns={allProductsColumn}
       />

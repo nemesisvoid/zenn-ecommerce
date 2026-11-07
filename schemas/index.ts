@@ -18,10 +18,9 @@ export const RegisterSchema = z.object({
   password: z.string().min(5, { message: 'Password must be at least 5 characters' }),
 });
 
+// What the browser may send when adding to the cart. Prices are never accepted from the client.
 export const CartItemsSchema = z.object({
-  productId: z.string(),
-  quantity: z.number().int().nonnegative('Quantity must be a positive number'),
-  price: z.number().nonnegative('Price must be a positive number'),
+  productId: z.string().min(1),
   variantId: z.string().optional().nullable(),
 });
 
@@ -36,7 +35,6 @@ export const CartSchema = z.object({
 });
 
 export const OrderSchema = z.object({
-  userId: z.string().min(1, { message: 'User ID is required' }),
   name: z.string().min(3, { message: 'Name must be at least 3 characters' }),
   email: z.string().email({ message: 'Enter a valid email' }),
   phone: z.string().min(11, { message: 'Phone number must be at least 11 characters' }).optional(),
@@ -195,3 +193,26 @@ export const UserSettingsSchema = UserProfileSettingsSchema.partial().merge(User
    };
  
  */
+
+// Banner links may point inside the store ("/list?category=shoes") or to an https:// page.
+const isSafeBannerLink = (value: string) => (value.startsWith('/') && !value.startsWith('//') && !value.startsWith('/\\')) || /^https:\/\/[^\s]+$/i.test(value);
+
+export const BannerFieldsSchema = z.object({
+  title: z.string().trim().min(2, 'Title must be at least 2 characters').max(80, 'Keep the title under 80 characters'),
+  subtitle: z.string().trim().max(200, 'Keep the subtitle under 200 characters').optional().or(z.literal('')),
+  imageUrl: z.string().url('Upload a banner image').refine(url => url.startsWith('https://res.cloudinary.com/'), 'Banner images must be uploaded'),
+  href: z.string().trim().min(1, 'Add a link').refine(isSafeBannerLink, 'Use a store path like /list or a full https:// link'),
+  ctaLabel: z.string().trim().min(1, 'Add button text').max(30, 'Keep the button text short'),
+  isActive: z.boolean(),
+  sortOrder: z.coerce.number().int().min(0, 'Order must be 0 or more'),
+  startsAt: z.coerce.date().optional().nullable(),
+  endsAt: z.coerce.date().optional().nullable(),
+});
+
+export const bannerDatesAreValid = (data: { startsAt?: Date | null; endsAt?: Date | null }) =>
+  !data.startsAt || !data.endsAt || data.endsAt > data.startsAt;
+
+export const BannerSchema = BannerFieldsSchema.refine(bannerDatesAreValid, {
+  path: ['endsAt'],
+  message: 'End date must be after the start date',
+});

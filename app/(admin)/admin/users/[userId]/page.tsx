@@ -1,5 +1,4 @@
 import { getUserById } from '@/actions/user.action';
-import AdminUserAccountManagementForm from '@/components/admin/users/admin-user-account-mangement-form';
 import AdminUserDetails from '@/components/admin/users/admin-user-details';
 import AdminUserForm from '@/components/admin/users/admin-user-form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';

@@ -3,6 +3,7 @@ import * as z from 'zod';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
 import { AdminUserAccountManagementSchema } from '@/schemas';
+import type { AccountStatus } from '@prisma/client';
 import { UseFormReturn } from 'react-hook-form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -28,7 +29,7 @@ const AdminUserAccountSection = ({ form }: { form: UseFormReturn<z.infer<typeof 
   const currentStatus = form.watch('userStatus');
   const [isBanAlertOpen, setIsBanAlertOpen] = useState(false);
 
-  const handleUserStatus = (value: z.nativeEnum<typeof AdminUserAccountManagementSchema.shape.userStatus>) => {
+  const handleUserStatus = (value: AccountStatus) => {
     if (value === 'BANNED') {
       setIsBanAlertOpen(true);
     } else {

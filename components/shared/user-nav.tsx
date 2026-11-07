@@ -13,14 +13,12 @@ import {
 
 import { HeartIcon, LayoutDashboardIcon, LogInIcon, LogOutIcon, PackageIcon, ShoppingBagIcon, UserIcon, UserPlusIcon } from 'lucide-react';
 import { logout } from '@/actions/login.action';
-import { CartType } from '@/types';
 import ThemeToggle from './theme-toggle';
 
 type UserNavProps = {
   isLoggedIn: boolean;
-  cart: CartType | null;
   cartItemsCount: number;
-  userRole: string;
+  userRole?: string;
 };
 
 const itemClass = 'cursor-pointer gap-2.5 rounded-lg px-2.5 py-2 text-[0.9375rem] [&_svg]:text-muted-foreground';
@@ -63,7 +61,7 @@ const UserNav = ({ isLoggedIn, userRole, cartItemsCount }: UserNavProps) => {
               <DropdownMenuItem
                 asChild
                 className={itemClass}>
-                <Link href='/user/orders'>
+                <Link href='/user/settings/orders'>
                   <PackageIcon />
                   Orders
                 </Link>

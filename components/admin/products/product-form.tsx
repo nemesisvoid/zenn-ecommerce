@@ -24,10 +24,11 @@ import ProductVariantForm from '@/components/admin/products/product-variant-form
 import UploadProductImageWidget from '@/components/cloudinary/upload-image-widget';
 import ImageUploader from '@/components/misc/image-uploader';
 import { handleImageUpload } from '@/helper/utils';
+import type { ProductType } from '@/types';
 
 interface ProductFormProps {
   categories: { id: string; name: string }[];
-  initialData?: z.infer<typeof CreateProductSchema>;
+  initialData?: ProductType;
 }
 
 const ProductForm = ({ categories, initialData }: ProductFormProps) => {
@@ -41,10 +42,12 @@ const ProductForm = ({ categories, initialData }: ProductFormProps) => {
     defaultValues: initialData
       ? {
           ...initialData,
-          variants: initialData.variants || [],
-          colorImages: initialData.colorImages || [],
-          price: parseFloat(initialData.price as unknown as string),
-          categories: initialData.categories?.map(cat => cat.id) || [],
+          // Nullable DB columns default to 0, which is what z.coerce.number() produced from null before.
+          discountPercent: initialData.discountPercent ?? 0,
+          variants: initialData.variants.map(v => ({ ...v, price: v.price ?? 0, stock: v.stock ?? 0 })),
+          colorImages: initialData.colorImages,
+          price: initialData.price,
+          categories: initialData.categories.map(cat => cat.id),
           hasVariants: initialData.hasVariants,
         }
       : {

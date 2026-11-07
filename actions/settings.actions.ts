@@ -1,9 +1,12 @@
 'use server';
+
+import { requireAdmin } from '@/lib/auth-guards';
 import * as z from 'zod';
 import { prisma } from '@/lib/prisma';
 import { SettingsSchema } from '@/schemas';
 
 export const createSettings = async (data: z.infer<typeof SettingsSchema>) => {
+  await requireAdmin();
   const settings = await prisma.settings.create({ data });
   return { settings, message: 'Settings created successfully' };
 };
@@ -17,6 +20,7 @@ export const getSettings = async () => {
 };
 
 export const updateSettings = async (id: string, data: z.infer<typeof SettingsSchema>) => {
+  await requireAdmin();
   try {
     const settings = await prisma.settings.update({
       where: { id },

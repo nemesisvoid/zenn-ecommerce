@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 
-import { CartType, ProductType } from '@/types';
+import { ProductType } from '@/types';
 import { formatCurrency, getPercentagePrice } from '@/helper/utils';
 import { CheckIcon, ShieldCheckIcon, TruckIcon } from 'lucide-react';
 import Link from 'next/link';
@@ -11,12 +11,11 @@ import AddToCart from '../cart/add-to-cart';
 
 type ProductVariantType = {
   product: ProductType;
-  cart: CartType | undefined;
 };
 
 // force dynamic
 
-const ProductDetails = ({ product, cart }: ProductVariantType) => {
+const ProductDetails = ({ product }: ProductVariantType) => {
   const hasVariants = product.variants.length > 0;
 
   const uniqueColors = useMemo(() => {
@@ -60,7 +59,7 @@ const ProductDetails = ({ product, cart }: ProductVariantType) => {
   const canAddToCart = !hasVariants || !!selectedVariant;
 
   const priceToShow = hasVariants
-    ? getPercentagePrice(selectedVariant?.price, product.discountPercent)
+    ? getPercentagePrice(selectedVariant?.price ?? product.price, product.discountPercent)
     : getPercentagePrice(product.price, product.discountPercent);
 
   const imagesToShow = product?.colorImages?.find(v => v.color === selectedColor)?.images || product.images;
@@ -172,11 +171,9 @@ const ProductDetails = ({ product, cart }: ProductVariantType) => {
 
         <div className='pt-8'>
           <AddToCart
-            cart={cart}
             product={product}
             selectedVariant={selectedVariant}
             canAddToCart={canAddToCart}
-            price={priceToShow}
           />
         </div>
 

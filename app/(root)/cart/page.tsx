@@ -1,5 +1,5 @@
-import { getCart, getCartItems } from '@/actions/cart.actions';
-import { auth } from '@/auth';
+import { getCart } from '@/actions/cart.actions';
+import { refreshCart } from '@/lib/cart';
 import CartDetails from '@/components/cart/cart-details';
 import EmptyState from '@/components/shared/empty-state';
 import PageBreadcrumb from '@/components/shared/page-breadcrumb';
@@ -9,7 +9,10 @@ import { ShoppingBagIcon } from 'lucide-react';
 import Link from 'next/link';
 
 const CartPage = async () => {
-  const cart = await getCart();
+  // Re-price from current product data so the bag never shows stale or tampered prices.
+  const existing = await getCart();
+  if (existing) await refreshCart(existing.id);
+  const cart = existing ? await getCart() : existing;
 
   if (!cart || cart.cartItems.length === 0) {
     return (
@@ -27,7 +30,6 @@ const CartPage = async () => {
       </div>
     );
   }
-  const cartItems = await getCartItems();
 
   return (
     <div className='container'>
@@ -36,15 +38,7 @@ const CartPage = async () => {
         className='mb-6'
       />
 
-      <CartDetails
-        cart={cart}
-        cartItems={cartItems
-          ?.filter(item => item.cartId !== null)
-          .map(item => ({
-            ...item,
-            cartId: item.cartId as string,
-          }))}
-      />
+      <CartDetails cart={cart} />
     </div>
   );
 };

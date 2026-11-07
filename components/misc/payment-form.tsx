@@ -8,14 +8,14 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { OrderSchema } from '@/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../ui/input';
-import { CartItemType, CartType } from '@/types';
+import { CartType } from '@/types';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { PaymentMethods } from '@/constants';
 import { Button } from '../ui/button';
 import Image from 'next/image';
-import { formatCurrency } from '@/helper/utils';
+import { formatCurrency, RenderedCartItem } from '@/helper/utils';
 import { useTransition } from 'react';
-import { createOrder, createOrderPayOnDelivery, createOrderPaystack } from '@/actions/order.action';
+import { createOrderPayOnDelivery, createOrderPaystack } from '@/actions/order.action';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { BanknoteIcon, CreditCardIcon, LockIcon } from 'lucide-react';
@@ -26,7 +26,7 @@ import { storeInput, storeLabel } from '../shared/form-styles';
 type PaymentFormProps = {
   user: { id: string | undefined; name: string | undefined | null; email: string | undefined | null };
   cart: CartType | undefined;
-  selectedProducts: CartItemType[];
+  selectedProducts: RenderedCartItem[];
 };
 
 export const PaymentForm = ({ user, cart, selectedProducts }: PaymentFormProps) => {
@@ -35,7 +35,6 @@ export const PaymentForm = ({ user, cart, selectedProducts }: PaymentFormProps) 
   const form = useForm<z.infer<typeof OrderSchema>>({
     resolver: zodResolver(OrderSchema),
     defaultValues: {
-      userId: user.id,
       name: user.name || '',
 
       email: user.email || '',
@@ -48,24 +47,25 @@ export const PaymentForm = ({ user, cart, selectedProducts }: PaymentFormProps) 
     },
   });
 
+  // Only the form details are sent; the server loads and prices the cart itself.
   const handleCreateOrder = async (data: z.infer<typeof OrderSchema>) => {
-    const newData = { cart, phoneNo: data.phone, ...data };
     startTransition(async () => {
       if (data.paymentMethod === 'PAYSTACK') {
-        const res = await createOrderPaystack(newData);
-        if (!res?.orderId) throw new Error(res?.message);
+        const res = await createOrderPaystack(data);
+        if (!res.success) {
+          toast.error(res.message);
+          return;
+        }
         toast.success(res.message);
         router.replace(res.auth_url);
       } else if (data.paymentMethod === 'PAY_ON_DELIVERY') {
-        try {
-          const res = await createOrderPayOnDelivery(newData);
-          if (!res?.orderId) throw new Error(res?.message);
-          toast.success(res.message);
-          router.replace(`/order/${res.orderId}`);
-        } catch (err) {
-          toast.error('Error placing order on delivery');
-          console.error('error placing order on delivery', err);
+        const res = await createOrderPayOnDelivery(data);
+        if (!res.success) {
+          toast.error(res.message);
+          return;
         }
+        toast.success(res.message);
+        router.replace(`/order/${res.orderId}`);
       }
     });
   };
@@ -279,13 +279,13 @@ export const PaymentForm = ({ user, cart, selectedProducts }: PaymentFormProps) 
           <aside className='panel h-fit p-6 lg:sticky lg:top-28'>
             <h2 className='text-lg font-semibold text-foreground'>Order summary</h2>
             <ul className='mt-6 space-y-4 border-b border-border pb-6'>
-              {selectedProducts.map((item, index) => (
+              {selectedProducts.map(item => (
                 <li
-                  key={index}
+                  key={`${item.productId}-${item.variantId ?? 'base'}`}
                   className='flex items-center gap-4'>
                   <div className='relative aspect-[4/5] w-14 shrink-0 overflow-hidden rounded-lg bg-muted'>
                     <Image
-                      src={item.images[0]}
+                      src={item.images?.[0] || ''}
                       fill
                       sizes='56px'
                       alt='product image'
@@ -297,10 +297,10 @@ export const PaymentForm = ({ user, cart, selectedProducts }: PaymentFormProps) 
                   </div>
 
                   <div className='min-w-0 flex-1'>
-                    <p className='truncate text-sm font-medium text-foreground'>{(item as { name?: string }).name ?? item.products?.name}</p>
+                    <p className='truncate text-sm font-medium text-foreground'>{item.name}</p>
                     {item.variantId && item.color && <p className='mt-0.5 text-sm capitalize text-muted-foreground'>{item.color}</p>}
                   </div>
-                  <p className='price text-sm text-foreground'>{formatCurrency(item.price)}</p>
+                  <p className='price text-sm text-foreground'>{formatCurrency((item.discountPrice ?? item.price) * item.quantity)}</p>
                 </li>
               ))}
             </ul>

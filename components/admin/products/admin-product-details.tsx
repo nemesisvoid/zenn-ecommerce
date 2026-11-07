@@ -1,7 +1,7 @@
 'use client';
 
 import { formatCurrency } from '@/helper/utils';
-import { ProductType, CategoryType, VariantType, ColorImageType } from '@/types'; // Adjust imports to match your project
+import { ProductType } from '@/types';
 import { Copy, ExternalLink, Box, Tag, Layers, CheckCircle, Image as ImageIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -33,7 +33,8 @@ const AdminProductDetails = ({ product }: AdminProductDetailsProps) => {
   }, [product.images, product.colorImages, selectedColorView]);
 
   // Handle SKU Copy
-  const handleCopySku = (sku: string) => {
+  const handleCopySku = (sku: string | null) => {
+    if (!sku) return;
     navigator.clipboard.writeText(sku);
     setCopiedSku(sku);
     setTimeout(() => setCopiedSku(null), 1500);

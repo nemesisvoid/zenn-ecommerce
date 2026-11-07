@@ -1,46 +1,44 @@
-import { getProductsByCategory } from '@/actions/category.actions';
-import ProductList from '@/components/product/product-list';
-import EmptyState from '@/components/shared/empty-state';
+import type { Metadata } from 'next';
 import PageBreadcrumb from '@/components/shared/page-breadcrumb';
-import { Button } from '@/components/ui/button';
-import { PackageOpenIcon } from 'lucide-react';
-import Link from 'next/link';
+import ProductCatalog from '@/components/product/product-catalog';
+import { getFilterCategories, parseCatalogParams } from '@/lib/catalog';
 
-const ProductListPage = async ({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
-  const filters = await searchParams;
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
-  const category = Array.isArray(filters.category) ? filters.category[0] : filters.category || 'all-products';
-  const data = await getProductsByCategory(category);
-  const title = category?.replace('-', ' ');
-  const count = data.products.length;
+// A single selected category becomes the page title (category cards link to /list?category=<slug>).
+const getSingleCategory = async (params: Record<string, string | string[] | undefined>) => {
+  const { categories } = parseCatalogParams(params);
+  if (categories.length !== 1) return null;
+  return (await getFilterCategories()).find(c => c.slug === categories[0]) ?? null;
+};
+
+export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
+  const category = await getSingleCategory(await searchParams);
+  return {
+    title: `${category?.name ?? 'Shop all products'} | Zenn`,
+    description: category?.description ?? 'Browse the full Zenn collection.',
+  };
+}
+
+const ProductListPage = async ({ searchParams }: { searchParams: SearchParams }) => {
+  const params = await searchParams;
+  const category = await getSingleCategory(params);
 
   return (
     <div className='container'>
       <PageBreadcrumb
-        items={[{ label: 'Home', href: '/' }, { label: 'Shop', href: '/list' }, ...(category !== 'all-products' ? [{ label: title }] : [])]}
+        items={[{ label: 'Home', href: '/' }, { label: 'Shop', href: '/list' }, ...(category ? [{ label: category.name }] : [])]}
         className='mb-6'
       />
-      <header className='mb-10 flex flex-col gap-2 border-b border-border pb-8 md:flex-row md:items-end md:justify-between'>
-        <h1 className='page-title first-letter:uppercase'>{title}</h1>
-        <p className='text-sm tabular-nums text-muted-foreground'>
-          {count} {count === 1 ? 'product' : 'products'}
-        </p>
+      <header className='mb-10 border-b border-border pb-8'>
+        <h1 className='page-title'>{category?.name ?? 'All products'}</h1>
+        {category?.description && <p className='lede mt-3 max-w-xl'>{category.description}</p>}
       </header>
 
-      {count === 0 ? (
-        <EmptyState
-          icon={PackageOpenIcon}
-          title='Nothing here yet'
-          description='There are no products in this category right now. Check back soon.'>
-          <Button
-            asChild
-            className='h-11 rounded-full px-6'>
-            <Link href='/list'>See all products</Link>
-          </Button>
-        </EmptyState>
-      ) : (
-        <ProductList data={data.products} />
-      )}
+      <ProductCatalog
+        pathname='/list'
+        params={params}
+      />
     </div>
   );
 };

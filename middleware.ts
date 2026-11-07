@@ -1,6 +1,6 @@
 import authConfig from './auth.config';
 import NextAuth from 'next-auth';
-import { apiAuthPrefix, authRoutes, DEFAULT_LOGIN_REDIRECT, adminRoutes, privateRoutes, publicRoutes, userRoutes } from './routes';
+import { apiAuthPrefix, authRoutes, adminRoutes, privateRoutes, publicRoutes, userRoutes, getSafeRedirect, loginUrlFor } from './routes';
 import { NextResponse } from 'next/server';
 
 const { auth } = NextAuth(authConfig);
@@ -35,27 +35,30 @@ export default auth(req => {
   const isAdminRoute = adminRoutes.some(route => nextUrl.pathname.startsWith(route));
   const isUserRoute = userRoutes.some(route => nextUrl.pathname.startsWith(route));
 
+  // Where a signed-out visitor was trying to go, so login can send them back afterwards.
+  const loginRedirect = new URL(loginUrlFor(nextUrl.pathname + nextUrl.search), nextUrl);
+
   if (isAdminRoute) {
-    if (!isLoggedIn) return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+    if (!isLoggedIn) return Response.redirect(loginRedirect);
     if (userRole !== 'ADMIN') return NextResponse.redirect(new URL('/', nextUrl));
     return res;
   }
 
   if (isUserRoute) {
-    if (!isLoggedIn) return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+    if (!isLoggedIn) return Response.redirect(loginRedirect);
     return res;
   }
   const isPrivateRoute = privateRoutes.some(route => nextUrl.pathname.startsWith(route));
 
   if (isPrivateRoute && !isLoggedIn) {
-    return NextResponse.redirect(new URL('/auth/login', nextUrl));
+    return NextResponse.redirect(loginRedirect);
   }
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
   if (isApiAuthRoute) return;
 
   if (isAuthRoute) {
-    if (isLoggedIn) return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+    if (isLoggedIn) return NextResponse.redirect(new URL(getSafeRedirect(nextUrl.searchParams.get('callbackUrl')), nextUrl));
     return;
   }
 
