@@ -54,6 +54,7 @@ const prepareOrder = async (input: CreateOrderInput) => {
       shippingAddress: address,
       itemsPrice: fresh.itemsPrice,
       shippingPrice: fresh.shippingPrice,
+      taxPrice: fresh.taxPrice,
       totalPrice: fresh.totalPrice,
       productId: fresh.cartItems[0].productId,
       cartId: fresh.id,

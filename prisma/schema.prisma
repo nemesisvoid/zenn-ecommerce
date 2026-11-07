@@ -183,6 +183,7 @@ model Cart {
   itemsPrice    Float
   totalPrice    Float
   shippingPrice Float
+  taxPrice      Float      @default(0)
   createdAt     DateTime   @default(now())
   user          User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
   cartItems     CartItem[]

@@ -97,6 +97,7 @@ type EmailOrder = {
   totalPrice: number;
   itemsPrice: number;
   shippingPrice: number;
+  taxPrice: number | null;
   shippingAddress: string;
   city: string;
   country: string;
@@ -136,6 +137,7 @@ const renderHtml = (order: EmailOrder, copy: EmailCopy, note?: string | null) =>
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:14px;margin-top:12px;">
             <tr><td style="padding:4px 0;color:#6b6459;">Subtotal</td><td align="right">${formatCurrency(order.itemsPrice)}</td></tr>
             <tr><td style="padding:4px 0;color:#6b6459;">Delivery</td><td align="right">${order.shippingPrice > 0 ? formatCurrency(order.shippingPrice) : 'Free'}</td></tr>
+            ${order.taxPrice ? `<tr><td style="padding:4px 0;color:#6b6459;">Tax</td><td align="right">${formatCurrency(order.taxPrice)}</td></tr>` : ''}
             <tr><td style="padding:8px 0 0;font-weight:700;font-size:16px;">Total</td><td align="right" style="padding:8px 0 0;font-weight:700;font-size:16px;">${formatCurrency(order.totalPrice)}</td></tr>
           </table>
           <p style="margin:20px 0 0;font-size:13px;line-height:1.5;color:#6b6459;">Delivering to: ${escapeHtml(`${order.shippingAddress}, ${order.city}, ${order.country}`)}</p>

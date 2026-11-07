@@ -16,8 +16,10 @@ import Link from 'next/link';
 
 type CartDetailsProps = {
   cart: CartType;
+  /** From Admin → Settings → Shipping; 0 means there is no free-delivery offer. */
+  freeShippingThreshold: number;
 };
-const CartDetails = ({ cart }: CartDetailsProps) => {
+const CartDetails = ({ cart, freeShippingThreshold }: CartDetailsProps) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const selectedProduct: RenderedCartItem[] = renderProduct(cart.cartItems);
@@ -168,7 +170,18 @@ const CartDetails = ({ cart }: CartDetailsProps) => {
               <dt className='text-muted-foreground'>Delivery</dt>
               <dd className='price'>{cart && cart.shippingPrice > 0 ? formatCurrency(cart?.shippingPrice) : 'Free'}</dd>
             </div>
+            {cart.taxPrice > 0 && (
+              <div className='summary-row'>
+                <dt className='text-muted-foreground'>Tax</dt>
+                <dd className='price'>{formatCurrency(cart.taxPrice)}</dd>
+              </div>
+            )}
           </dl>
+          {freeShippingThreshold > 0 && cart.shippingPrice > 0 && (
+            <p className='mt-4 text-sm text-muted-foreground'>
+              Add <span className='font-medium text-foreground'>{formatCurrency(freeShippingThreshold - cart.itemsPrice)}</span> more for free delivery.
+            </p>
+          )}
 
           <div className='summary-row pt-5'>
             <span className='font-semibold text-foreground'>Total</span>

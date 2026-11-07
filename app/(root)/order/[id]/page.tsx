@@ -237,6 +237,12 @@ const OrderPage = async ({ params }: { params: Promise<{ id: string }> }) => {
               <dt className='text-muted-foreground'>Delivery</dt>
               <dd className='price text-foreground'>{order.shippingPrice > 0 ? formatCurrency(order.shippingPrice) : 'Free'}</dd>
             </div>
+            {!!order.taxPrice && order.taxPrice > 0 && (
+              <div className='summary-row'>
+                <dt className='text-muted-foreground'>Tax</dt>
+                <dd className='price text-foreground'>{formatCurrency(order.taxPrice)}</dd>
+              </div>
+            )}
           </dl>
 
           <div className='summary-row border-t border-border bg-secondary/60 px-6 py-5 md:px-8'>

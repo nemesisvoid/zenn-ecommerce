@@ -316,6 +316,12 @@ export const PaymentForm = ({ user, cart, selectedProducts }: PaymentFormProps) 
                     <dt className='text-muted-foreground'>Delivery</dt>
                     <dd className='price'>{cart.shippingPrice > 0 ? formatCurrency(cart.shippingPrice) : 'Free'}</dd>
                   </div>
+                  {cart.taxPrice > 0 && (
+                    <div className='summary-row'>
+                      <dt className='text-muted-foreground'>Tax</dt>
+                      <dd className='price'>{formatCurrency(cart.taxPrice)}</dd>
+                    </div>
+                  )}
                 </dl>
                 <div className='summary-row pt-5'>
                   <span className='font-semibold text-foreground'>Total</span>

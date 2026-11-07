@@ -1,6 +1,6 @@
 // Server-side cart pricing. Deliberately NOT a 'use server' module: these helpers
 // must only be called from our own server code, never exposed as public actions.
-import { calcPrice, getPercentagePrice } from '@/helper/utils';
+import { calcPrice, getPercentagePrice, type PricingSettings } from '@/helper/utils';
 import { prisma } from '@/lib/prisma';
 import type { Prisma } from '@prisma/client';
 
@@ -12,6 +12,23 @@ export const getUnitPrice = (product: PricedProduct, variant: PricedVariant) => 
   const price = variant?.price ?? product.price;
   const discountPrice = product.discountPercent ? getPercentagePrice(price, product.discountPercent) : null;
   return { price, discountPrice };
+};
+
+/**
+ * Delivery fee, free-delivery threshold and tax rate from Admin → Settings → Shipping.
+ * Without a settings row nothing extra is charged.
+ */
+export const getPricingSettings = async (): Promise<PricingSettings> => {
+  const settings = await prisma.settings.findFirst({ select: { shippingFee: true, freeShippingThreshold: true, taxRate: true } });
+  const num = (value: unknown) => {
+    const n = Number(value ?? 0);
+    return Number.isFinite(n) && n > 0 ? n : 0;
+  };
+  return {
+    shippingFee: num(settings?.shippingFee),
+    freeShippingThreshold: num(settings?.freeShippingThreshold),
+    taxRate: Math.min(num(settings?.taxRate), 1),
+  };
 };
 
 /** What the customer actually pays per unit. */
@@ -53,6 +70,7 @@ export const refreshCart = async (cartId: string) => {
       const unit = getUnitPrice(item.products, item.variants);
       return { price: effectiveUnitPrice(unit), quantity: item.quantity };
     }),
+    await getPricingSettings(),
   );
 
   await prisma.cart.update({ where: { id: cartId }, data: totals });

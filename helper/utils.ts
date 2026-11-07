@@ -38,15 +38,25 @@ export interface RenderedCartItem {
   discountPercent?: number | null;
   discountPrice?: number | null;
 }
-export const calcPrice = (arr: CalcPriceProps[]) => {
-  const newArr = arr.map(item => ({
-    price: item.price,
-    quantity: item.quantity,
-  }));
-  const itemsPrice = newArr.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const shippingPrice = itemsPrice > 500000 ? 0 : 1000;
-  const totalPrice = itemsPrice + shippingPrice;
-  return { itemsPrice, shippingPrice, totalPrice };
+/** Store pricing rules from Admin → Settings → Shipping. */
+export type PricingSettings = {
+  /** Flat delivery fee in naira. */
+  shippingFee: number;
+  /** Orders with a subtotal at or above this get free delivery. 0 turns free delivery off. */
+  freeShippingThreshold: number;
+  /** Tax as a fraction of the subtotal, e.g. 0.075 for 7.5%. */
+  taxRate: number;
+};
+
+const roundMoney = (amount: number) => Math.round(amount * 100) / 100;
+
+export const calcPrice = (arr: CalcPriceProps[], pricing: PricingSettings) => {
+  const itemsPrice = roundMoney(arr.reduce((acc, item) => acc + item.price * item.quantity, 0));
+  const freeDelivery = itemsPrice === 0 || (pricing.freeShippingThreshold > 0 && itemsPrice >= pricing.freeShippingThreshold);
+  const shippingPrice = freeDelivery ? 0 : roundMoney(pricing.shippingFee);
+  const taxPrice = roundMoney(itemsPrice * pricing.taxRate);
+  const totalPrice = roundMoney(itemsPrice + shippingPrice + taxPrice);
+  return { itemsPrice, shippingPrice, taxPrice, totalPrice };
 };
 
 export const slugify = (str: string) => {
@@ -232,6 +242,14 @@ export const receiptEmailHtml = (order: any) => {
             <td><strong>Shipping</strong></td>
             <td align="right">₦${order.shippingPrice.toLocaleString()}</td>
           </tr>
+          ${
+            order.taxPrice
+              ? `<tr>
+            <td><strong>Tax</strong></td>
+            <td align="right">₦${order.taxPrice.toLocaleString()}</td>
+          </tr>`
+              : ''
+          }
           <tr>
             <td style="padding-top:10px; font-size:16px;"><strong>Total Paid</strong></td>
             <td align="right" style="padding-top:10px; font-size:16px;"><strong>₦${order.totalPrice.toLocaleString()}</strong></td>

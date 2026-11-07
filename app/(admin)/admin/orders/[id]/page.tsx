@@ -160,6 +160,12 @@ const AdminOrderPage = async ({ params }: { params: Promise<{ id: string }> }) =
                 <dt className='text-muted-foreground'>Delivery</dt>
                 <dd className='tabular-nums text-foreground'>{order.shippingPrice > 0 ? formatCurrency(order.shippingPrice) : 'Free'}</dd>
               </div>
+              {!!order.taxPrice && order.taxPrice > 0 && (
+                <div className='flex justify-between'>
+                  <dt className='text-muted-foreground'>Tax</dt>
+                  <dd className='tabular-nums text-foreground'>{formatCurrency(order.taxPrice)}</dd>
+                </div>
+              )}
               <div className='flex justify-between border-t border-border pt-2 text-base font-semibold'>
                 <dt>Total</dt>
                 <dd className='tabular-nums'>{formatCurrency(order.totalPrice)}</dd>
