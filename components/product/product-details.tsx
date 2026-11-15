@@ -8,6 +8,7 @@ import { CheckIcon, ShieldCheckIcon, TruckIcon } from 'lucide-react';
 import Link from 'next/link';
 import ProductImages from './product-images';
 import AddToCart from '../cart/add-to-cart';
+import WishlistButton from '../wishlist/wishlist-button';
 
 type ProductVariantType = {
   product: ProductType;
@@ -169,11 +170,16 @@ const ProductDetails = ({ product }: ProductVariantType) => {
           </fieldset>
         )}
 
-        <div className='pt-8'>
+        <div className='space-y-3 pt-8'>
           <AddToCart
             product={product}
             selectedVariant={selectedVariant}
             canAddToCart={canAddToCart}
+          />
+          <WishlistButton
+            productId={product.id}
+            productName={product.name}
+            variant='full'
           />
         </div>
 
