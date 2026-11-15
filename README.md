@@ -4,6 +4,66 @@ A full-stack online store built with **Next.js 15 (App Router)**, **Prisma** and
 
 Prices are in Nigerian Naira (₦).
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/home-dark.webp">
+  <img src="docs/screenshots/home-light.webp" alt="Zenn home page with a large serif headline and a featured product image">
+</picture>
+
+---
+
+## Screenshots
+
+Images follow your GitHub theme: switch between light and dark mode to see both versions of the store.
+
+<table>
+  <tr>
+    <th width="50%">Shop with filters</th>
+    <th width="50%">Product page</th>
+  </tr>
+  <tr>
+    <td>
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/shop-dark.webp">
+        <img src="docs/screenshots/shop-light.webp" alt="Product listing with category, price and availability filters, sorting and sale badges">
+      </picture>
+    </td>
+    <td>
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/product-dark.webp">
+        <img src="docs/screenshots/product-light.webp" alt="Product page with image gallery, colour and size options, sale price and add-to-bag button">
+      </picture>
+    </td>
+  </tr>
+  <tr>
+    <th>Sign in (light)</th>
+    <th>Sign in (dark)</th>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/sign-in-light.webp" alt="Sign-in page in light mode"></td>
+    <td><img src="docs/screenshots/sign-in-dark.webp" alt="Sign-in page in dark mode"></td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <th colspan="2">On mobile</th>
+  </tr>
+  <tr>
+    <td align="center">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/mobile-home-dark.webp">
+        <img src="docs/screenshots/mobile-home-light.webp" width="260" alt="Home page on a phone">
+      </picture>
+    </td>
+    <td align="center">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/mobile-product-dark.webp">
+        <img src="docs/screenshots/mobile-product-light.webp" width="260" alt="Product page on a phone">
+      </picture>
+    </td>
+  </tr>
+</table>
+
 ---
 
 ## Features
@@ -13,6 +73,7 @@ Prices are in Nigerian Naira (₦).
 - **Product variants**: colour and size options, each with its own price and stock, and per-colour image galleries.
 - **Discounts**: a percentage discount per product, shown as a sale price throughout the store.
 - **Search and filters**: search by name or description, filter by category and price range (filters are kept in the URL, so results can be shared).
+- **Wishlist**: signed-in customers can save products with the heart on any product card or product page and find them in their account.
 - **Light and dark mode**, responsive layout, and loading skeletons.
 
 ### Bag (cart)
@@ -198,7 +259,6 @@ auth.ts, auth.config.ts, middleware.ts, routes.ts   Authentication and route pro
 
 These are in the database or the interface but not finished yet:
 
-- **Wishlist**: the account page is placeholder UI.
 - **Product reviews**: the data model exists; there is no customer-facing review form yet.
 - **Shipping settings**: the admin shipping fee and free-shipping threshold aren't applied yet (delivery is a fixed ₦1,000, free over ₦500,000).
 - **Maintenance mode**: can be saved in settings but isn't enforced.
