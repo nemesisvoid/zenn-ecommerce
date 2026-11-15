@@ -1,5 +1,5 @@
 import { getCart } from '@/actions/cart.actions';
-import { refreshCart } from '@/lib/cart';
+import { getPricingSettings, refreshCart } from '@/lib/cart';
 import CartDetails from '@/components/cart/cart-details';
 import EmptyState from '@/components/shared/empty-state';
 import PageBreadcrumb from '@/components/shared/page-breadcrumb';
@@ -31,6 +31,8 @@ const CartPage = async () => {
     );
   }
 
+  const { freeShippingThreshold } = await getPricingSettings();
+
   return (
     <div className='container'>
       <PageBreadcrumb
@@ -38,7 +40,10 @@ const CartPage = async () => {
         className='mb-6'
       />
 
-      <CartDetails cart={cart} />
+      <CartDetails
+        cart={cart}
+        freeShippingThreshold={freeShippingThreshold}
+      />
     </div>
   );
 };

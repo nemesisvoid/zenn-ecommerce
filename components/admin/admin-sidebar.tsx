@@ -1,68 +1,141 @@
 'use client';
 
-import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
-import { sidebarLinks } from '@/constants';
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { ExternalLinkIcon } from 'lucide-react';
+
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
+  useSidebar,
+} from '@/components/ui/sidebar';
+import BrandMark from '@/components/shared/brand-mark';
+import Logo from '@/components/shared/logo';
+import { sidebarLinks } from '@/constants';
+import { cn } from '@/lib/utils';
+
+type NavLink = (typeof sidebarLinks)[number];
+
+const GROUPS: { label: string; links: string[] }[] = [
+  { label: 'Overview', links: ['/admin/dashboard', '/admin/activities'] },
+  { label: 'Catalogue', links: ['/admin/products', '/admin/categories', '/admin/banners'] },
+  { label: 'Sales', links: ['/admin/orders', '/admin/users'] },
+];
+const FOOTER_LINKS = ['/admin/settings'];
+
+const byLink = (links: string[]) => links.map(link => sidebarLinks.find(item => item.link === link)).filter((item): item is NavLink => !!item);
 
 const AdminSidebar = () => {
   const pathname = usePathname();
-  const { state } = useSidebar();
+  const { state, isMobile, setOpenMobile } = useSidebar();
+  const collapsed = state === 'collapsed' && !isMobile;
+
+  const closeOnMobile = () => {
+    if (isMobile) setOpenMobile(false);
+  };
+
+  const renderItem = (item: NavLink) => {
+    const isActive = pathname === item.link || pathname?.startsWith(`${item.link}/`);
+    return (
+      <SidebarMenuItem key={item.link}>
+        <SidebarMenuButton
+          asChild
+          isActive={isActive}
+          tooltip={item.name}
+          className={cn(
+            'relative h-10 gap-3 rounded-lg px-3 text-[0.9rem] text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground',
+            'data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-foreground',
+          )}>
+          <Link
+            href={item.link}
+            onClick={closeOnMobile}
+            aria-current={isActive ? 'page' : undefined}>
+            {isActive && (
+              <span
+                className='absolute -left-2 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-brand group-data-[collapsible=icon]:hidden'
+                aria-hidden='true'
+              />
+            )}
+            <item.icon
+              className={cn('size-[18px]', isActive && 'text-brand-ink')}
+              aria-hidden='true'
+            />
+            <span>{item.name}</span>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    );
+  };
 
   return (
     <Sidebar
       collapsible='icon'
-      variant='floating'
-      className='backdrop-blur-sm'>
-      <SidebarContent className='mt-1 px-3 py-4 '>
-        <SidebarHeader className='px-2 pb-2'>
-          <div className='flex items-center justify-center gap-2'>
-            <Image
-              src='/zenn-logo.png'
-              alt='logo'
-              width={100}
-              height={100}
-            />
-          </div>
-        </SidebarHeader>
+      variant='floating'>
+      <SidebarHeader className='px-3 pb-2 pt-4'>
+        <div className={cn('flex h-10 items-center', collapsed ? 'justify-center' : 'justify-between gap-2 px-1')}>
+          {collapsed ? (
+            <Link
+              href='/admin/dashboard'
+              aria-label='Zenn admin home'
+              className='rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring'>
+              <BrandMark className='size-8' />
+            </Link>
+          ) : (
+            <>
+              <Logo
+                href='/admin/dashboard'
+                className='text-[1.75rem]'
+              />
+              <span className='rounded-full border border-border px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground'>
+                Admin
+              </span>
+            </>
+          )}
+        </div>
+      </SidebarHeader>
 
-        <SidebarMenu>
-          {sidebarLinks.map(item => {
-            const isActive = pathname?.startsWith(item.link);
-            return (
-              <SidebarMenuItem
-                key={item.name}
-                className='mb-3'>
-                <SidebarMenuButton asChild>
-                  <Link
-                    href={item.link}
-                    title={item.name}
-                    aria-current={isActive ? 'page' : undefined}
-                    className={[
-                      'group relative flex items-center gap-3 rounded-full px-0 py-4 transition-all',
-                      'outline-none ring-0 focus-visible:ring-2 focus-visible:ring-sidebar-ring/50',
-                      isActive ? 'text-black shadow-sm' : 'text-muted-foreground hover:text-foreground',
-                    ].join(' ')}>
-                    <span
-                      className={[
-                        'flex size-8 items-center justify-center rounded-full transition-all',
-                        isActive && state !== 'collapsed'
-                          ? 'dark:text-white shadow-sm group-hover:bg-sidebar-accent dark:bg-sidebar-accent/50'
-                          : 'text-muted-foreground group-hover:text-foreground',
-                      ].join(' ')}>
-                      <item.icon className='size-4' />
-                    </span>
-                    <span className={isActive ? 'font-medium dark:text-white' : ''}>{item.name}</span>
-                    {/* 
-                    {isActive && <span className='absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-r bg-white/70' />} */}
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            );
-          })}
-        </SidebarMenu>
+      <SidebarContent className='px-1'>
+        {GROUPS.map(group => (
+          <SidebarGroup key={group.label}>
+            <SidebarGroupLabel className='text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground/80'>{group.label}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu className='gap-1'>{byLink(group.links).map(renderItem)}</SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
+
+      <SidebarFooter className='border-t border-sidebar-border px-3 py-3'>
+        <SidebarMenu className='gap-1'>
+          {byLink(FOOTER_LINKS).map(renderItem)}
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              tooltip='View store'
+              className='h-10 gap-3 rounded-lg px-3 text-[0.9rem] text-muted-foreground hover:bg-sidebar-accent hover:text-foreground'>
+              <Link
+                href='/'
+                target='_blank'>
+                <ExternalLinkIcon
+                  className='size-[18px]'
+                  aria-hidden='true'
+                />
+                <span>View store</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+      <SidebarRail />
     </Sidebar>
   );
 };

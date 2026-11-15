@@ -69,7 +69,7 @@ const UserNav = ({ isLoggedIn, userRole, cartItemsCount }: UserNavProps) => {
               <DropdownMenuItem
                 asChild
                 className={itemClass}>
-                <Link href='/user/wishlist'>
+                <Link href='/user/settings/wishlist'>
                   <HeartIcon />
                   Wishlist
                 </Link>

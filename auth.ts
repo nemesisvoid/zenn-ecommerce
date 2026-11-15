@@ -82,7 +82,9 @@ export const {
         return null;
       }
 
-      token.name = (token.name ?? existingUser.name ?? [existingUser.firstName, existingUser.lastName].filter(Boolean).join(' ').trim()) || '';
+      token.name = existingUser.name || [existingUser.firstName, existingUser.lastName].filter(Boolean).join(' ').trim() || token.name || '';
+      token.email = existingUser.email;
+      token.picture = existingUser.avatar || existingUser.image || null;
       token.role = existingUser.role;
       if (trigger === 'signIn' || trigger === 'signUp') {
         const cookie = await cookies();

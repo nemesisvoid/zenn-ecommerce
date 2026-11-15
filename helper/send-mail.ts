@@ -7,6 +7,10 @@ interface SendMailProps {
   text?: string;
   html?: string;
 }
+/** Escapes text before putting it into email HTML, so names can't inject links or markup. */
+export const escapeHtml = (value: string | null | undefined) =>
+  (value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
 const host = process.env.EMAIL_HOST;
 const port = process.env.EMAIL_PORT;
 const user = process.env.EMAIL_USER;
@@ -101,7 +105,7 @@ export const sendAdminNotificationMail = async (email: string, user: { name?: st
   await transporter.sendMail({
     to: email,
     subject: 'New User Registered',
-    html: `<div>A new user has registered to the website <br/> <p> User details: ${user.name}, ${user.email}
+    html: `<div>A new user has registered to the website <br/> <p> User details: ${escapeHtml(user.name)}, ${escapeHtml(user.email)}
     </p> 
     </div>`,
   });
@@ -111,7 +115,7 @@ export const sendUserWelcomeMail = async (email: string, name: string) => {
   await transporter.sendMail({
     to: email,
     subject: 'Welcome to Zenn E-commerce Website',
-    html: `<div>Hi ${name},<br/>
+    html: `<div>Hi ${escapeHtml(name)},<br/>
     <p>Thank you for registering with us. We are excited to have you on board!</p> <br/>
     <p>Explore our wide range of products and start shopping today! </p>
     <a href="${process.env.NEXT_PUBLIC_APP_URL}/list">Shop Now</a>

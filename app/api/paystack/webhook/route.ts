@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import { applyPaystackPayment, type PaystackTransaction } from '@/lib/payments';
+import { handlePaystackRefundEvent } from '@/lib/refunds';
 
 export async function POST(req: Request) {
   const secret = process.env.PAYSTACK_SECRET_KEY;
@@ -17,7 +18,19 @@ export async function POST(req: Request) {
     return new Response('Invalid signature', { status: 401 });
   }
 
-  const event = JSON.parse(raw.toString('utf-8')) as { event: string; data: PaystackTransaction };
+  // charge.* events carry a transaction; refund.* events add the original payment's transaction_reference.
+  const event = JSON.parse(raw.toString('utf-8')) as { event: string; data: PaystackTransaction & { transaction_reference?: string } };
+
+  // refund.pending / processing / processed / failed / needs-attention
+  if (event.event.startsWith('refund.')) {
+    try {
+      await handlePaystackRefundEvent(event.data);
+      return new Response('OK', { status: 200 });
+    } catch (err) {
+      console.error('Paystack refund webhook error:', err);
+      return new Response('Error', { status: 500 });
+    }
+  }
 
   // Acknowledge events we don't act on, so Paystack doesn't keep retrying them.
   if (event.event !== 'charge.success') return new Response('Ignored', { status: 200 });

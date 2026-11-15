@@ -8,6 +8,7 @@ import {
   PackageIcon,
   PencilIcon,
   PlusIcon,
+  ReceiptTextIcon,
   ScrollTextIcon,
   Trash2Icon,
   UserRoundIcon,
@@ -96,6 +97,7 @@ const ENTITY_META: Record<string, EntityMeta> = {
   PRODUCT: { noun: 'product', plural: 'Products', icon: PackageIcon },
   CATEGORY: { noun: 'category', plural: 'Categories', icon: FolderTreeIcon },
   BANNER: { noun: 'banner', plural: 'Banners', icon: GalleryHorizontalIcon },
+  ORDER: { noun: 'order', plural: 'Orders', icon: ReceiptTextIcon },
   USER: { noun: 'user', plural: 'Users', icon: UserRoundIcon },
   ACTIVITY_LOG: { noun: 'activity log', plural: 'Activity log', icon: ScrollTextIcon },
 };
@@ -124,11 +126,7 @@ export const getActorName = (user: ActivityLogEntry['user']) => {
   return user.name?.trim() || fullName || user.email;
 };
 
-export const getInitials = (name: string) => {
-  const words = name.replace(/@.*/, '').split(/[\s._-]+/).filter(Boolean);
-  const initials = words.length > 1 ? words[0][0] + words[words.length - 1][0] : (words[0] ?? '?').slice(0, 2);
-  return initials.toUpperCase();
-};
+export { getInitials } from '@/lib/utils';
 
 // ---------------------------------------------------------------------------
 // Field labels & values

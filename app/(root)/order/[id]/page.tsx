@@ -19,6 +19,7 @@ import {
 import { cn } from '@/lib/utils';
 import EmptyState from '@/components/shared/empty-state';
 import OrderStatusPill from '@/components/shared/order-status-pill';
+import RefundSection from '@/components/order/refund-section';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -236,6 +237,12 @@ const OrderPage = async ({ params }: { params: Promise<{ id: string }> }) => {
               <dt className='text-muted-foreground'>Delivery</dt>
               <dd className='price text-foreground'>{order.shippingPrice > 0 ? formatCurrency(order.shippingPrice) : 'Free'}</dd>
             </div>
+            {!!order.taxPrice && order.taxPrice > 0 && (
+              <div className='summary-row'>
+                <dt className='text-muted-foreground'>Tax</dt>
+                <dd className='price text-foreground'>{formatCurrency(order.taxPrice)}</dd>
+              </div>
+            )}
           </dl>
 
           <div className='summary-row border-t border-border bg-secondary/60 px-6 py-5 md:px-8'>
@@ -243,6 +250,11 @@ const OrderPage = async ({ params }: { params: Promise<{ id: string }> }) => {
             <span className='price text-xl font-semibold text-foreground'>{formatCurrency(order.totalPrice)}</span>
           </div>
         </div>
+
+        <RefundSection
+          order={order}
+          requests={order.refundRequests}
+        />
 
         <div className='mt-8 flex flex-wrap justify-center gap-3'>
           <Button

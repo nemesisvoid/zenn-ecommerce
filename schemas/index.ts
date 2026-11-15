@@ -107,7 +107,7 @@ export const GeneralSettingsSchema = z.object({
 export const ShippingSettingsSchema = z.object({
   shippingFee: z.coerce.number().nonnegative('Default shipping cost must be a positive number'),
   freeShippingThreshold: z.coerce.number().nonnegative('Free shipping threshold must be a positive number'),
-  taxRate: z.coerce.number().nonnegative('Tax rate must be a positive number').optional(),
+  taxRate: z.coerce.number().nonnegative('Tax rate must be a positive number').max(1, 'Enter the rate as a decimal, e.g. 0.075 for 7.5%').optional(),
   // paymentMethod: z.array(
   //   z.object({
   //     paystack: z.boolean().default(false),

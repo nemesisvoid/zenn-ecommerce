@@ -9,6 +9,7 @@ import SettingsHeader from './settings-header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { getInitials } from '@/lib/utils';
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -124,7 +125,7 @@ const UserProfileForm = ({ initialData }: UserProfileFormProps) => {
                 src={avatarPreview}
                 className='object-cover'
               />
-              <AvatarFallback className='bg-secondary text-lg font-medium'>{`${initialData.firstName[0]}${initialData.lastName[0]}s`}</AvatarFallback>
+              <AvatarFallback className='bg-secondary text-lg font-medium'>{getInitials(initialData)}</AvatarFallback>
             </Avatar>
             <div className='flex flex-col items-start gap-2'>
               <p className='text-sm font-medium text-foreground'>Profile photo</p>

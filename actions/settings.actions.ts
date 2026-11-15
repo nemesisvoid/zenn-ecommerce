@@ -7,7 +7,9 @@ import { SettingsSchema } from '@/schemas';
 
 export const createSettings = async (data: z.infer<typeof SettingsSchema>) => {
   await requireAdmin();
-  const settings = await prisma.settings.create({ data });
+  const parsed = SettingsSchema.safeParse(data);
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? 'Invalid settings', message: '' };
+  const settings = await prisma.settings.create({ data: parsed.data });
   return { settings, message: 'Settings created successfully' };
 };
 export const getSettings = async () => {
@@ -21,14 +23,16 @@ export const getSettings = async () => {
 
 export const updateSettings = async (id: string, data: z.infer<typeof SettingsSchema>) => {
   await requireAdmin();
+  const parsed = SettingsSchema.safeParse(data);
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? 'Invalid settings', message: '' };
   try {
     const settings = await prisma.settings.update({
       where: { id },
-      data,
+      data: parsed.data,
     });
     return { settings, message: 'Settings updated successfully' };
   } catch (error) {
     console.error('error updating settings:', error);
-    return { error: 'Error updating settings' };
+    return { error: 'Error updating settings', message: '' };
   }
 };

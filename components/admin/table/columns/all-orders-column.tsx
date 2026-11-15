@@ -4,15 +4,15 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ColumnDef } from '@tanstack/react-table';
 
-import { PaymentMethod, PaymentStatus, OrderStatus, DeliveryStatus } from '@prisma/client';
+import { PaymentMethod, PaymentStatus, OrderStatus, DeliveryStatus, RefundStatus } from '@prisma/client';
 import { StatusBadge } from '@/components/misc/status-badge';
 
 import { formatCurrency } from '@/helper/utils';
 
 export type AllOrdersColumnType = {
   id: string;
+  userId: string;
   customerName: string | null;
-  // Not currently provided: getAllOrders() does not select the user's image/avatar, so the fallback is shown.
   avatar?: string | null;
   totalItems: number;
   orderNumber: string;
@@ -22,19 +22,36 @@ export type AllOrdersColumnType = {
   paymentStatus: PaymentStatus;
   orderStatus: OrderStatus;
   deliveryStatus: DeliveryStatus;
+  refundStatus: RefundStatus | null;
 };
 
 export const allOrdersColumn: ColumnDef<AllOrdersColumnType>[] = [
   {
-    header: 'Order Id',
-    accessorKey: 'id',
+    header: 'Order',
+    accessorKey: 'orderNumber',
+    cell: ({ row }) => (
+      <Link
+        href={`/admin/orders/${row.original.id}`}
+        className='font-medium text-foreground hover:underline'>
+        #{row.original.orderNumber}
+      </Link>
+    ),
+  },
+  {
+    header: 'Date',
+    accessorKey: 'orderDate',
+    cell: ({ row }) => (
+      <span className='whitespace-nowrap text-sm'>
+        {new Date(row.original.orderDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+      </span>
+    ),
   },
   {
     header: 'Customer Name',
     accessorKey: 'customerName',
     cell: ({ row }) => {
       return (
-        <Link href={`/admin/customers/${row.original.id}`}>
+        <Link href={`/admin/users/${row.original.userId}`}>
           <div className='flex items-center gap-2'>
             <Image
               src={row.original.avatar ? row.original.avatar : '/avatar-fallback.png'}
@@ -53,13 +70,24 @@ export const allOrdersColumn: ColumnDef<AllOrdersColumnType>[] = [
   },
 
   {
-    header: 'Total Items',
+    header: 'Items',
     accessorKey: 'totalItems',
+  },
+  {
+    header: 'Total',
+    accessorKey: 'totalAmount',
+    cell: ({ row }) => <span className='whitespace-nowrap tabular-nums'>{formatCurrency(row.original.totalAmount)}</span>,
   },
 
   {
     header: 'Payment Method',
     accessorKey: 'paymentMethod',
+    cell: ({ row }) => (row.original.paymentMethod === 'PAYSTACK' ? 'Paystack' : 'Pay on delivery'),
+  },
+  {
+    header: 'Order Status',
+    accessorKey: 'orderStatus',
+    cell: ({ row }) => <StatusBadge status={row.original.orderStatus} />,
   },
 
   {
@@ -74,6 +102,34 @@ export const allOrdersColumn: ColumnDef<AllOrdersColumnType>[] = [
     accessorKey: 'deliveryStatus',
     cell: ({ row }) => {
       return <StatusBadge status={row.original.deliveryStatus} />;
+    },
+  },
+  {
+    header: 'Refund',
+    accessorKey: 'refundStatus',
+    cell: ({ row }) => {
+      const status = row.original.refundStatus;
+      if (!status) return <span className='text-muted-foreground'>—</span>;
+      // Highlight requests that are waiting on the admin.
+      const needsAction = status === 'REQUESTED' || status === 'RECEIVED' || status === 'FAILED';
+      const label: Record<RefundStatus, string> = {
+        REQUESTED: 'New request',
+        APPROVED: 'Awaiting return',
+        RECEIVED: 'Ready to refund',
+        REFUNDING: 'Refunding',
+        FAILED: 'Refund failed',
+        REFUNDED: 'Refunded',
+        REJECTED: 'Declined',
+      };
+      return (
+        <Link
+          href={`/admin/orders/${row.original.id}`}
+          className={`inline-flex whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium ${
+            needsAction ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' : 'bg-secondary text-muted-foreground'
+          }`}>
+          {label[status]}
+        </Link>
+      );
     },
   },
 

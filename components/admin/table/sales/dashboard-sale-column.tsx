@@ -20,7 +20,7 @@ export const dashboardSaleColumn: ColumnDef<DashboardSaleColumn>[] = [
     accessorKey: 'orderId',
     cell: ({ row }) => (
       <Link
-        href={`/admin/order/${row.original.orderId}`}
+        href={`/admin/orders/${row.original.orderId}`}
         className='hover:text-purple-400 duration-300'>
         {row.original.orderId}
       </Link>
